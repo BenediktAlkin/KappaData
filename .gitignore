@@ -6,7 +6,7 @@
 
 temp/
 
-main_*.py
+scratchpad*.py
 
 
 # Byte-compiled / optimized / DLL files
