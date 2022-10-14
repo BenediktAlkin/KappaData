@@ -1,7 +1,6 @@
 import torch
 import unittest
 from unittest.mock import patch, MagicMock
-import redis
 import kappadata.caching.redis_dataset
 from tests_mock.redis_mock import RedisMock
 from torch.utils.data import Dataset
