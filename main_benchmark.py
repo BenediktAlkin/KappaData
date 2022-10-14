@@ -77,6 +77,8 @@ def main(image_folder_path, epochs, batch_size, num_workers):
                         print(f"{j+1}/{n_batches}", end="\r")
                 logging.info(f"epoch {i} took: {epoch_sw.elapsed_seconds}")
         logging.info(f"{epochs} epochs took: {sw.elapsed_seconds}")
+        if caching_dataset is not None:
+            dataset.dispose()
 
 
 if __name__ == "__main__":
