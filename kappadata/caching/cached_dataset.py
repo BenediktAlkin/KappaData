@@ -1,7 +1,9 @@
+import logging
 from torch.utils.data import Dataset
 
 class CachedDataset(Dataset):
     def __init__(self, dataset, transform=None):
+        self.logger = logging.getLogger(type(self).__name__)
         self.dataset = dataset
         self.transform = transform
 

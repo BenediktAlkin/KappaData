@@ -3,8 +3,11 @@ import redis
 from .cached_dataset import CachedDataset
 import torch
 import io
+import subprocess
+import shutil
 
 class RedisDataset(CachedDataset):
+    CONNECTION_TRIES = 10
     CUSTOM_ENCODE_TRANSFORMS = []
     CUSTOM_DECODE_TRANSFORMS = []
 
@@ -52,9 +55,39 @@ class RedisDataset(CachedDataset):
             return RedisDataset._tensor_from_bytes
         return None
 
-    def __init__(self, host, port, encode_transforms=None, decode_transforms=None, **kwargs):
+    def __init__(
+            self,
+            host="localhost",
+            port=6379,
+            start_if_not_running=True,
+            encode_transforms=None,
+            decode_transforms=None,
+            **kwargs,
+    ):
         super().__init__(**kwargs)
         self.db = redis.Redis(host=host, port=port)
+        self.db_process = None
+        for i in range(self.CONNECTION_TRIES):
+            try:
+                self.db.ping()
+                break
+            except redis.exceptions.ConnectionError:
+                msg = f"couldn't find redis server on '{host}:{port}'"
+                if start_if_not_running:
+                    assert shutil.which("redis-server") is not None, "can't find command 'redis-server'"
+                    try_start_local_str = " -> trying to start local server"
+                    self.logger.info(f"{msg}{try_start_local_str}")
+                    try:
+                        self.db_process = subprocess.Popen(["redis-server", "--port", f"{port}"])
+                        self.logger.info(f"started redis-server on port {port}")
+                    except:
+                        raise
+                else:
+                    try_string = "" if i == 0 else f" {i + 1}/{self.CONNECTION_TRIES}"
+                    self.logger.info(f"{msg}{try_string}")
+                if i == self.CONNECTION_TRIES - 1:
+                    raise
+
         # store how many items are returned from the dataset
         # e.g. ImageNet returns 2 items (image and class label)
         self.items_per_sample = None
@@ -100,3 +133,5 @@ class RedisDataset(CachedDataset):
 
     def dispose(self):
         self.db.close()
+        if self.db_process is not None:
+            self.db_process.close()
