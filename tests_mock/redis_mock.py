@@ -27,3 +27,9 @@ class RedisMock:
 
     def get_encoder(self):
         return self.encoder
+
+    def ping(self):
+        pass
+
+    def flushall(self):
+        self.items.clear()
