@@ -20,9 +20,7 @@ class RedisDataset(CachedDataset):
 
     @staticmethod
     def _tensor_from_bytes(raw_item):
-        buffer = io.BytesIO()
-        buffer.write(raw_item)
-        buffer.seek(0)
+        buffer = io.BytesIO(raw_item)
         return torch.load(buffer)
 
     @staticmethod
