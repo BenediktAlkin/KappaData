@@ -70,6 +70,7 @@ class RedisDataset(CachedDataset):
         for i in range(self.CONNECTION_TRIES):
             try:
                 self.db.ping()
+                self.db.flushall()
                 break
             except redis.exceptions.ConnectionError:
                 msg = f"couldn't find redis server on '{host}:{port}'"
@@ -90,40 +91,34 @@ class RedisDataset(CachedDataset):
 
         # store how many items are returned from the dataset
         # e.g. ImageNet returns 2 items (image and class label)
-        self.items_per_sample = None
+        sample = self.dataset[0]
+        self.items_per_sample = len(sample)
         # redis encoder doesn't support all datatypes
         self.encode_transforms = encode_transforms
         # redis returns bytes -> apply a decoding transform to every retrieved sample
         self.decode_transforms = decode_transforms
 
-    def _getitem_impl(self, idx):
-        if not self.db.exists(idx):
-            sample = self.dataset[idx]
-            # initialize items_per_sample and encode_transforms/decode_transforms
-            if self.items_per_sample is None:
-                self.items_per_sample = len(sample)
-                if self.encode_transforms is None:
-                    # automatically initialize encode_transforms from known datatypes
-                    self.encode_transforms = [
-                        self.get_encode_transform(item)
-                        for item in sample
-                    ]
-                if self.decode_transforms is None:
-                    # automatically initialize decode_transforms from known datatypes
-                    self.decode_transforms = [
-                        self.get_decode_transform(item)
-                        for item in sample
-                    ]
-                else:
-                    assert len(self.decode_transforms) == self.items_per_sample
+        # initialize encode_transforms
+        if self.encode_transforms is None:
+            # automatically initialize encode_transforms from known datatypes
+            self.encode_transforms = [self.get_encode_transform(item) for item in sample]
+        else:
+            assert len(self.encode_transforms) == self.items_per_sample
+        # initialize decode_transforms
+        if self.decode_transforms is None:
+            # automatically initialize decode_transforms from known datatypes
+            self.decode_transforms = [self.get_decode_transform(item) for item in sample]
+        else:
+            assert len(self.decode_transforms) == self.items_per_sample
 
-            # store in db
-            db_idx = idx * self.items_per_sample
+    def _getitem_impl(self, idx):
+        db_idx = idx * self.items_per_sample
+        if not self.db.exists(db_idx):
+            sample = self.dataset[idx]
             for i, (encode_transform, item) in enumerate(zip(self.encode_transforms, sample)):
                 encoded_item = encode_transform(item) if encode_transform is not None else item
                 self.db.set(db_idx + i, encoded_item)
         else:
-            db_idx = idx * self.items_per_sample
             raw_sample = [self.db.get(db_idx + i) for i in range(self.items_per_sample)]
             sample = tuple(
                 decode_transform(raw_item) if decode_transform is not None else raw_item
