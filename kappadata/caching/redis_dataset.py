@@ -93,10 +93,10 @@ class RedisDataset(CachedDataset):
         else:
             db_idx = index * self.items_per_sample
             raw_sample = [self.db.get(db_idx + i) for i in range(self.items_per_sample)]
-            sample = [
+            sample = tuple(
                 decode_transform(raw_item) if decode_transform is not None else raw_item
                 for decode_transform, raw_item in zip(self.decode_transforms, raw_sample)
-            ]
+            )
 
         if self.transform is not None:
             sample = self.transform(sample)
