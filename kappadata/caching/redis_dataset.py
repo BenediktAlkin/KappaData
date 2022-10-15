@@ -55,6 +55,7 @@ class RedisDataset(CachedDataset):
 
     def __init__(
             self,
+            *args,
             host="localhost",
             port=6379,
             start_if_not_running=True,
@@ -62,7 +63,7 @@ class RedisDataset(CachedDataset):
             decode_transforms=None,
             **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
         self.db = redis.Redis(host=host, port=port)
         self.db_process = None
         for i in range(self.CONNECTION_TRIES):
