@@ -17,6 +17,8 @@ class CachedDataset(Dataset):
         return len(self.dataset)
 
     def __getattr__(self, item):
+        if item == "dataset":
+            return getattr(super(), item)
         return getattr(self.dataset, item)
 
     def _getitem_impl(self, index):
