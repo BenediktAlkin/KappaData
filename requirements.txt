@@ -1,3 +1,5 @@
 torch
 redis
 Pillow
+einops
+numpy
