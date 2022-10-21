@@ -21,7 +21,7 @@ class ModeWrapper(Dataset):
                 self._getitem_fns.append(getattr(self.dataset, fn_name))
 
     @staticmethod
-    def _get_index(idx):
+    def _get_index(idx, ctx=None):
         return idx
 
     def __getitem__(self, idx):
@@ -31,10 +31,11 @@ class ModeWrapper(Dataset):
             idx = len(self) + idx
 
         items = []
+        ctx = {}
         for getitem_fn in self._getitem_fns:
-            item = getitem_fn(idx)
+            item = getitem_fn(idx, ctx)
             items.append(item)
-        return tuple(items)
+        return ctx, *tuple(items)
 
     def __len__(self):
         return len(self.dataset)

@@ -2,6 +2,7 @@ import unittest
 
 from kappadata.wrappers.class_filter_wrapper import ClassFilterWrapper
 from kappadata.wrappers.base.dataset_base import DatasetBase
+from tests_mock.index_dataset import IndexDataset
 
 class TestClassFilterWrapper(unittest.TestCase):
     class ClassDataset(DatasetBase):
@@ -20,8 +21,8 @@ class TestClassFilterWrapper(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: ClassFilterWrapper(None, valid_classes=[1], invalid_classes=[3]))
         self.assertRaises(AssertionError, lambda: ClassFilterWrapper(None, valid_classes=1))
         self.assertRaises(AssertionError, lambda: ClassFilterWrapper(None, invalid_classes=3))
-        _ = ClassFilterWrapper(None, valid_classes=[1])
-        _ = ClassFilterWrapper(None, invalid_classes=[3])
+        _ = ClassFilterWrapper(IndexDataset(size=3), valid_classes=[1])
+        _ = ClassFilterWrapper(IndexDataset(size=3), invalid_classes=[3])
 
     def test_valid_classes(self):
         ds = ClassFilterWrapper(self.ClassDataset(classes=[0, 1, 1, 1, 5, 3, 1, 0, 3, 2, 1]), valid_classes=[1])
