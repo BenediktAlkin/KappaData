@@ -2,16 +2,17 @@ import bisect
 
 from torch.utils.data import ConcatDataset
 from kappadata.errors import UseModeWrapperException
-
+from functools import partial
 
 class KDConcatDataset(ConcatDataset):
     def __getattr__(self, item):
         if item.startswith("getitem_"):
             # all methods starting with getitem_ are called with self.datasets[dataset_idx][sample_idx]
             return partial(self._call_getitem, item)
-        if item == "dataset":
+        if item == "datasets":
             return getattr(super(), item)
-        return getattr(self.dataset, item)
+        # warning/exception here might make sense
+        return getattr(self.datasets[0], item)
 
     def _call_getitem(self, item, idx, *args, **kwargs):
         dataset_idx, sample_idx = self._to_concat_idx(idx)
