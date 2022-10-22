@@ -7,10 +7,10 @@ Utilities for [datasets and dataloading](https://pytorch.org/tutorials/beginner/
 - caching datasets in-memory
 - various dataset filters and other manipulation (filter by class, limit size to a %, ...)
 
-### Modular datasets
+# Modular datasets
 [pytorch datasets](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html) load all data in the `__getitem__`.
 KappaData decouples the `__getitem__` such that single properties of the dataset can be loaded independently.
-#### Image classification dataset example
+## Image classification dataset example
 Let's take an image classification dataset as an example. A sample consists of an image with an associated class label. 
 ```
 class ImageClassificationDataset(torch.utils.data.Dataset):
@@ -49,7 +49,7 @@ for y in kappadata.ModeWrapper(ds, mode="y"):
   ...
 ```
 
-#### Augmentation parameters
+## Augmentation parameters
 With KappaData you can also retrieve various properties of your data prepocessing (e.g. augmentation parameters).
 The following example shows how you can retrieve the parameters [torchvision.transforms.RandomResizedCrop](https://pytorch.org/vision/main/generated/torchvision.transforms.RandomResizedCrop.html).
 ```
@@ -81,8 +81,8 @@ for x, ctx in kappadata.ModeWrapper(ds, mode="x", return_ctx=True):
   print(ctx["crop_parameters"])
 ```
 
-## Caching datasets in-memory
-### SharedDictDataset
+# Caching datasets in-memory
+## SharedDictDataset
 `kappadata.SharedDictDataset` provides a wrapper to store arbitrary datasets in-memory via dictionary shared between all 
 worker processes ([python multiprocessing](https://docs.python.org/3/library/multiprocessing.html)).
 The shared memory part is important for [dataloading](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader) 
@@ -92,11 +92,11 @@ as it has ~130GB and its not too uncommon for GPU servers to have more RAM than 
 
 `cached_ds = kappadata.SharedDictDataset(dataset=ImageClassificationDataset(...))`
 
-### RedisDataset [EXPERIMENTAL]
+## RedisDataset [EXPERIMENTAL]
 `kappadata.RedisDataset` provides an in-memory cache via the [redis](https://redis.io/) in-memory database.
 This enables sharing data between multiple GPU-proceses (not only worker processes) for multi-GPU training.
 
-### Caching image datasets
+## Caching image datasets
 Naively caching image datasets can lead to high memory consumption because image data is usually stored in a compressed
 format and decompressed by the dataset. To reduce memory, the raw uncompressed data needs to be cached.
 
@@ -119,7 +119,7 @@ class CachedImageFolder(kappadata.KDDataset):
 ```
 
 
-## Automatically copy datasets to a local (fast) disk
+# Automatically copy datasets to a local (fast) disk
 Datasets are often stored on a global (slow) storage and before training moved to a local (fast) disk.
 `kappadata.copy_folder_from_global_to_local` provides an utility function to do this automatically:
 - local path doesn't exist -> automatically copy from global to local
@@ -140,7 +140,7 @@ The above code will also work (without modification) if `/system/data/ImageNet` 
 `train.zip` and `val.zip`
 
 
-## Dataset manipulation/filters
+# Dataset manipulation/filters
 - Filter by class 
   - `kappadata.ClassFilterWrapper(ds, valid_classes=[0, 1])`
   - `kappadata.ClassFilterWrapper(ds, invalid_classes=[0, 1])`

@@ -12,8 +12,6 @@ pip install redis[hiredis]
 - multiple redis instances
     - store guid in database and check for it
 
-### inmemory zip
-
-## wrappers
-
+## other
+- inmemory zip
 - samplers
