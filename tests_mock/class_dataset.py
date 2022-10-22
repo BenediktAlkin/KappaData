@@ -1,5 +1,6 @@
 from kappadata.datasets.kd_dataset import KDDataset
 
+
 class ClassDataset(KDDataset):
     def __init__(self, classes):
         super().__init__()

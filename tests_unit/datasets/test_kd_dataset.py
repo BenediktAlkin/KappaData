@@ -1,7 +1,8 @@
 import unittest
 
-from tests_mock.index_dataset import IndexDataset
 from kappadata.errors import UseModeWrapperException
+from tests_mock.index_dataset import IndexDataset
+
 
 class TestKDDataset(unittest.TestCase):
     def test_dispose(self):

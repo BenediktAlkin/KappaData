@@ -1,5 +1,7 @@
-from PIL import Image
 import io
+
+from PIL import Image
+
 
 def raw_image_loader(path):
     with open(path, "rb") as f:

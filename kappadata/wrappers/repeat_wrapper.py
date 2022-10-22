@@ -1,5 +1,7 @@
-from kappadata.datasets.kd_subset import KDSubset
 import numpy as np
+
+from kappadata.datasets.kd_subset import KDSubset
+
 
 class RepeatWrapper(KDSubset):
     """ repeats the dataset <repetitions> times or until it reaches <min_size>"""

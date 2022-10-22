@@ -1,9 +1,12 @@
-import torch
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
+import torch
+from torch.utils.data import Dataset
+
 import kappadata.caching.redis_dataset
 from tests_mock.redis_mock import RedisMock
-from torch.utils.data import Dataset
+
 
 class TestRedisDataset(unittest.TestCase):
     @patch("kappadata.caching.redis_dataset.redis")
@@ -28,7 +31,6 @@ class TestRedisDataset(unittest.TestCase):
                     self.assertTrue(torch.all(expected == actual))
                 else:
                     self.assertEqual(expected, actual)
-
 
         test_equal(ds[0], redis_ds[0])
         test_equal(ds[0], redis_ds[0])

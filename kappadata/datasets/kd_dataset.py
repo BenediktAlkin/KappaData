@@ -1,6 +1,9 @@
-from torch.utils.data import Dataset
 import logging
+
+from torch.utils.data import Dataset
+
 from kappadata.errors import UseModeWrapperException
+
 
 class KDDataset(Dataset):
     def __init__(self, **kwargs):

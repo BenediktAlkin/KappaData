@@ -1,8 +1,10 @@
 import bisect
+from functools import partial
 
 from torch.utils.data import ConcatDataset
+
 from kappadata.errors import UseModeWrapperException
-from functools import partial
+
 
 class KDConcatDataset(ConcatDataset):
     def __getattr__(self, item):
@@ -34,7 +36,6 @@ class KDConcatDataset(ConcatDataset):
         else:
             sample_idx = idx - self.cumulative_sizes[dataset_idx - 1]
         return dataset_idx, sample_idx
-
 
     def __enter__(self):
         return self

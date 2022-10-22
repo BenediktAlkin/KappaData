@@ -1,10 +1,13 @@
 # adapted from https://github.com/ptrblck/pytorch_misc/blob/master/pytorch_redis.py
-import redis
-from .cached_dataset import CachedDataset
-import torch
 import io
-import subprocess
 import shutil
+import subprocess
+
+import redis
+import torch
+
+from .cached_dataset import CachedDataset
+
 
 class RedisDataset(CachedDataset):
     CONNECTION_TRIES = 10

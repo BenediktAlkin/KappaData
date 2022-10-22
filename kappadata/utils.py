@@ -11,6 +11,7 @@ def get_class_counts(classes, n_classes):
     counts[unique_classes] = unique_counts
     return counts
 
+
 def get_class_counts_from_dataset(dataset):
     classes = [dataset.getitem_class(i) for i in range(len(dataset))]
     return get_class_counts(classes=classes, n_classes=dataset.n_classes)

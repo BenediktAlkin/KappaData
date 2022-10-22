@@ -1,8 +1,8 @@
 import unittest
 
 from kappadata.wrappers.class_filter_wrapper import ClassFilterWrapper
-from kappadata.datasets.kd_dataset import KDDataset
 from tests_mock.class_dataset import ClassDataset
+
 
 class TestClassFilterWrapper(unittest.TestCase):
     def test_ctor_arg_checks(self):

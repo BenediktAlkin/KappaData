@@ -1,5 +1,6 @@
 from kappadata.datasets.kd_subset import KDSubset
 
+
 class ClassFilterWrapper(KDSubset):
     def __init__(self, dataset, valid_classes=None, invalid_classes=None):
         assert (valid_classes is None) ^ (invalid_classes is None)

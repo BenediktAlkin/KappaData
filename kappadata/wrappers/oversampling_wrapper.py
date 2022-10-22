@@ -3,6 +3,7 @@ import numpy as np
 from kappadata.datasets.kd_subset import KDSubset
 from kappadata.utils import get_class_counts
 
+
 class OversamplingWrapper(KDSubset):
     def __init__(self, dataset, strategy="multiply"):
         self.strategy = strategy

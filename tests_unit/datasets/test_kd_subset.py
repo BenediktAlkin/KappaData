@@ -1,8 +1,9 @@
 import unittest
-from kappadata.datasets.kd_dataset import KDDataset
+
 from kappadata.datasets.kd_subset import KDSubset
-from tests_mock.index_dataset import IndexDataset
 from kappadata.errors import UseModeWrapperException
+from tests_mock.index_dataset import IndexDataset
+
 
 class TestKDSubset(unittest.TestCase):
     def test_getattr_getitem(self):

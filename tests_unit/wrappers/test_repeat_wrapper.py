@@ -1,9 +1,10 @@
 import unittest
 
 import numpy as np
-from tests_mock.index_dataset import IndexDataset
+
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.wrappers.repeat_wrapper import RepeatWrapper
+from tests_mock.index_dataset import IndexDataset
 
 
 class TestRepeatWrapper(unittest.TestCase):

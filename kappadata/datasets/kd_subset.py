@@ -1,6 +1,9 @@
-from torch.utils.data import Subset
 from functools import partial
+
+from torch.utils.data import Subset
+
 from kappadata.errors import UseModeWrapperException
+
 
 class KDSubset(Subset):
     def __getattr__(self, item):

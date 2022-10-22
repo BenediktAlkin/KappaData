@@ -1,5 +1,6 @@
 from redis.connection import Encoder
 
+
 class RedisMock:
     def __init__(self, host, port):
         self.host = host

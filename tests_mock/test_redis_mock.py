@@ -1,7 +1,10 @@
-import torch
 import unittest
-from tests_mock.redis_mock import RedisMock
+
 import redis
+import torch
+
+from tests_mock.redis_mock import RedisMock
+
 
 class TestRedisMock(unittest.TestCase):
     def test_encode(self):

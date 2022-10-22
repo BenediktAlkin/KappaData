@@ -1,8 +1,10 @@
 import unittest
-from tests_mock.index_dataset import IndexDataset
-from kappadata.wrappers.mode_wrapper import ModeWrapper
+
 from kappadata.datasets.kd_dataset import KDDataset
 from kappadata.datasets.kd_subset import KDSubset
+from kappadata.wrappers.mode_wrapper import ModeWrapper
+from tests_mock.index_dataset import IndexDataset
+
 
 class TestModeWrapper(unittest.TestCase):
     class CustomGetitemDataset(KDDataset):
@@ -16,7 +18,6 @@ class TestModeWrapper(unittest.TestCase):
     def test_custom_getitem_fn(self):
         ds = ModeWrapper(dataset=self.CustomGetitemDataset(), mode="custom")
         self.assertEqual((0, {}), ds[0])
-
 
     class ContextPropagationDataset(KDDataset):
         @staticmethod
@@ -35,13 +36,11 @@ class TestModeWrapper(unittest.TestCase):
         ds = ModeWrapper(dataset=self.ContextPropagationDataset(), mode="first second")
         self.assertEqual((0, 50, {"message": 50}), ds[0])
 
-
     def test_getitem_slices(self):
         ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index")
 
         def unpack(data_ctx_list):
             return [data_ctx_item[0] for data_ctx_item in data_ctx_list]
-
 
         self.assertEquals([0, 1, 2], unpack(ds[:3]))
         self.assertEquals([3, 4, 5], unpack(ds[3:6]))

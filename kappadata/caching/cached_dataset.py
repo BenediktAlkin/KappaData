@@ -1,5 +1,7 @@
 import logging
+
 from torch.utils.data import Dataset
+
 
 class CachedDataset(Dataset):
     def __init__(self, dataset, transform=None):

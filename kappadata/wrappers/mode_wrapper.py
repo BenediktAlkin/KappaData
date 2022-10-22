@@ -1,5 +1,3 @@
-from torch.utils.data import Dataset
-
 from kappadata.datasets.kd_dataset import KDDataset
 
 

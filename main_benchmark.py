@@ -1,16 +1,18 @@
+import argparse
+import logging
+import shutil
+import sys
 from functools import partial
 from pathlib import Path
-import logging
-import sys
-import shutil
+
+import kappaprofiler as kp
+from torch.utils.data import DataLoader, Dataset
+from torchvision.datasets import ImageFolder
+from torchvision.transforms import ToTensor, CenterCrop, Compose
 
 import kappadata as kd
 from kappadata.loading.image_folder import raw_image_loader, raw_image_folder_sample_to_pil_sample
-from torchvision.datasets import ImageFolder
-import argparse
-import kappaprofiler as kp
-from torch.utils.data import DataLoader, Dataset
-from torchvision.transforms import ToTensor, CenterCrop, Compose
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -19,6 +21,7 @@ def parse_args():
     parser.add_argument("--batch_size", type=int, default=512)
     parser.add_argument("--num_workers", type=int, default=4)
     return vars(parser.parse_args())
+
 
 def setup_logging():
     logger = logging.getLogger()
@@ -29,6 +32,7 @@ def setup_logging():
         datefmt="%m-%d %H:%M:%S",
     ))
     logger.handlers = [handler]
+
 
 class DatasetWrapper(Dataset):
     def __init__(self, dataset, transform):
@@ -43,6 +47,7 @@ class DatasetWrapper(Dataset):
 
     def __len__(self):
         return len(self.dataset)
+
 
 def main(image_folder_path, epochs, batch_size, num_workers):
     setup_logging()
@@ -74,7 +79,7 @@ def main(image_folder_path, epochs, batch_size, num_workers):
             for i in range(epochs):
                 with kp.Stopwatch() as epoch_sw:
                     for j, (_, _) in enumerate(loader):
-                        print(f"{j+1}/{n_batches}", end="\r")
+                        print(f"{j + 1}/{n_batches}", end="\r")
                 logging.info(f"epoch {i} took: {epoch_sw.elapsed_seconds}")
         logging.info(f"{epochs} epochs took: {sw.elapsed_seconds}")
         if caching_dataset is not None:

@@ -1,8 +1,8 @@
 import unittest
 
 from kappadata.wrappers.shuffle_wrapper import ShuffleWrapper
-from kappadata.datasets.kd_dataset import KDDataset
 from tests_mock.index_dataset import IndexDataset
+
 
 class TestShuffleWrapper(unittest.TestCase):
     def test_shuffle_seeded(self):
