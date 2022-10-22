@@ -16,8 +16,8 @@ class TestModeWrapper(unittest.TestCase):
             return 1
 
     def test_custom_getitem_fn(self):
-        ds = ModeWrapper(dataset=self.CustomGetitemDataset(), mode="custom")
-        self.assertEqual((0, {}), ds[0])
+        ds = ModeWrapper(dataset=self.CustomGetitemDataset(), mode="custom", return_ctx=False)
+        self.assertEqual((0,), ds[0])
 
     class ContextPropagationDataset(KDDataset):
         @staticmethod
@@ -33,8 +33,10 @@ class TestModeWrapper(unittest.TestCase):
             return 1
 
     def test_context_propagation(self):
-        ds = ModeWrapper(dataset=self.ContextPropagationDataset(), mode="first second")
+        ds = ModeWrapper(dataset=self.ContextPropagationDataset(), mode="first second", return_ctx=True)
         self.assertEqual((0, 50, {"message": 50}), ds[0])
+        ds = ModeWrapper(dataset=self.ContextPropagationDataset(), mode="first second", return_ctx=False)
+        self.assertEqual((0, 50), ds[0])
 
     def test_getitem_slices(self):
         ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index")
@@ -51,13 +53,13 @@ class TestModeWrapper(unittest.TestCase):
         self.assertEquals(9, ds[-1][0])
 
     def test_getitem(self):
-        ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index x")
-        self.assertEqual((0, 0, {}), ds[0])
+        ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index x", return_ctx=False)
+        self.assertEqual((0, 0), ds[0])
 
     def test_subset_getitem(self):
-        ds = ModeWrapper(dataset=KDSubset(IndexDataset(size=10), indices=[5, 6]), mode="index x")
-        self.assertEqual((0, 5, {}), ds[0])
-        self.assertEqual((1, 6, {}), ds[1])
+        ds = ModeWrapper(dataset=KDSubset(IndexDataset(size=10), indices=[5, 6]), mode="index x", return_ctx=False)
+        self.assertEqual((0, 5), ds[0])
+        self.assertEqual((1, 6), ds[1])
 
     def test_len(self):
         ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index x")
@@ -77,8 +79,8 @@ class TestModeWrapper(unittest.TestCase):
         self.assertEqual(10, ds.size)
 
     def test_iter(self):
-        ds = ModeWrapper(dataset=IndexDataset(size=3), mode="index x")
+        ds = ModeWrapper(dataset=IndexDataset(size=3), mode="index x", return_ctx=False)
         samples = [sample for sample in ds]
-        self.assertEqual((0, 0, {}), samples[0])
-        self.assertEqual((1, 1, {}), samples[1])
-        self.assertEqual((2, 2, {}), samples[2])
+        self.assertEqual((0, 0), samples[0])
+        self.assertEqual((1, 1), samples[1])
+        self.assertEqual((2, 2), samples[2])

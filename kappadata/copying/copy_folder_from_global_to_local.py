@@ -27,7 +27,7 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
     # - autocopy start/end file exists -> already copied -> do nothing
     # - autocopy start file exists && autocopy end file doesn't exist -> incomplete copy -> delete and copy again
     # - autocopy start file doesn't exists -> manually copied dataset -> do nothing
-    dst_path = local_path / relative_path if relative_path is not None else local_path
+    dst_path = local_path / global_path.name / relative_path if relative_path is not None else local_path
     start_copy_file = dst_path / "autocopy_start.txt"
     end_copy_file = dst_path / "autocopy_end.txt"
     was_deleted = False

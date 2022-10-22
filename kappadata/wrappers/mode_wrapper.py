@@ -2,10 +2,11 @@ from kappadata.datasets.kd_dataset import KDDataset
 
 
 class ModeWrapper(KDDataset):
-    def __init__(self, dataset: KDDataset, mode: str):
+    def __init__(self, dataset: KDDataset, mode: str, return_ctx: bool = False):
         super().__init__()
         self.dataset = dataset
         self.mode = mode
+        self.return_ctx = return_ctx
 
         self._getitem_fns = []
         items = mode.split(" ")
@@ -32,7 +33,9 @@ class ModeWrapper(KDDataset):
         for getitem_fn in self._getitem_fns:
             item = getitem_fn(idx, ctx)
             items.append(item)
-        return *tuple(items), ctx
+        if self.return_ctx:
+            return *tuple(items), ctx
+        return tuple(items)
 
     def __len__(self):
         return len(self.dataset)
