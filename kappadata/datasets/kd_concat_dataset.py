@@ -1,0 +1,49 @@
+import bisect
+
+from torch.utils.data import ConcatDataset
+from kappadata.errors import UseModeWrapperException
+
+
+class KDConcatDataset(ConcatDataset):
+    def __getattr__(self, item):
+        if item.startswith("getitem_"):
+            # all methods starting with getitem_ are called with self.datasets[dataset_idx][sample_idx]
+            return partial(self._call_getitem, item)
+        if item == "dataset":
+            return getattr(super(), item)
+        return getattr(self.dataset, item)
+
+    def _call_getitem(self, item, idx, *args, **kwargs):
+        dataset_idx, sample_idx = self._to_concat_idx(idx)
+        func = getattr(self.datasets[dataset_idx], item)
+        return func(sample_idx, *args, **kwargs)
+
+    def _to_concat_idx(self, idx):
+        """
+        modification of __getitem__ from torch.utils.ConcatDataset that returns dataset_idx and sample_idx
+        (instead of self.datasets[dataset_idx][sample_idx]
+        """
+        if idx < 0:
+            if -idx > len(self):
+                raise ValueError("absolute value of index should not exceed dataset length")
+            idx = len(self) + idx
+        dataset_idx = bisect.bisect_right(self.cumulative_sizes, idx)
+        if dataset_idx == 0:
+            sample_idx = idx
+        else:
+            sample_idx = idx - self.cumulative_sizes[dataset_idx - 1]
+        return dataset_idx, sample_idx
+
+    def dispose(self):
+        for dataset in self.datasets:
+            dataset.dispose()
+
+    @property
+    def root_dataset(self):
+        if len(self.datasets) == 1:
+            return self.datasets[0].root_dataset
+        # warning/exception here might make sense
+        return self.datasets[0].root_dataset
+
+    def __getitem__(self, idx):
+        raise UseModeWrapperException

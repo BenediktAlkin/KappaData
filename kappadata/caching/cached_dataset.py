@@ -7,8 +7,8 @@ class CachedDataset(Dataset):
         self.dataset = dataset
         self.transform = transform
 
-    def __getitem__(self, index):
-        sample = self._getitem_impl(index)
+    def __getitem__(self, idx):
+        sample = self._getitem_impl(idx)
         if self.transform is not None:
             sample = self.transform(sample)
         return sample

@@ -9,7 +9,7 @@ class TestRedisDataset(unittest.TestCase):
     @patch("kappadata.caching.redis_dataset.redis")
     def test_encode_decode(self, redis_module):
         class TestDataset(Dataset):
-            def __getitem__(self, item):
+            def __getitem__(self, idx):
                 float_tensor = torch.tensor([3., 4.], dtype=torch.float32)
                 long_tensor = torch.tensor([5, 6], dtype=torch.long)
                 return 1, 2., "test", True, b"12", float_tensor, long_tensor
