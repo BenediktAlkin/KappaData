@@ -1,12 +1,15 @@
-import zipfile
 import shutil
-from pathlib import Path
+import zipfile
 from collections import namedtuple
+from pathlib import Path
 
 CopyResult = namedtuple("CopyFolderResult", "was_copied was_deleted was_zip")
 
+def _log(log, msg):
+    if log is not None:
+        log(msg)
 
-def copy_folder_from_global_to_local(global_path, local_path, relative_path=None):
+def copy_folder_from_global_to_local(global_path, local_path, relative_path=None, log=None):
     if not isinstance(global_path, Path):
         global_path = Path(global_path).expanduser()
     if not isinstance(local_path, Path):
@@ -32,9 +35,11 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
         if start_copy_file.exists():
             if end_copy_file.exists():
                 # already automatically copied -> do nothing
+                _log(log, f"using manually copied dataset '{dst_path}'")
                 return CopyResult(was_copied=False, was_deleted=False, was_zip=False)
             else:
                 # incomplete copy -> delete and copy again
+                _log(log, f"found incomplete automatic copy in '{dst_path}' -> deleting folder")
                 shutil.rmtree(dst_path)
                 was_deleted = True
                 dst_path.mkdir()
@@ -48,9 +53,11 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
     # copy
     was_zip = False
     if src_path.exists() and src_path.is_dir():
+        _log(log, f"copying '{src_path}' to '{dst_path}'")
         # copy folder (dirs_exist_ok=True because dst_path is created for start_copy_file)
         shutil.copytree(src_path, dst_path, dirs_exist_ok=True)
     elif src_path.with_suffix(".zip").exists():
+        _log(log, f"extracting '{src_path.with_suffix('.zip')}' to '{dst_path}'")
         # extract zip
         was_zip = True
         with zipfile.ZipFile(src_path.with_suffix(".zip")) as f:
@@ -62,4 +69,5 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
     with open(end_copy_file, "w") as f:
         f.write("this file indicates that the copying the dataset automatically was successful")
 
+    _log(log, "finished copying data from global to local")
     return CopyResult(was_copied=True, was_deleted=was_deleted, was_zip=was_zip)
