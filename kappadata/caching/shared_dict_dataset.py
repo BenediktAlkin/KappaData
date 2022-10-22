@@ -9,7 +9,7 @@ class SharedDictDataset(CachedDataset):
         manager = Manager()
         self.shared_dict = manager.dict()
 
-    def _getitem_impl(self, idx):
+    def _cached_getitem(self, idx):
         if idx not in self.shared_dict:
             sample = self.dataset[idx]
             self.shared_dict[idx] = sample

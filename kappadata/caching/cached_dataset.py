@@ -8,7 +8,7 @@ class CachedDataset(Dataset):
         self.transform = transform
 
     def __getitem__(self, idx):
-        sample = self._getitem_impl(idx)
+        sample = self._cached_getitem(idx)
         if self.transform is not None:
             sample = self.transform(sample)
         return sample
@@ -21,7 +21,7 @@ class CachedDataset(Dataset):
             return getattr(super(), item)
         return getattr(self.dataset, item)
 
-    def _getitem_impl(self, index):
+    def _cached_getitem(self, index):
         raise NotImplementedError
 
     def dispose(self):

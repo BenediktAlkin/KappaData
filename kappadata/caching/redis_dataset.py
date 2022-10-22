@@ -110,7 +110,7 @@ class RedisDataset(CachedDataset):
         else:
             assert len(self.decode_transforms) == self.items_per_sample
 
-    def _getitem_impl(self, idx):
+    def _cached_getitem(self, idx):
         db_idx = idx * self.items_per_sample
         if not self.db.exists(db_idx):
             sample = self.dataset[idx]
