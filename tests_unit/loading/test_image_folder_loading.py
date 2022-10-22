@@ -1,8 +1,7 @@
 import unittest
 from unittest.mock import patch, mock_open
 
-import torch
-from torchvision.transforms.functional import to_tensor
+import numpy as np
 
 from kappadata.loading.image_folder import raw_image_loader, raw_image_folder_sample_to_pil_sample
 
@@ -20,12 +19,12 @@ class TestImageFolder(unittest.TestCase):
         sample = (self.IMG, 0)
         x, y = raw_image_folder_sample_to_pil_sample(sample)
         self.assertEqual(0, y)
-        x_tensor = to_tensor(x)
+        x_arr = np.array(x)
         # black pixel
-        self.assertTrue(torch.all(torch.tensor([0., 0., 0.]) == x_tensor[:, 0, 0]))
+        self.assertTrue(np.all(np.array([0., 0., 0.]) == x_arr[0, 0]))
         # red pixel
-        self.assertTrue(torch.all(torch.tensor([1., 0., 0.]) == x_tensor[:, 0, 1]))
+        self.assertTrue(np.all(np.array([255., 0., 0.]) == x_arr[0, 1]))
         # green pixel
-        self.assertTrue(torch.all(torch.tensor([0., 1., 0.]) == x_tensor[:, 1, 0]))
+        self.assertTrue(np.all(np.array([0., 255., 0.]) == x_arr[1, 0]))
         # blue pixel
-        self.assertTrue(torch.all(torch.tensor([0., 0., 1.]) == x_tensor[:, 1, 1]))
+        self.assertTrue(np.all(np.array([0., 0., 255.]) == x_arr[1, 1]))
