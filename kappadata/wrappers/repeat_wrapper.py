@@ -1,22 +1,21 @@
-import einops
 from kappadata.datasets.kd_subset import KDSubset
 import numpy as np
 
 class RepeatWrapper(KDSubset):
-    """ repeats the dataset <repetitions> times or until it reaches <size>"""
+    """ repeats the dataset <repetitions> times or until it reaches <min_size>"""
 
-    def __init__(self, dataset, repetitions=None, size=None):
-        assert (repetitions is not None) ^ (size is not None)
+    def __init__(self, dataset, repetitions=None, min_size=None):
+        assert (repetitions is not None) ^ (min_size is not None)
         assert len(dataset) > 0
         self.repetitions = repetitions
-        self.size = size
+        self.min_size = min_size
 
-        if repetitions is None:
-            assert isinstance(size, int) and size > 0
-            repetitions = np.ceil(size / len(dataset))
+        if min_size is not None:
+            assert isinstance(min_size, int) and min_size > 0
+            self.repetitions = int(np.ceil(min_size / len(dataset)))
+        else:
+            assert repetitions > 0
 
-        # force at least 1 repetition
-        repetitions = max(1, repetitions)
         # repeat indices <repetitions> times in round-robin fashion (indices are like [0, 1, 2, 0, 1, 2])
-        indices = einops.repeat(torch.arange(len(dataset)), "i -> (r i)", r=repetitions)
+        indices = list(range(len(dataset))) * self.repetitions
         super().__init__(dataset=dataset, indices=indices)
