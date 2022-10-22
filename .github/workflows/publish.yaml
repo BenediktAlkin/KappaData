@@ -18,6 +18,8 @@ jobs:
           python-version: 3.8
       - name: install requirements
         run: pip install -r requirements.txt
+      - name: install test requirements
+        run: pip install -r requirements_test.txt
 
       # run unit tests
       - name: tests_unit
