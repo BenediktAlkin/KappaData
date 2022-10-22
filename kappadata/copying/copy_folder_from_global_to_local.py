@@ -1,3 +1,4 @@
+import zipfile
 import shutil
 from pathlib import Path
 from collections import namedtuple
@@ -52,8 +53,8 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
     elif src_path.with_suffix(".zip").exists():
         # extract zip
         was_zip = True
-        with zipfile.ZipFile(global_image_folder_path) as f:
-            f.extractall(local_image_folder_path)
+        with zipfile.ZipFile(src_path.with_suffix(".zip")) as f:
+            f.extractall(dst_path)
     else:
         raise NotImplementedError
 
