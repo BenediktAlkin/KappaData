@@ -1,6 +1,6 @@
-from kappadata.wrappers.base.dataset_base import DatasetBase
+from kappadata.datasets.kd_dataset import KDDataset
 
-class IndexDataset(DatasetBase):
+class IndexDataset(KDDataset):
     def __init__(self, size):
         super().__init__()
         self.size = size

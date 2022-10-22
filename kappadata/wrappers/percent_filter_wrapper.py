@@ -1,9 +1,9 @@
 import numpy as np
 
-from .base.wrapper_base import WrapperBase
+from kappadata.datasets.kd_subset import KDSubset
 
 
-class PercentFilterWrapper(WrapperBase):
+class PercentFilterWrapper(KDSubset):
     def __init__(self, dataset, from_percent=None, to_percent=None, ceil_from_index=False, ceil_to_index=False):
         self.from_percent = from_percent or 0.
         self.to_percent = to_percent or 1.

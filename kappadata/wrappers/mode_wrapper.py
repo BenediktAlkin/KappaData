@@ -1,11 +1,10 @@
 from torch.utils.data import Dataset
 
-from .dataset_base import DatasetBase
+from kappadata.datasets.kd_dataset import KDDataset
 
 
-class ModeWrapper(Dataset):
-
-    def __init__(self, dataset: DatasetBase, mode: str):
+class ModeWrapper(KDDataset):
+    def __init__(self, dataset: KDDataset, mode: str):
         super().__init__()
         self.dataset = dataset
         self.mode = mode

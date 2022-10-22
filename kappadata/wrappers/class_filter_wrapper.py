@@ -1,6 +1,6 @@
-from .base.wrapper_base import WrapperBase
+from kappadata.datasets.kd_subset import KDSubset
 
-class ClassFilterWrapper(WrapperBase):
+class ClassFilterWrapper(KDSubset):
     def __init__(self, dataset, valid_classes=None, invalid_classes=None):
         assert (valid_classes is None) ^ (invalid_classes is None)
         assert valid_classes is None or isinstance(valid_classes, list)

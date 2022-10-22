@@ -1,10 +1,10 @@
 import unittest
-from kappadata.wrappers.base.dataset_base import DatasetBase
-from kappadata.wrappers.base.wrapper_base import WrapperBase
+from kappadata.datasets.kd_dataset import KDDataset
+from kappadata.datasets.kd_subset import KDSubset
 from tests_mock.index_dataset import IndexDataset
 
-class TestWrapperBase(unittest.TestCase):
-    class MockWrapper(WrapperBase):
+class TestKDSubset(unittest.TestCase):
+    class MockWrapper(KDSubset):
         def __init__(self, dataset):
             indices = list(reversed(range(len(dataset))))
             super().__init__(dataset=dataset, indices=indices)

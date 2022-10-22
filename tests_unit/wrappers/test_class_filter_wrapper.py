@@ -1,10 +1,10 @@
 import unittest
 
 from kappadata.wrappers.class_filter_wrapper import ClassFilterWrapper
-from kappadata.wrappers.base.dataset_base import DatasetBase
+from kappadata.datasets.kd_dataset import KDDataset
 
 class TestClassFilterWrapper(unittest.TestCase):
-    class ClassDataset(DatasetBase):
+    class ClassDataset(KDDataset):
         def __init__(self, classes):
             super().__init__()
             self.classes = classes

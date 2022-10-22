@@ -1,6 +1,6 @@
 import unittest
 from tests_mock.index_dataset import IndexDataset
-from kappadata.wrappers.base.mode_wrapper import ModeWrapper
+from kappadata.wrappers.mode_wrapper import ModeWrapper
 
 class TestModeWrapper(unittest.TestCase):
     def test_slices(self):

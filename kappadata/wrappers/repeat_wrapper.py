@@ -1,8 +1,8 @@
 import einops
-from .base.wrapper_base import WrapperBase
+from kappadata.datasets.kd_subset import KDSubset
 import numpy as np
 
-class RepeatWrapper(WrapperBase):
+class RepeatWrapper(KDSubset):
     """ repeats the dataset <repetitions> times or until it reaches <size>"""
 
     def __init__(self, dataset, repetitions=None, size=None):

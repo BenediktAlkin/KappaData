@@ -1,7 +1,7 @@
 import unittest
 
 from kappadata.wrappers.shuffle_wrapper import ShuffleWrapper
-from kappadata.wrappers.base.dataset_base import DatasetBase
+from kappadata.datasets.kd_dataset import KDDataset
 from tests_mock.index_dataset import IndexDataset
 
 class TestShuffleWrapper(unittest.TestCase):

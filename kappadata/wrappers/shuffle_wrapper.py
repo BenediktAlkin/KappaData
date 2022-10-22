@@ -1,9 +1,9 @@
 import numpy as np
 
-from .base.wrapper_base import WrapperBase
+from kappadata.datasets.kd_subset import KDSubset
 
 
-class ShuffleWrapper(WrapperBase):
+class ShuffleWrapper(KDSubset):
     def __init__(self, dataset, seed=None):
         self.seed = seed
         if seed is not None:
