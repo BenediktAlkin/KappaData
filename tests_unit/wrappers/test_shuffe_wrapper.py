@@ -5,8 +5,6 @@ from kappadata.datasets.kd_dataset import KDDataset
 from tests_mock.index_dataset import IndexDataset
 
 class TestShuffleWrapper(unittest.TestCase):
-
-
     def test_shuffle_seeded(self):
         ds = IndexDataset(size=10)
         shuffled = ShuffleWrapper(ds, seed=5)
