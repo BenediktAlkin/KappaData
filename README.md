@@ -14,40 +14,47 @@ KappaData decouples the `__getitem__` such that single properties of the dataset
 Let's take an image classification dataset as an example. A sample consists of an image with an associated class label. 
 ```
 class ImageClassificationDataset(torch.utils.data.Dataset):
-  def __init__(self, image_paths):
-    super().__init__()
-    self.image_paths = image_paths
-  def __len__(self):
-    return len(self.image_paths)
+    def __init__(self, image_paths):
+        super().__init__()
+        self.image_paths = image_paths
+    def __len__(self):
+        return len(self.image_paths)
     
-  def __getitem__(self, idx):
-    img = load_image(self.image_paths[idx])
-    class_label = image_path_to_class_label(self.image_paths[idx])
-    return img, class_label
+    def __getitem__(self, idx):
+        img = load_image(self.image_paths[idx])
+        class_label = image_path_to_class_label(self.image_paths[idx])
+        return img, class_label
 ```
 
 If you training process contains something that only requires the class labels, the dataset has to additionally load 
 all the images which can take a long time (whereas loading only labels is very fast).
 With KappaData the `__getitem__` method is split into subparts:
 ```
+# inherit from kappadata.KDDataset
 class ImageClassificationDataset(kappadata.KDDataset):
-  def __init__(self, image_paths):
-    super().__init__()
-    self.image_paths = image_paths
-  def __len__(self):
-    return len(self.image_paths)
+    def __init__(self, image_paths):
+        super().__init__()
+        self.image_paths = image_paths
+    def __len__(self):
+        return len(self.image_paths)
     
-  def getitem_x(self, idx, ctx=None):
-    return load_image(self.image_paths[idx])
-  def getitem_y(self, idx, ctx=None):
-    return image_path_to_class_label(self.image_paths[idx])
+    def getitem_x(self, idx, ctx=None):
+        return load_image(self.image_paths[idx])
+    def getitem_y(self, idx, ctx=None):
+        return image_path_to_class_label(self.image_paths[idx])
 ```
 Now each subpart of the dataset can be retrieved by wrapping the dataset into a `ModeWrapper`:
 ```
 ds = ImageClassificationDataset(image_paths=...)
 for y in kappadata.ModeWrapper(ds, mode="y"):
-  ...
+    ...
 ```
+
+
+
+[torch.utils.data.Subset](https://pytorch.org/docs/stable/data.html#torch.utils.data.Subset) / 
+[torch.utils.data.ConcatDataset](https://pytorch.org/docs/stable/data.html#torch.utils.data.ConcatDataset) 
+can be used by simply replacing them with `kappadata.KDSubset`/`kappadata.KDConcatDataset`.
 
 ## Augmentation parameters
 With KappaData you can also retrieve various properties of your data prepocessing (e.g. augmentation parameters).
@@ -65,20 +72,20 @@ class MyRandomResizedCrop(torchvision.transforms.RandomResizedCrop):
         return cropped
   
 class ImageClassificationDataset(kappadata.KDDataset):
-  def __init__(self, ...):
+    def __init__(self, ...):
+      ...
+      self.random_resized_crop = MyRandomResizedCrop()
     ...
-    self.random_resized_crop = MyRandomResizedCrop()
-  ...
-  def getitem_x(self, idx, ctx=None):
-    img = load_image(self.image_paths[idx])
-    return self.random_resized_crop(img, ctx=ctx)
+    def getitem_x(self, idx, ctx=None):
+        img = load_image(self.image_paths[idx])
+        return self.random_resized_crop(img, ctx=ctx)
 ```
 
 When you want to access the parameters simply pass `return_ctx=True` to the `ModeWrapper`:
 ```
 ds = ImageClassificationDataset(image_paths=...)
 for x, ctx in kappadata.ModeWrapper(ds, mode="x", return_ctx=True):
-  print(ctx["crop_parameters"])
+    print(ctx["crop_parameters"])
 ```
 
 # Caching datasets in-memory
@@ -105,17 +112,17 @@ Example cache a [torchvision.datasets.ImageFolder](https://pytorch.org/vision/st
 from kappadata.loading.image_folder import raw_image_loader, raw_image_folder_sample_to_pil_sample 
 class CachedImageFolder(kappadata.KDDataset):
     def __init__(self, ...):
-      # modify ImageFolder to load raw samples (NOTE: can't apply transforms onto raw data)
-      self.ds = torchvision.datasets.ImageFolder(..., transform=None, loader=raw_image_loader)
-      # initialize cached dataset that decompresses the raw data into a PIL image
-      self.cached_ds = kappadata.SharedDictDataset(self.ds, transform=raw_image_folder_sample_to_pil_sample)
-      # store transforms to apply after decompression
-      self.transform = ...
+        # modify ImageFolder to load raw samples (NOTE: can't apply transforms onto raw data)
+        self.ds = torchvision.datasets.ImageFolder(..., transform=None, loader=raw_image_loader)
+        # initialize cached dataset that decompresses the raw data into a PIL image
+        self.cached_ds = kappadata.SharedDictDataset(self.ds, transform=raw_image_folder_sample_to_pil_sample)
+        # store transforms to apply after decompression
+        self.transform = ...
     def getitem_x(self, idx, ctx=None):
-      x, _ = self.cached_ds[idx]
-      if self.transform is not None:
-          x = self.transform(x)
-      return x
+        x, _ = self.cached_ds[idx]
+        if self.transform is not None:
+            x = self.transform(x)
+        return x
 ```
 
 
@@ -154,3 +161,13 @@ The above code will also work (without modification) if `/system/data/ImageNet` 
   - repeat until size is > 100 `kappadata.RepeatWrapper(ds, min_size=100)`
 - Shuffle dataset
   - `kappadata.ShuffleWrapper(ds, seed=5)`
+
+# Miscellaneous
+- all datasets derived from `kappadata.KDDataset` automatically support python
+  - `all_class_labels = ModeWrapper(ds, mode="y")[:]`
+  - `all_class_labels = ModeWrapper(ds, mode="y")[5:-3:2]`
+- all datasets derived from `kappadata.KDDataset` implement __iter__
+  ```
+  for y in ModeWrapper(ds, mode="y"):
+      ...
+  ```
