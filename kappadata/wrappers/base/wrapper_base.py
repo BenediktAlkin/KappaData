@@ -3,8 +3,8 @@ from functools import partial
 
 class WrapperBase(Subset):
     def __getattr__(self, item):
-        if item.startswith("idxget_"):
-            # all methods starting with idxget_ are called with self.indices[idx]
+        if item.startswith("getitem_"):
+            # all methods starting with getitem_ are called with self.indices[idx]
             func = getattr(self.dataset, item)
             return partial(self._call_with_nested_index, func)
         if item == "dataset":

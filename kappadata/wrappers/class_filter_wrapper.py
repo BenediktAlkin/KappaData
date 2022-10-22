@@ -8,7 +8,7 @@ class ClassFilterWrapper(WrapperBase):
         self.valid_classes = set(valid_classes) if valid_classes is not None else None
         self.invalid_classes = set(invalid_classes) if invalid_classes is not None else None
 
-        indices = [i for i in range(len(dataset)) if self._is_valid_class(dataset.idxget_class(i))]
+        indices = [i for i in range(len(dataset)) if self._is_valid_class(dataset.getitem_class(i))]
         super().__init__(dataset=dataset, indices=indices)
 
     def _is_valid_class(self, cls):

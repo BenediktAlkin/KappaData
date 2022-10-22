@@ -14,14 +14,14 @@ class ModeWrapper(Dataset):
         items = mode.split(" ")
         for item in items:
             if item == "index":
-                self._getitem_fns.append(self._get_index)
+                self._getitem_fns.append(self._getitem_index)
             else:
-                fn_name = f"idxget_{item}"
-                assert hasattr(self.dataset, fn_name), f"{type(self.dataset.root_dataset)} has no method idxget_{item}"
+                fn_name = f"getitem_{item}"
+                assert hasattr(self.dataset, fn_name), f"{type(self.dataset.root_dataset)} has no method getitem_{item}"
                 self._getitem_fns.append(getattr(self.dataset, fn_name))
 
     @staticmethod
-    def _get_index(idx, ctx=None):
+    def _getitem_index(idx, _=None):
         return idx
 
     def __getitem__(self, idx):
@@ -35,7 +35,7 @@ class ModeWrapper(Dataset):
         for getitem_fn in self._getitem_fns:
             item = getitem_fn(idx, ctx)
             items.append(item)
-        return ctx, *tuple(items)
+        return *tuple(items), ctx
 
     def __len__(self):
         return len(self.dataset)

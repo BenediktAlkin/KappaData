@@ -6,11 +6,7 @@ class IndexDataset(DatasetBase):
         self.size = size
 
     @staticmethod
-    def idxget_x(idx, ctx=None):
-        return idx
-
-    @staticmethod
-    def idxget_class(idx, ctx=None):
+    def getitem_x(idx, _=None):
         return idx
 
     def __len__(self):

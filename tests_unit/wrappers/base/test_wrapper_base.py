@@ -15,9 +15,9 @@ class TestWrapperBase(unittest.TestCase):
         double_wrapped = self.MockWrapper(wrapped)
         x = range(len(wrapped))
         for i, j in zip(x, reversed(x)):
-            self.assertEquals(i, ds.idxget_x(i))
-            self.assertEquals(j, wrapped.idxget_x(i))
-            self.assertEquals(i, double_wrapped.idxget_x(i))
+            self.assertEquals(i, ds.getitem_x(i))
+            self.assertEquals(j, wrapped.getitem_x(i))
+            self.assertEquals(i, double_wrapped.getitem_x(i))
         self.assertEquals(ds, wrapped.dataset)
         self.assertEquals(ds, wrapped.root_dataset)
         self.assertEquals(wrapped, double_wrapped.dataset)
