@@ -21,19 +21,27 @@ class TestKDConcatDataset(unittest.TestCase):
         self.assertTrue(ds0.disposed)
         self.assertTrue(ds1.disposed)
 
+    def test_dispose_context_manager(self):
+        ds0 = IndexDataset(size=3)
+        ds1 = IndexDataset(size=4)
+        with KDConcatDataset([ds0, ds1]):
+            pass
+        self.assertTrue(ds0.disposed)
+        self.assertTrue(ds1.disposed)
+
     def test_getitem(self):
         ds0 = IndexDataset(size=3)
         ds1 = IndexDataset(size=4)
         ds = KDConcatDataset([ds0, ds1])
         with self.assertRaises(UseModeWrapperException):
             _ = ds[0]
-            
-    def test_root_dataset_len1(self):
+
+    def test_root_dataset_single(self):
         ds0 = IndexDataset(size=3)
         ds = KDConcatDataset([ds0])
         self.assertEqual(ds0, ds.root_dataset)
 
-    def test_root_dataset_len2(self):
+    def test_root_dataset_multi(self):
         ds0 = IndexDataset(size=3)
         ds1 = IndexDataset(size=4)
         ds = KDConcatDataset([ds0, ds1])

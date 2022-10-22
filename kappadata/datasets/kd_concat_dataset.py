@@ -35,6 +35,13 @@ class KDConcatDataset(ConcatDataset):
             sample_idx = idx - self.cumulative_sizes[dataset_idx - 1]
         return dataset_idx, sample_idx
 
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        self.dispose()
+
     def dispose(self):
         for dataset in self.datasets:
             dataset.dispose()
