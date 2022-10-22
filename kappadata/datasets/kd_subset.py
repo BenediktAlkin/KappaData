@@ -15,6 +15,12 @@ class KDSubset(Subset):
     def _call_getitem(self, func, idx, *args, **kwargs):
         return func(self.indices[idx], *args, **kwargs)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        self.dispose()
+
     @property
     def root_dataset(self):
         return self.dataset.root_dataset
