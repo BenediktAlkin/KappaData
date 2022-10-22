@@ -2,6 +2,7 @@ import unittest
 from tests_mock.index_dataset import IndexDataset
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.datasets.kd_dataset import KDDataset
+from kappadata.datasets.kd_subset import KDSubset
 
 class TestModeWrapper(unittest.TestCase):
     class CustomGetitemDataset(KDDataset):
@@ -54,9 +55,18 @@ class TestModeWrapper(unittest.TestCase):
         ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index x")
         self.assertEqual((0, 0, {}), ds[0])
 
+    def test_subset_getitem(self):
+        ds = ModeWrapper(dataset=KDSubset(IndexDataset(size=10), indices=[5, 6]), mode="index x")
+        self.assertEqual((0, 5, {}), ds[0])
+        self.assertEqual((1, 6, {}), ds[1])
+
     def test_len(self):
         ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index x")
         self.assertEqual(10, len(ds))
+
+    def test_subset_len(self):
+        ds = ModeWrapper(dataset=KDSubset(IndexDataset(size=10), indices=[5, 6]), mode="index x")
+        self.assertEqual(2, len(ds))
 
     def test_getattr_dataset(self):
         ds0 = IndexDataset(size=10)
