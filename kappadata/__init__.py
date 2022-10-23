@@ -19,3 +19,4 @@ from .wrappers.oversampling_wrapper import OversamplingWrapper
 from .wrappers.percent_filter_wrapper import PercentFilterWrapper
 from .wrappers.repeat_wrapper import RepeatWrapper
 from .wrappers.shuffle_wrapper import ShuffleWrapper
+from .wrappers.subset_wrapper import SubsetWrapper
