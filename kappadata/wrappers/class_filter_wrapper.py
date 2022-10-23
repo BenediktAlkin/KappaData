@@ -1,3 +1,5 @@
+import numpy as np
+
 from kappadata.datasets.kd_subset import KDSubset
 
 
@@ -9,11 +11,13 @@ class ClassFilterWrapper(KDSubset):
         self.valid_classes = set(valid_classes) if valid_classes is not None else None
         self.invalid_classes = set(invalid_classes) if invalid_classes is not None else None
 
-        indices = [i for i in range(len(dataset)) if self._is_valid_class(dataset.getitem_class(i))]
-        super().__init__(dataset=dataset, indices=indices)
 
-    def _is_valid_class(self, cls):
+        # use numpy for better performance
+        # NOTE: np.isin requires list (not set)
+        all_indices = np.arange(len(dataset))
+        classes = np.array([dataset.getitem_class(i) for i in all_indices])
         if self.valid_classes is not None:
-            return cls in self.valid_classes
+            indices = all_indices[np.isin(classes, list(self.valid_classes))]
         else:
-            return cls not in self.invalid_classes
+            indices = all_indices[~np.isin(classes, list(self.invalid_classes))]
+        super().__init__(dataset=dataset, indices=indices)
