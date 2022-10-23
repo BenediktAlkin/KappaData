@@ -58,7 +58,7 @@ can be used by simply replacing them with `kappadata.KDSubset`/`kappadata.KDConc
 
 ## Augmentation parameters
 With KappaData you can also retrieve various properties of your data prepocessing (e.g. augmentation parameters).
-The following example shows how you can retrieve the parameters [torchvision.transforms.RandomResizedCrop](https://pytorch.org/vision/main/generated/torchvision.transforms.RandomResizedCrop.html).
+The following example shows how you can retrieve the parameters of [torchvision.transforms.RandomResizedCrop](https://pytorch.org/vision/main/generated/torchvision.transforms.RandomResizedCrop.html).
 ```
 import torchvision.transforms.functional as F
 class MyRandomResizedCrop(torchvision.transforms.RandomResizedCrop):
@@ -90,14 +90,13 @@ for x, ctx in kappadata.ModeWrapper(ds, mode="x", return_ctx=True):
 
 # Caching datasets in-memory
 ## SharedDictDataset
-`kappadata.SharedDictDataset` provides a wrapper to store arbitrary datasets in-memory via dictionary shared between all 
-worker processes ([python multiprocessing](https://docs.python.org/3/library/multiprocessing.html)).
+`kappadata.SharedDictDataset` provides a wrapper to store arbitrary datasets in-memory via a dictionary shared between all 
+worker processes (using [python multiprocessing](https://docs.python.org/3/library/multiprocessing.html) data structures).
 The shared memory part is important for [dataloading](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader) 
 with `num_workers > 0`. Small and medium sized datasets can be cached in-memory to avoid bottlenecks when loading data
 from a disk. For example even the full [ImageNet](https://www.image-net.org/) can be cached on many servers
 as it has ~130GB and its not too uncommon for GPU servers to have more RAM than that.
 
-`cached_ds = kappadata.SharedDictDataset(dataset=ImageClassificationDataset(...))`
 
 ## RedisDataset [EXPERIMENTAL]
 `kappadata.RedisDataset` provides an in-memory cache via the [redis](https://redis.io/) in-memory database.
@@ -105,9 +104,9 @@ This enables sharing data between multiple GPU-proceses (not only worker process
 
 ## Caching image datasets
 Naively caching image datasets can lead to high memory consumption because image data is usually stored in a compressed
-format and decompressed by the dataset. To reduce memory, the raw uncompressed data needs to be cached.
+format and decompressed during loading. To reduce memory, the raw uncompressed data needs to be cached.
 
-Example cache a [torchvision.datasets.ImageFolder](https://pytorch.org/vision/stable/generated/torchvision.datasets.ImageFolder.html):
+Example caching a [torchvision.datasets.ImageFolder](https://pytorch.org/vision/stable/generated/torchvision.datasets.ImageFolder.html):
 ```
 from kappadata.loading.image_folder import raw_image_loader, raw_image_folder_sample_to_pil_sample 
 class CachedImageFolder(kappadata.KDDataset):
