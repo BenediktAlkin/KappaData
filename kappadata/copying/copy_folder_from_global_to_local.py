@@ -5,9 +5,11 @@ from pathlib import Path
 
 CopyResult = namedtuple("CopyFolderResult", "was_copied was_deleted was_zip")
 
+
 def _log(log, msg):
     if log is not None:
         log(msg)
+
 
 def copy_folder_from_global_to_local(global_path, local_path, relative_path=None, log=None):
     if not isinstance(global_path, Path):

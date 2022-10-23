@@ -11,7 +11,6 @@ class ClassFilterWrapper(KDSubset):
         self.valid_classes = set(valid_classes) if valid_classes is not None else None
         self.invalid_classes = set(invalid_classes) if invalid_classes is not None else None
 
-
         # use numpy for better performance
         # NOTE: np.isin requires list (not set)
         all_indices = np.arange(len(dataset))
