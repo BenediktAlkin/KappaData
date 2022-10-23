@@ -1,5 +1,6 @@
 import numpy as np
-from kappadata import KDSubset
+
+from kappadata.datasets.kd_subset import KDSubset
 
 
 class SubsetWrapper(KDSubset):

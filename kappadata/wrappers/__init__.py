@@ -1,4 +1,3 @@
-
 from .class_filter_wrapper import ClassFilterWrapper
 from .mode_wrapper import ModeWrapper
 from .oversampling_wrapper import OversamplingWrapper
