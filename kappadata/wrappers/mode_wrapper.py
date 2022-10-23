@@ -37,6 +37,8 @@ class ModeWrapper(KDDataset):
             items.append(item)
         if self.return_ctx:
             return *tuple(items), ctx
+        if len(items) == 1:
+            return items[0]
         return tuple(items)
 
     def __len__(self):

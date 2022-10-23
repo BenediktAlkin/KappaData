@@ -17,7 +17,7 @@ class TestModeWrapper(unittest.TestCase):
 
     def test_custom_getitem_fn(self):
         ds = ModeWrapper(dataset=self.CustomGetitemDataset(), mode="custom", return_ctx=False)
-        self.assertEqual((0,), ds[0])
+        self.assertEqual(0, ds[0])
 
     class ContextPropagationDataset(KDDataset):
         @staticmethod
@@ -42,7 +42,7 @@ class TestModeWrapper(unittest.TestCase):
         ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index")
 
         def unpack(data_ctx_list):
-            return [data_ctx_item[0] for data_ctx_item in data_ctx_list]
+            return [data_ctx_item for data_ctx_item in data_ctx_list]
 
         self.assertEquals([0, 1, 2], unpack(ds[:3]))
         self.assertEquals([3, 4, 5], unpack(ds[3:6]))
@@ -50,7 +50,7 @@ class TestModeWrapper(unittest.TestCase):
         self.assertEquals([9], unpack(ds[-1:]))
         self.assertEquals([0, 1], unpack(ds[:-8]))
         self.assertEquals([3, 2, 1, 0], unpack(ds[3::-1]))
-        self.assertEquals(9, ds[-1][0])
+        self.assertEquals(9, ds[-1])
         self.assertEquals([1, 2, 3], unpack(ds[list(range(1, 4))]))
 
     def test_getitem(self):

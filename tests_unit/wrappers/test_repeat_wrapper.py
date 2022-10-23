@@ -11,8 +11,7 @@ class TestRepeatWrapper(unittest.TestCase):
     def assert_correct_x(self, ds, expected):
         self.assertEqual(len(expected), len(ds))
         batch = ModeWrapper(ds, mode="x")[:]
-        x = [b[0] for b in batch]
-        self.assertEqual(expected, x)
+        self.assertEqual(expected, [b for b in batch])
         _, counts = np.unique(ds.indices, return_counts=True)
         self.assertTrue(np.all(counts == ds.repetitions))
 
