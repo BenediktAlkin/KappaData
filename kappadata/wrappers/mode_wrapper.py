@@ -25,6 +25,8 @@ class ModeWrapper(KDDataset):
     def __getitem__(self, idx):
         if isinstance(idx, slice):
             return [self[i] for i in range(len(self))[idx]]
+        if isinstance(idx, list):
+            return [self[i] for i in idx]
         if idx < 0:
             idx = len(self) + idx
 

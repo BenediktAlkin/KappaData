@@ -51,6 +51,7 @@ class TestModeWrapper(unittest.TestCase):
         self.assertEquals([0, 1], unpack(ds[:-8]))
         self.assertEquals([3, 2, 1, 0], unpack(ds[3::-1]))
         self.assertEquals(9, ds[-1][0])
+        self.assertEquals([1, 2, 3], unpack(ds[list(range(1, 4))]))
 
     def test_getitem(self):
         ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index x", return_ctx=False)
