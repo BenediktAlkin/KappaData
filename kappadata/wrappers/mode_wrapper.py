@@ -44,6 +44,11 @@ class ModeWrapper(KDDataset):
     def __len__(self):
         return len(self.dataset)
 
+    @property
+    def root_dataset(self):
+        # root_dataset is implemented in base class -> not handled in __getattr__
+        return self.dataset.root_dataset
+
     def __getattr__(self, item):
         if item == "dataset":
             return getattr(super(), item)

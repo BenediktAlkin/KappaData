@@ -70,6 +70,11 @@ class TestModeWrapper(unittest.TestCase):
         ds = ModeWrapper(dataset=KDSubset(IndexDataset(size=10), indices=[5, 6]), mode="index x")
         self.assertEqual(2, len(ds))
 
+    def test_root_dataset(self):
+        root = IndexDataset(size=10)
+        ds = ModeWrapper(dataset=root, mode="index x")
+        self.assertEqual(root, ds.root_dataset)
+
     def test_getattr_dataset(self):
         ds0 = IndexDataset(size=10)
         ds = ModeWrapper(dataset=ds0, mode="index x")
@@ -85,3 +90,4 @@ class TestModeWrapper(unittest.TestCase):
         self.assertEqual((0, 0), samples[0])
         self.assertEqual((1, 1), samples[1])
         self.assertEqual((2, 2), samples[2])
+
