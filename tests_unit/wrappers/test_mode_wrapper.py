@@ -34,7 +34,7 @@ class TestModeWrapper(unittest.TestCase):
 
     def test_context_propagation(self):
         ds = ModeWrapper(dataset=self.ContextPropagationDataset(), mode="first second", return_ctx=True)
-        self.assertEqual((0, 50, {"message": 50}), ds[0])
+        self.assertEqual(((0, 50), {"message": 50}), ds[0])
         ds = ModeWrapper(dataset=self.ContextPropagationDataset(), mode="first second", return_ctx=False)
         self.assertEqual((0, 50), ds[0])
 
