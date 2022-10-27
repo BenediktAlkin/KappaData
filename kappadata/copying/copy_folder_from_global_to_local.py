@@ -37,7 +37,7 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
         if start_copy_file.exists():
             if end_copy_file.exists():
                 # already automatically copied -> do nothing
-                _log(log, f"using manually copied dataset '{dst_path}'")
+                _log(log, f"dataset was already automatically copied '{dst_path}'")
                 return CopyResult(was_copied=False, was_deleted=False, was_zip=False)
             else:
                 # incomplete copy -> delete and copy again
@@ -45,6 +45,9 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
                 shutil.rmtree(dst_path)
                 was_deleted = True
                 dst_path.mkdir()
+        else:
+            _log(log, f"using manually copied dataset '{dst_path}'")
+            return CopyResult(was_copied=False, was_deleted=False, was_zip=False)
     else:
         dst_path.mkdir(parents=True)
 

@@ -85,7 +85,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
         self._assert_imagenet_split_exists(local_path / "imagenet" / "train")
 
         self.assertEqual(1, len(logger.msgs))
-        msg0 = "using manually copied dataset '/local/data/imagenet/train'"
+        msg0 = "dataset was already automatically copied '/local/data/imagenet/train'"
         self.assertTrue(logger.path_msg_equals(msg0, logger.msgs[0]))
 
     def test_imagenet_already_exists_auto_folder(self):
