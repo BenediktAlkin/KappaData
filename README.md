@@ -32,7 +32,7 @@ class ImageClassificationDataset(torch.utils.data.Dataset):
         return img, class_label
 ```
 
-If you training process contains something that only requires the class labels, the dataset has to additionally load
+If your training process contains something that only requires the class labels, the dataset has to additionally load
 all the images which can take a long time (whereas loading only labels is very fast).
 With KappaData the `__getitem__` method is split into subparts:
 
@@ -100,6 +100,8 @@ When you want to access the parameters simply pass `return_ctx=True` to the `Mod
 ds = ImageClassificationDataset(image_paths=...)
 for x, ctx in kappadata.ModeWrapper(ds, mode="x", return_ctx=True):
     print(ctx["crop_parameters"])
+for (x, y), ctx in kappadata.ModeWrapper(ds, mode="x y", return_ctx=True):
+    ...
 ```
 
 # Caching datasets in-memory

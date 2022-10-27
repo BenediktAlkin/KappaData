@@ -35,11 +35,16 @@ class ModeWrapper(KDDataset):
         for getitem_fn in self._getitem_fns:
             item = getitem_fn(idx, ctx)
             items.append(item)
-        if self.return_ctx:
-            return *tuple(items), ctx
         if len(items) == 1:
-            return items[0]
-        return tuple(items)
+            # single item -> no tuple
+            items = items[0]
+        else:
+            # multiple items -> wrap into tuple
+            items = tuple(items)
+        if self.return_ctx:
+            return items, ctx
+        return items
+
 
     def __len__(self):
         return len(self.dataset)

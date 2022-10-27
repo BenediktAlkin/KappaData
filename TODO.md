@@ -1,5 +1,6 @@
 ## code
 
+- test ClassFilterWrapper with string labels
 - check how test requirements are correctly handled
     - currently `# noinspection PyPackageRequirements` is needed for pyfakefs
 
