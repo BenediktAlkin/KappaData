@@ -26,7 +26,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
 
     def _setup_imagenet(self):
         global_path = Path("/global/imagenet")
-        local_path = Path("/local/data")
+        local_path = Path("/local/data/imagenet")
         (global_path / "train").mkdir(parents=True)
         (global_path / "val").mkdir()
         for split in ["train", "val"]:
@@ -55,9 +55,9 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
         self.assertTrue(result.was_copied)
         self.assertFalse(result.was_deleted)
         self.assertEqual(was_zip, result.was_zip)
-        self._assert_imagenet_split_exists(local_path / "imagenet" / "train")
-        self.assertTrue((local_path / "imagenet" / "train" / "autocopy_start.txt").exists())
-        self.assertTrue((local_path / "imagenet" / "train" / "autocopy_end.txt").exists())
+        self._assert_imagenet_split_exists(local_path / "train")
+        self.assertTrue((local_path / "train" / "autocopy_start.txt").exists())
+        self.assertTrue((local_path / "train" / "autocopy_end.txt").exists())
         self.assertEqual(2, len(logger.msgs))
         self.assertTrue(logger.path_msg_equals(msg0, logger.msgs[0]))
         self.assertEqual("finished copying data from global to local", logger.msgs[1])
@@ -74,7 +74,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
 
     def _test_imagenet_already_exists_auto(self, global_path, local_path):
         copy_folder_from_global_to_local(global_path, local_path, relative_path="train")
-        self._assert_imagenet_split_exists(local_path / "imagenet" / "train")
+        self._assert_imagenet_split_exists(local_path / "train")
 
         logger = self.MockLogger()
         result = copy_folder_from_global_to_local(global_path, local_path, relative_path="train", log=logger)
@@ -82,7 +82,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
         self.assertFalse(result.was_deleted)
         # was_zip is never set because nothing is extracted
         self.assertFalse(result.was_zip)
-        self._assert_imagenet_split_exists(local_path / "imagenet" / "train")
+        self._assert_imagenet_split_exists(local_path / "train")
 
         self.assertEqual(1, len(logger.msgs))
         msg0 = "dataset was already automatically copied '/local/data/imagenet/train'"
@@ -98,16 +98,16 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
 
     def _test_imagenet_incomplete_copy(self, global_path, local_path, was_zip, msg1):
         copy_folder_from_global_to_local(global_path, local_path, relative_path="train")
-        self._assert_imagenet_split_exists(local_path / "imagenet" / "train")
+        self._assert_imagenet_split_exists(local_path / "train")
         # remove end_copy_file
-        os.remove(local_path / "imagenet" / "train" / "autocopy_end.txt")
+        os.remove(local_path / "train" / "autocopy_end.txt")
 
         logger = self.MockLogger()
         result = copy_folder_from_global_to_local(global_path, local_path, relative_path="train", log=logger)
         self.assertTrue(result.was_copied)
         self.assertTrue(result.was_deleted)
         self.assertEqual(was_zip, result.was_zip)
-        self._assert_imagenet_split_exists(local_path / "imagenet" / "train")
+        self._assert_imagenet_split_exists(local_path / "train")
 
         self.assertEqual(3, len(logger.msgs))
         msg0 = "found incomplete automatic copy in '/local/data/imagenet/train' -> deleting folder"
