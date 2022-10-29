@@ -8,9 +8,7 @@ from tests_mock.index_dataset import IndexDataset
 class TestPercentWrapper(unittest.TestCase):
     def assert_correct_x(self, ds, expected):
         self.assertEqual(len(expected), len(ds))
-        batch = ModeWrapper(ds, mode="x")[:]
-        x = [b[0] for b in batch]
-        self.assertEqual(expected, x)
+        self.assertEqual(expected, ModeWrapper(ds, mode="x")[:])
 
     def test_perfectfit_to(self):
         ds = PercentFilterWrapper(IndexDataset(size=10), to_percent=0.3)

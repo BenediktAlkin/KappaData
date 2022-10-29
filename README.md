@@ -2,16 +2,22 @@
 
 [![publish](https://github.com/BenediktAlkin/KappaData/actions/workflows/publish.yaml/badge.svg)](https://github.com/BenediktAlkin/KappaData/actions/workflows/publish.yaml)
 
-Utilities for [datasets and dataloading](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html) with [pytorch](https://pytorch.org/)
+Utilities for [datasets and dataloading](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html)
+with [pytorch](https://pytorch.org/)
+
 - modular datasets
 - caching datasets in-memory
 - various dataset filters and other manipulation (filter by class, limit size to a %, ...)
 
 # Modular datasets
+
 [pytorch datasets](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html) load all data in the `__getitem__`.
 KappaData decouples the `__getitem__` such that single properties of the dataset can be loaded independently.
+
 ## Image classification dataset example
-Let's take an image classification dataset as an example. A sample consists of an image with an associated class label. 
+
+Let's take an image classification dataset as an example. A sample consists of an image with an associated class label.
+
 ```
 class ImageClassificationDataset(torch.utils.data.Dataset):
     def __init__(self, image_paths):
@@ -26,9 +32,10 @@ class ImageClassificationDataset(torch.utils.data.Dataset):
         return img, class_label
 ```
 
-If you training process contains something that only requires the class labels, the dataset has to additionally load 
+If your training process contains something that only requires the class labels, the dataset has to additionally load
 all the images which can take a long time (whereas loading only labels is very fast).
 With KappaData the `__getitem__` method is split into subparts:
+
 ```
 # inherit from kappadata.KDDataset
 class ImageClassificationDataset(kappadata.KDDataset):
@@ -43,22 +50,28 @@ class ImageClassificationDataset(kappadata.KDDataset):
     def getitem_y(self, idx, ctx=None):
         return image_path_to_class_label(self.image_paths[idx])
 ```
+
 Now each subpart of the dataset can be retrieved by wrapping the dataset into a `ModeWrapper`:
+
 ```
 ds = ImageClassificationDataset(image_paths=...)
 for y in kappadata.ModeWrapper(ds, mode="y"):
     ...
+for x, y in kappadata.ModeWrapper(ds, mode="x y"):
+    ...
 ```
 
-
-
-[torch.utils.data.Subset](https://pytorch.org/docs/stable/data.html#torch.utils.data.Subset) / 
-[torch.utils.data.ConcatDataset](https://pytorch.org/docs/stable/data.html#torch.utils.data.ConcatDataset) 
+[torch.utils.data.Subset](https://pytorch.org/docs/stable/data.html#torch.utils.data.Subset) /
+[torch.utils.data.ConcatDataset](https://pytorch.org/docs/stable/data.html#torch.utils.data.ConcatDataset)
 can be used by simply replacing them with `kappadata.KDSubset`/`kappadata.KDConcatDataset`.
 
 ## Augmentation parameters
+
 With KappaData you can also retrieve various properties of your data prepocessing (e.g. augmentation parameters).
-The following example shows how you can retrieve the parameters of [torchvision.transforms.RandomResizedCrop](https://pytorch.org/vision/main/generated/torchvision.transforms.RandomResizedCrop.html).
+The following example shows how you can retrieve the parameters
+of [torchvision.transforms.RandomResizedCrop](https://pytorch.org/vision/main/generated/torchvision.transforms.RandomResizedCrop.html)
+.
+
 ```
 import torchvision.transforms.functional as F
 class MyRandomResizedCrop(torchvision.transforms.RandomResizedCrop):
@@ -82,31 +95,42 @@ class ImageClassificationDataset(kappadata.KDDataset):
 ```
 
 When you want to access the parameters simply pass `return_ctx=True` to the `ModeWrapper`:
+
 ```
 ds = ImageClassificationDataset(image_paths=...)
 for x, ctx in kappadata.ModeWrapper(ds, mode="x", return_ctx=True):
     print(ctx["crop_parameters"])
+for (x, y), ctx in kappadata.ModeWrapper(ds, mode="x y", return_ctx=True):
+    ...
 ```
 
 # Caching datasets in-memory
+
 ## SharedDictDataset
-`kappadata.SharedDictDataset` provides a wrapper to store arbitrary datasets in-memory via a dictionary shared between all 
-worker processes (using [python multiprocessing](https://docs.python.org/3/library/multiprocessing.html) data structures).
-The shared memory part is important for [dataloading](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader) 
+
+`kappadata.SharedDictDataset` provides a wrapper to store arbitrary datasets in-memory via a dictionary shared between
+all
+worker processes (using [python multiprocessing](https://docs.python.org/3/library/multiprocessing.html) data
+structures).
+The shared memory part is important
+for [dataloading](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader)
 with `num_workers > 0`. Small and medium sized datasets can be cached in-memory to avoid bottlenecks when loading data
 from a disk. For example even the full [ImageNet](https://www.image-net.org/) can be cached on many servers
 as it has ~130GB and its not too uncommon for GPU servers to have more RAM than that.
 
-
 ## RedisDataset [EXPERIMENTAL]
+
 `kappadata.RedisDataset` provides an in-memory cache via the [redis](https://redis.io/) in-memory database.
 This enables sharing data between multiple GPU-proceses (not only worker processes) for multi-GPU training.
 
 ## Caching image datasets
+
 Naively caching image datasets can lead to high memory consumption because image data is usually stored in a compressed
 format and decompressed during loading. To reduce memory, the raw uncompressed data needs to be cached.
 
-Example caching a [torchvision.datasets.ImageFolder](https://pytorch.org/vision/stable/generated/torchvision.datasets.ImageFolder.html):
+Example caching
+a [torchvision.datasets.ImageFolder](https://pytorch.org/vision/stable/generated/torchvision.datasets.ImageFolder.html):
+
 ```
 from kappadata.loading.image_folder import raw_image_loader, raw_image_folder_sample_to_pil_sample 
 class CachedImageFolder(kappadata.KDDataset):
@@ -124,10 +148,11 @@ class CachedImageFolder(kappadata.KDDataset):
         return x
 ```
 
-
 # Automatically copy datasets to a local (fast) disk
+
 Datasets are often stored on a global (slow) storage and before training moved to a local (fast) disk.
 `kappadata.copy_folder_from_global_to_local` provides an utility function to do this automatically:
+
 - local path doesn't exist -> automatically copy from global to local
 - local path exists -> do nothing
 - local path exists but is incomplete -> clear directory and copy again
@@ -142,29 +167,31 @@ copy_folder_from_global_to_local(global_path, local_path)
 # copy only "train"
 copy_folder_from_global_to_local(global_path, local_path, relative_path="train")
 ```
-The above code will also work (without modification) if `/system/data/ImageNet` contains only 2 zip files 
+
+The above code will also work (without modification) if `/system/data/ImageNet` contains only 2 zip files
 `train.zip` and `val.zip`
 
-
 # Dataset manipulation/filters
-- Filter by class 
-  - `kappadata.ClassFilterWrapper(ds, valid_classes=[0, 1])`
-  - `kappadata.ClassFilterWrapper(ds, invalid_classes=[0, 1])`
+
+- Filter by class
+    - `kappadata.ClassFilterWrapper(ds, valid_classes=[0, 1])`
+    - `kappadata.ClassFilterWrapper(ds, invalid_classes=[0, 1])`
 - Balance data by oversampling underrepresented classes `kappadata.OversamplingWrapper(ds)`
-- Subset by specifying percentages 
-  - `kappadata.PercentFilterWrapper(ds, from_percent=0.25)`
-  - `kappadata.PercentFilterWrapper(ds, to_percent=0.75)`
-  - `kappadata.PercentFilterWrapper(ds, from_percent=0.25, to_percent=0.75)`
+- Subset by specifying percentages
+    - `kappadata.PercentFilterWrapper(ds, from_percent=0.25)`
+    - `kappadata.PercentFilterWrapper(ds, to_percent=0.75)`
+    - `kappadata.PercentFilterWrapper(ds, from_percent=0.25, to_percent=0.75)`
 - Repeat the whole dataset
-  - repeat twice: `kappadata.RepeatWrapper(ds, repetitions=2)`
-  - repeat until size is > 100 `kappadata.RepeatWrapper(ds, min_size=100)`
+    - repeat twice: `kappadata.RepeatWrapper(ds, repetitions=2)`
+    - repeat until size is > 100 `kappadata.RepeatWrapper(ds, min_size=100)`
 - Shuffle dataset
-  - `kappadata.ShuffleWrapper(ds, seed=5)`
+    - `kappadata.ShuffleWrapper(ds, seed=5)`
 
 # Miscellaneous
+
 - all datasets derived from `kappadata.KDDataset` automatically support python
-  - `all_class_labels = ModeWrapper(ds, mode="y")[:]`
-  - `all_class_labels = ModeWrapper(ds, mode="y")[5:-3:2]`
+    - `all_class_labels = ModeWrapper(ds, mode="y")[:]`
+    - `all_class_labels = ModeWrapper(ds, mode="y")[5:-3:2]`
 - all datasets derived from `kappadata.KDDataset` implement __iter__
   ```
   for y in ModeWrapper(ds, mode="y"):

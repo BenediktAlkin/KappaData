@@ -5,9 +5,11 @@ from pathlib import Path
 
 CopyResult = namedtuple("CopyFolderResult", "was_copied was_deleted was_zip")
 
+
 def _log(log, msg):
     if log is not None:
         log(msg)
+
 
 def copy_folder_from_global_to_local(global_path, local_path, relative_path=None, log=None):
     if not isinstance(global_path, Path):
@@ -27,7 +29,7 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
     # - autocopy start/end file exists -> already copied -> do nothing
     # - autocopy start file exists && autocopy end file doesn't exist -> incomplete copy -> delete and copy again
     # - autocopy start file doesn't exists -> manually copied dataset -> do nothing
-    dst_path = local_path / global_path.name / relative_path if relative_path is not None else local_path
+    dst_path = local_path / relative_path if relative_path is not None else local_path
     start_copy_file = dst_path / "autocopy_start.txt"
     end_copy_file = dst_path / "autocopy_end.txt"
     was_deleted = False
@@ -35,7 +37,7 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
         if start_copy_file.exists():
             if end_copy_file.exists():
                 # already automatically copied -> do nothing
-                _log(log, f"using manually copied dataset '{dst_path}'")
+                _log(log, f"dataset was already automatically copied '{dst_path}'")
                 return CopyResult(was_copied=False, was_deleted=False, was_zip=False)
             else:
                 # incomplete copy -> delete and copy again
@@ -43,6 +45,9 @@ def copy_folder_from_global_to_local(global_path, local_path, relative_path=None
                 shutil.rmtree(dst_path)
                 was_deleted = True
                 dst_path.mkdir()
+        else:
+            _log(log, f"using manually copied dataset '{dst_path}'")
+            return CopyResult(was_copied=False, was_deleted=False, was_zip=False)
     else:
         dst_path.mkdir(parents=True)
 

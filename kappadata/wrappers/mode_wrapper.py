@@ -25,6 +25,8 @@ class ModeWrapper(KDDataset):
     def __getitem__(self, idx):
         if isinstance(idx, slice):
             return [self[i] for i in range(len(self))[idx]]
+        if isinstance(idx, list):
+            return [self[i] for i in idx]
         if idx < 0:
             idx = len(self) + idx
 
@@ -33,12 +35,24 @@ class ModeWrapper(KDDataset):
         for getitem_fn in self._getitem_fns:
             item = getitem_fn(idx, ctx)
             items.append(item)
+        if len(items) == 1:
+            # single item -> no tuple
+            items = items[0]
+        else:
+            # multiple items -> wrap into tuple
+            items = tuple(items)
         if self.return_ctx:
-            return *tuple(items), ctx
-        return tuple(items)
+            return items, ctx
+        return items
+
 
     def __len__(self):
         return len(self.dataset)
+
+    @property
+    def root_dataset(self):
+        # root_dataset is implemented in base class -> not handled in __getattr__
+        return self.dataset.root_dataset
 
     def __getattr__(self, item):
         if item == "dataset":
