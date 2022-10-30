@@ -2,9 +2,12 @@
 
 ## code
 
-- concatdataset handling of recursive stuff
-- modewrapper which excludes some kind of wrapper (e.g. exclude MixupWrapper)
 - think about a clean solution to avoid context overwriting (e.g. two mixup wrappers)
+- MultiViewWrapper
+- modewrapper which excludes some kind of wrapper (e.g. exclude MixupWrapper)
+  - maybe some shallow copy solution (?)
+
+- concatdataset handling of recursive stuff
 - check if copying folders is faster than individual files
 - test ClassFilterWrapper with string labels
 - check how test requirements are correctly handled
