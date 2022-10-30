@@ -228,3 +228,4 @@ The above code will also work (without modification) if `/system/data/ImageNet` 
   for y in ModeWrapper(ds, mode="y"):
       ...
   ```
+- retrieve the original dataset without wrappers `ds.root_dataset`

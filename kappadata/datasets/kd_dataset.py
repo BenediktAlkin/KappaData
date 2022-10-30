@@ -26,6 +26,14 @@ class KDDataset(Dataset):
     @property
     def root_dataset(self):
         return self
+    
+    @staticmethod
+    def has_wrapper_type(wrapper_type):
+        return False
+
+    @property
+    def all_wrappers(self):
+        return []
 
     def __getitem__(self, idx):
         raise UseModeWrapperException

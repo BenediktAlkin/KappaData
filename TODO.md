@@ -1,3 +1,7 @@
+## tests
+
+- test has_wrapper_type and all_wrappers
+
 ## code
 
 - think about a clean solution to avoid context overwriting (e.g. two mixup wrappers)

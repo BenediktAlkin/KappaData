@@ -25,3 +25,12 @@ class KDWrapper(KDDataset):
     def root_dataset(self):
         # KDDataset implements root_dataset -> __getitem__ doesn't trigger
         return self.dataset.root_dataset
+    
+    def has_wrapper_type(self, wrapper_type):
+        if type(self) == wrapper_type:
+            return True
+        return self.dataset.has_wrapper_type(wrapper_type)
+
+    @property
+    def all_wrappers(self):
+        return [self] + self.dataset.all_wrappers
