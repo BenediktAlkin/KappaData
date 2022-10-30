@@ -4,8 +4,8 @@ import numpy as np
 from torch.nn.functional import one_hot
 
 class MixupWrapper(KDWrapper):
-    def __init__(self, alpha, seed=None, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, alpha, seed=None, **kwargs):
+        super().__init__(*args, **kwargs)
         assert isinstance(alpha, (int, float)) and alpha > 0
         self.alpha = alpha
         self.rng = np.random.default_rng(seed=seed)
