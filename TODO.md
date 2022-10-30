@@ -1,7 +1,5 @@
 ## tests
 
-- test has_wrapper/has_wrapper_type/all_wrappers/all_wrapper_types
-
 ## code
 
 - concatdataset handling of recursive stuff
