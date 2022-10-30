@@ -45,6 +45,7 @@ class ImageClassificationDataset(kappadata.KDDataset):
     def __len__(self):
         return len(self.image_paths)
     
+    # replace __getitem__ with getitem_x and getitem_y
     def getitem_x(self, idx, ctx=None):
         return load_image(self.image_paths[idx])
     def getitem_y(self, idx, ctx=None):
@@ -64,6 +65,52 @@ for x, y in kappadata.ModeWrapper(ds, mode="x y"):
 [torch.utils.data.Subset](https://pytorch.org/docs/stable/data.html#torch.utils.data.Subset) /
 [torch.utils.data.ConcatDataset](https://pytorch.org/docs/stable/data.html#torch.utils.data.ConcatDataset)
 can be used by simply replacing them with `kappadata.KDSubset`/`kappadata.KDConcatDataset`.
+
+
+
+# Wrappers
+
+## "Dataset Wrappers"
+KappaData implements various ways to manipulate datasets (`kappadata.wrappers.dataset_wrappers`). 
+
+- Filter by class
+    - `kappadata.ClassFilterWrapper(ds, valid_classes=[0, 1])`
+    - `kappadata.ClassFilterWrapper(ds, invalid_classes=[0, 1])`
+- Balance data by oversampling underrepresented classes `kappadata.OversamplingWrapper(ds)`
+- Subset by specifying percentages
+    - `kappadata.PercentFilterWrapper(ds, from_percent=0.25)`
+    - `kappadata.PercentFilterWrapper(ds, to_percent=0.75)`
+    - `kappadata.PercentFilterWrapper(ds, from_percent=0.25, to_percent=0.75)`
+- Repeat the whole dataset
+    - repeat twice: `kappadata.RepeatWrapper(ds, repetitions=2)`
+    - repeat until size is > 100 `kappadata.RepeatWrapper(ds, min_size=100)`
+- Shuffle dataset
+    - `kappadata.ShuffleWrapper(ds, seed=5)`
+
+## "Sample Wrappers"
+KappaData implements various ways to manipulate how samples are sampled from the underlying dataset 
+(`kappadata.wrappers.sample_wrappers`). "Sample Wrappers" are similar to transforms in that they transform the sample
+in some way, but "Sample Wrappers" are more powerful because they have full access to the underlying dataset whereas
+normal transforms only have access to a single sample.
+```
+class Transform:
+  def forward(x):
+    # only x can be manipulated (e.g. normalized, image-transforms, ...)
+```
+```
+class SampleWrapper(kd.KDWrapper):
+  def getitem_x(idx, ctx=None):
+    # access to the underlying dataset via self.dataset
+    # e.g. return the sum of two different samples
+    idx2 = np.random.randint(len(self))
+    return self.dataset.getitem_x(idx, ctx) + self.dataset.getitem_x(idx2, ctx)
+```
+
+This allows implementing more complex transformations. KappaData implements the following SampleWrappers:
+- [Mixup](https://arxiv.org/abs/1710.09412) `kappadata.MixupWrapper(dataset=ds, alpha=1.)`
+- TODO cutmix
+- TODO sampling multiple views
+
 
 ## Augmentation parameters
 
@@ -171,25 +218,9 @@ copy_folder_from_global_to_local(global_path, local_path, relative_path="train")
 The above code will also work (without modification) if `/system/data/ImageNet` contains only 2 zip files
 `train.zip` and `val.zip`
 
-# Dataset manipulation/filters
-
-- Filter by class
-    - `kappadata.ClassFilterWrapper(ds, valid_classes=[0, 1])`
-    - `kappadata.ClassFilterWrapper(ds, invalid_classes=[0, 1])`
-- Balance data by oversampling underrepresented classes `kappadata.OversamplingWrapper(ds)`
-- Subset by specifying percentages
-    - `kappadata.PercentFilterWrapper(ds, from_percent=0.25)`
-    - `kappadata.PercentFilterWrapper(ds, to_percent=0.75)`
-    - `kappadata.PercentFilterWrapper(ds, from_percent=0.25, to_percent=0.75)`
-- Repeat the whole dataset
-    - repeat twice: `kappadata.RepeatWrapper(ds, repetitions=2)`
-    - repeat until size is > 100 `kappadata.RepeatWrapper(ds, min_size=100)`
-- Shuffle dataset
-    - `kappadata.ShuffleWrapper(ds, seed=5)`
-
 # Miscellaneous
 
-- all datasets derived from `kappadata.KDDataset` automatically support python
+- all datasets derived from `kappadata.KDDataset` automatically support python slicing
     - `all_class_labels = ModeWrapper(ds, mode="y")[:]`
     - `all_class_labels = ModeWrapper(ds, mode="y")[5:-3:2]`
 - all datasets derived from `kappadata.KDDataset` implement __iter__

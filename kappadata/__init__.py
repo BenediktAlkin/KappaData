@@ -4,6 +4,7 @@ import kappadata.datasets
 import kappadata.loading
 import kappadata.wrappers
 import kappadata.wrappers.dataset_wrappers
+import kappadata.wrappers.sample_wrappers
 
 from .caching.redis_dataset import RedisDataset
 from .caching.shared_dict_dataset import SharedDictDataset
@@ -22,3 +23,5 @@ from .wrappers.dataset_wrappers.percent_filter_wrapper import PercentFilterWrapp
 from .wrappers.dataset_wrappers.repeat_wrapper import RepeatWrapper
 from .wrappers.dataset_wrappers.shuffle_wrapper import ShuffleWrapper
 from .wrappers.dataset_wrappers.subset_wrapper import SubsetWrapper
+
+from .wrappers.sample_wrappers.mixup_wrapper import MixupWrapper
