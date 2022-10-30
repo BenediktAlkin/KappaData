@@ -28,11 +28,19 @@ class KDDataset(Dataset):
         return self
     
     @staticmethod
+    def has_wrapper(wrapper):
+        return False
+
+    @staticmethod
     def has_wrapper_type(wrapper_type):
         return False
 
     @property
     def all_wrappers(self):
+        return []
+
+    @property
+    def all_wrapper_types(self):
         return []
 
     def __getitem__(self, idx):

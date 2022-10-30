@@ -28,6 +28,11 @@ class KDSubset(Subset):
     def root_dataset(self):
         return self.dataset.root_dataset
     
+    def has_wrapper(self, wrapper):
+        if self == wrapper:
+            return True
+        return self.dataset.has_wrapper(wrapper)
+
     def has_wrapper_type(self, wrapper_type):
         if type(self) == wrapper_type:
             return True
@@ -36,6 +41,10 @@ class KDSubset(Subset):
     @property
     def all_wrappers(self):
         return [self] + self.dataset.all_wrappers
+
+    @property
+    def all_wrapper_types(self):
+        return [type(self)] + self.dataset.all_wrapper_types
 
     def __getitem__(self, idx):
         raise UseModeWrapperException

@@ -54,6 +54,24 @@ class ModeWrapper(KDDataset):
         # root_dataset is implemented in base class -> not handled in __getattr__
         return self.dataset.root_dataset
 
+    def has_wrapper(self, wrapper):
+        if self == wrapper:
+            return True
+        return self.dataset.has_wrapper(wrapper)
+
+    def has_wrapper_type(self, wrapper_type):
+        if type(self) == wrapper_type:
+            return True
+        return self.dataset.has_wrapper_type(wrapper_type)
+
+    @property
+    def all_wrappers(self):
+        return [self] + self.dataset.all_wrappers
+
+    @property
+    def all_wrapper_types(self):
+        return [type(self)] + self.dataset.all_wrapper_types
+
     def __getattr__(self, item):
         if item == "dataset":
             return getattr(super(), item)
