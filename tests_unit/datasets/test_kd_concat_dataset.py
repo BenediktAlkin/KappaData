@@ -48,3 +48,27 @@ class TestKDConcatDataset(unittest.TestCase):
         ds1 = IndexDataset(size=4)
         ds = KDConcatDataset([ds0, ds1])
         self.assertEqual(ds0, ds.root_dataset)
+
+    def test_has_wrapper(self):
+        ds0 = IndexDataset(size=3)
+        ds1 = IndexDataset(size=4)
+        ds = KDConcatDataset([ds0, ds1])
+        self.assertFalse(ds.has_wrapper(None))
+
+    def test_has_wrapper_type(self):
+        ds0 = IndexDataset(size=3)
+        ds1 = IndexDataset(size=4)
+        ds = KDConcatDataset([ds0, ds1])
+        self.assertFalse(ds.has_wrapper_type(None))
+
+    def test_all_wrappers(self):
+        ds0 = IndexDataset(size=3)
+        ds1 = IndexDataset(size=4)
+        ds = KDConcatDataset([ds0, ds1])
+        self.assertEqual([], ds.all_wrappers)
+
+    def test_all_wrapper_types(self):
+        ds0 = IndexDataset(size=3)
+        ds1 = IndexDataset(size=4)
+        ds = KDConcatDataset([ds0, ds1])
+        self.assertEqual([], ds.all_wrapper_types)
