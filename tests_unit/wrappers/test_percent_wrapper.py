@@ -1,7 +1,7 @@
 import unittest
 
 from kappadata.wrappers.mode_wrapper import ModeWrapper
-from kappadata.wrappers.percent_filter_wrapper import PercentFilterWrapper
+from kappadata.wrappers.dataset_wrappers.percent_filter_wrapper import PercentFilterWrapper
 from tests_mock.index_dataset import IndexDataset
 
 

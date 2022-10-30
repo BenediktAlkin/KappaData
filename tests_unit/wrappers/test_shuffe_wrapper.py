@@ -1,6 +1,6 @@
 import unittest
 
-from kappadata.wrappers.shuffle_wrapper import ShuffleWrapper
+from kappadata.wrappers.dataset_wrappers import ShuffleWrapper
 from tests_mock.index_dataset import IndexDataset
 
 

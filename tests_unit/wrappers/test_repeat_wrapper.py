@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from kappadata.wrappers.mode_wrapper import ModeWrapper
-from kappadata.wrappers.repeat_wrapper import RepeatWrapper
+from kappadata.wrappers.dataset_wrappers.repeat_wrapper import RepeatWrapper
 from tests_mock.index_dataset import IndexDataset
 
 

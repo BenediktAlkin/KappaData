@@ -1,6 +1,6 @@
 import unittest
 
-from kappadata.wrappers.class_filter_wrapper import ClassFilterWrapper
+from kappadata.wrappers.dataset_wrappers.class_filter_wrapper import ClassFilterWrapper
 from tests_mock.class_dataset import ClassDataset
 
 

@@ -1,12 +1,7 @@
 from kappadata.errors import UseModeWrapperException
 from .kd_dataset import KDDataset
 
-# TODO test and publish
-# TODO better naming conventions between wrapper that modifies which samples are in the dataset and wrappers which
-#  modifiy the sample directly
-# TODO maybe better naming is not really needed as wrappers can be nested arbitrarily
-# TODO should probably rename wrappers into dataset_wrappers and call the other ones sample_wrappers and make another
-#  package for them
+
 class KDWrapper(KDDataset):
     def __init__(self, dataset: KDDataset, **kwargs):
         super().__init__(**kwargs)
@@ -25,3 +20,8 @@ class KDWrapper(KDDataset):
 
     def dispose(self):
         self.dataset.dispose()
+
+    @property
+    def root_dataset(self):
+        # KDDataset implements root_dataset -> __getitem__ doesn't trigger
+        return self.dataset.root_dataset

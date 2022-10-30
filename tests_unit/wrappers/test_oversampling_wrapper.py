@@ -1,7 +1,7 @@
 import unittest
 
 from kappadata.utils import get_class_counts_from_dataset
-from kappadata.wrappers.oversampling_wrapper import OversamplingWrapper
+from kappadata.wrappers.dataset_wrappers.oversampling_wrapper import OversamplingWrapper
 from tests_mock.class_dataset import ClassDataset
 
 
