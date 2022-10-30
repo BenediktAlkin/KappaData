@@ -1,7 +1,7 @@
 import unittest
 
 from kappadata.wrappers.dataset_wrappers.subset_wrapper import SubsetWrapper
-from tests_mock.index_dataset import IndexDataset
+from tests_util.index_dataset import IndexDataset
 
 
 class TestSubsetWrapper(unittest.TestCase):

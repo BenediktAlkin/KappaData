@@ -2,7 +2,7 @@ import unittest
 
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.errors import UseModeWrapperException
-from tests_mock.index_dataset import IndexDataset
+from tests_util.index_dataset import IndexDataset
 
 
 class TestKDWrapper(unittest.TestCase):

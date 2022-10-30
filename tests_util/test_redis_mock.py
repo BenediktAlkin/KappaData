@@ -3,7 +3,7 @@ import unittest
 import redis
 import torch
 
-from tests_mock.redis_mock import RedisMock
+from tests_util.redis_mock import RedisMock
 
 
 class TestRedisMock(unittest.TestCase):

@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import Dataset
 
 import kappadata.caching.redis_dataset
-from tests_mock.redis_mock import RedisMock
+from tests_util.redis_mock import RedisMock
 
 
 class TestRedisDataset(unittest.TestCase):
