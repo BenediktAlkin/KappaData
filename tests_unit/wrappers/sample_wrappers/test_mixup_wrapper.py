@@ -1,6 +1,6 @@
 import torch
 import unittest
-from tests_mock.classification_dataset import ClassificationDataset
+from tests_util.classification_dataset import ClassificationDataset
 from kappadata.wrappers.sample_wrappers.mixup_wrapper import MixupWrapper
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from torch.utils.data import DataLoader
