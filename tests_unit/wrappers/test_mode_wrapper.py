@@ -91,3 +91,25 @@ class TestModeWrapper(unittest.TestCase):
         self.assertEqual((1, 1), samples[1])
         self.assertEqual((2, 2), samples[2])
 
+    def test_has_wrapper(self):
+        root_ds = IndexDataset(size=3)
+        wrapper = ModeWrapper(dataset=root_ds, mode="index x", return_ctx=False)
+        self.assertFalse(root_ds.has_wrapper(wrapper))
+        self.assertTrue(wrapper.has_wrapper(wrapper))
+
+    def test_has_wrapper_type(self):
+        root_ds = IndexDataset(size=3)
+        wrapper = ModeWrapper(dataset=root_ds, mode="index x", return_ctx=False)
+        self.assertFalse(root_ds.has_wrapper_type(ModeWrapper))
+        self.assertTrue(wrapper.has_wrapper_type(ModeWrapper))
+
+    def test_all_wrappers(self):
+        root_ds = IndexDataset(size=3)
+        wrapper = ModeWrapper(dataset=root_ds, mode="index x", return_ctx=False)
+        self.assertEqual([wrapper], wrapper.all_wrappers)
+
+    def test_all_wrapper_types(self):
+        root_ds = IndexDataset(size=3)
+        wrapper = ModeWrapper(dataset=root_ds, mode="index x", return_ctx=False)
+        self.assertEqual([ModeWrapper], wrapper.all_wrapper_types)
+
