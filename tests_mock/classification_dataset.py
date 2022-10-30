@@ -1,10 +1,15 @@
 from kappadata.datasets.kd_dataset import KDDataset
 
 
-class ClassDataset(KDDataset):
-    def __init__(self, classes):
+class ClassificationDataset(KDDataset):
+    def __init__(self, x, classes):
         super().__init__()
+        assert len(x) == len(classes)
+        self.x = x
         self.classes = classes
+
+    def getitem_x(self, idx, _=None):
+        return self.x[idx]
 
     def getitem_class(self, idx, _=None):
         return self.classes[idx]

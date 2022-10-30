@@ -1,5 +1,6 @@
 ## code
 
+- think about a clean solution to avoid context overwriting (e.g. two mixup wrappers)
 - check if copying folders is faster than individual files
 - test ClassFilterWrapper with string labels
 - check how test requirements are correctly handled
