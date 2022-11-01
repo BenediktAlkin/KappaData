@@ -107,7 +107,7 @@ class SampleWrapper(kd.KDWrapper):
 ```
 
 This allows implementing more complex transformations. KappaData implements the following SampleWrappers:
-- [Mixup](https://arxiv.org/abs/1710.09412) `kappadata.MixupWrapper(dataset=ds, alpha=1.)`
+- [Mixup](https://arxiv.org/abs/1710.09412) `kappadata.MixupWrapper(dataset=ds, alpha=1., p=1.)`
 - TODO cutmix
 - TODO sampling multiple views
 

@@ -12,7 +12,7 @@ class TestHasWrapper(unittest.TestCase):
         root_ds = IndexDataset(size=10)
         wrapper1 = PercentFilterWrapper(root_ds, from_percent=0.3)
         wrapper2 = RepeatWrapper(wrapper1, repetitions=2)
-        wrapper3 = MixupWrapper(wrapper2, alpha=1.)
+        wrapper3 = MixupWrapper(wrapper2, alpha=1., p=1.)
         wrapper4 = ShuffleWrapper(wrapper3, seed=2)
         wrapper5 = PercentFilterWrapper(wrapper4, to_percent=0.5)
 
