@@ -15,12 +15,14 @@ class MixupWrapper(KDWrapper):
     def _get_params(self, ctx):
         if ctx is None or "mixup_lambda" not in ctx:
             apply = self.rng.random() < self.p
-            ctx["mixup_apply"] = apply
+            if ctx is not None:
+                ctx["mixup_apply"] = apply
             if apply:
                 lamb = self.rng.beta(self.alpha, self.alpha)
                 idx2 = self.rng.integers(0, len(self))
-                ctx["mixup_lambda"] = lamb
-                ctx["mixup_idx2"] = idx2
+                if ctx is not None:
+                    ctx["mixup_lambda"] = lamb
+                    ctx["mixup_idx2"] = idx2
             else:
                 return False, None, None
         else:
@@ -40,17 +42,20 @@ class MixupWrapper(KDWrapper):
         x2 = self.dataset.getitem_x(idx2, ctx)
         return lamb * x1 + (1. - lamb) * x2
 
+
+    def _getitem_class(self, idx, ctx):
+        y = self.dataset.getitem_class(idx, ctx)
+        if not torch.is_tensor(y):
+            y = torch.tensor(y)
+        if y.ndim == 0:
+            y = one_hot(y, num_classes=self.dataset.n_classes)
+        return y
+
     def getitem_class(self, idx, ctx=None):
         apply, lamb, idx2 = self._get_params(ctx)
-        y1 = self.dataset.getitem_class(idx, ctx)
-        if not torch.is_tensor(y1):
-            y1 = torch.tensor(y1)
-        y1 = one_hot(y1, num_classes=self.dataset.n_classes)
+        y1 = self._getitem_class(idx, ctx)
         if not apply:
             return y1
-        y2 = self.dataset.getitem_class(idx2, ctx)
-        if not torch.is_tensor(y2):
-            y2 = torch.tensor(y2)
-        y2 = one_hot(y2, num_classes=self.dataset.n_classes)
+        y2 = self._getitem_class(idx2, ctx)
         return lamb * y1 + (1. - lamb) * y2
 

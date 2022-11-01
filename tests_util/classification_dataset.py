@@ -9,7 +9,7 @@ class ClassificationDataset(KDDataset):
         self.classes = classes
 
     def getitem_x(self, idx, _=None):
-        return self.x[idx]
+        return self.x[idx].clone()
 
     def getitem_class(self, idx, _=None):
         return self.classes[idx]

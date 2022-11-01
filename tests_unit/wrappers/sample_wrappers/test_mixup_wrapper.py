@@ -16,7 +16,7 @@ class TestMixupWrapper(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: MixupWrapper(dataset=None, alpha=1., p=-2.))
         _ = MixupWrapper(dataset=ClassificationDataset(x=torch.randn(2, 1), classes=list(range(2))), alpha=1., p=1.)
 
-    def test_mixup(self):
+    def test_getitem_x_class(self):
         rng = torch.Generator().manual_seed(63)
         data = torch.randn(2, 4, generator=rng)
         classes = torch.randint(4, size=(2,), generator=rng)
@@ -31,3 +31,15 @@ class TestMixupWrapper(unittest.TestCase):
         # ds[1] is "interpolated" with itself (floating point errors occour)
         self.assertTrue(torch.allclose(data[1], x[1]))
         self.assertTrue(torch.all(lamb[1] * data[1] + (1. - lamb[1]) * data[1] == x[1]))
+
+
+    def test_getitem_class(self):
+        rng = torch.Generator().manual_seed(63)
+        data = torch.randn(2, 1, 4, 4, generator=rng)
+        classes = torch.randint(4, size=(2,), generator=rng)
+        ds = ClassificationDataset(x=data, classes=classes)
+        mixup_ds = MixupWrapper(dataset=ds, alpha=1., p=1., seed=621413)
+        y0 = mixup_ds.getitem_class(0)
+        y1 = mixup_ds.getitem_class(1)
+        self.assertEquals([0, 1, 0], y0.tolist())
+        self.assertTrue(torch.allclose(torch.tensor([0, 0.1406126618, 0.8593873382]), y1))
