@@ -43,3 +43,19 @@ class TestMixupWrapper(unittest.TestCase):
         y1 = mixup_ds.getitem_class(1)
         self.assertEquals([0, 1, 0], y0.tolist())
         self.assertTrue(torch.allclose(torch.tensor([0, 0.1406126618, 0.8593873382]), y1))
+
+    def test_getitem_class_automatic_noctx(self):
+        rng = torch.Generator().manual_seed(42)
+        data = torch.randn(16, 1, 8, 8, generator=rng)
+        classes = torch.randint(4, size=(len(data),), generator=rng)
+        ds = ClassificationDataset(x=data, classes=classes)
+        mixup_ds = MixupWrapper(dataset=ds, alpha=1., p=1., seed=101)
+
+        max_nonzero_class_prob_count = 0
+        for i in range(len(data)):
+            y = mixup_ds.getitem_class(i)
+            self.assertTrue(torch.allclose(torch.tensor(1.), y.sum()))
+            nonzero_class_prob_count = (y != 0.).sum()
+            max_nonzero_class_prob_count = max(max_nonzero_class_prob_count, nonzero_class_prob_count)
+            self.assertLessEqual(nonzero_class_prob_count, 2)
+        self.assertEqual(2, max_nonzero_class_prob_count)

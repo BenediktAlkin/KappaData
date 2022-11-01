@@ -79,11 +79,12 @@ class TestMixWrapper(unittest.TestCase):
         classes = torch.randint(4, size=(len(data),), generator=rng)
         ds = ClassificationDataset(x=data, classes=classes)
         mix_ds = MixWrapper(dataset=ds, cutmix_alpha=1., mixup_alpha=1., p=1., cutmix_p=0.5, seed=103)
+
         max_nonzero_class_prob_count = 0
         for i in range(len(data)):
             y = mix_ds.getitem_class(i)
-            self.assertEquals(1., y.sum())
+            self.assertTrue(torch.allclose(torch.tensor(1.), y.sum()))
             nonzero_class_prob_count = (y != 0.).sum()
             max_nonzero_class_prob_count = max(max_nonzero_class_prob_count, nonzero_class_prob_count)
             self.assertLessEqual(nonzero_class_prob_count, 2)
-        self.assertEqual(2., max_nonzero_class_prob_count)
+        self.assertEqual(2, max_nonzero_class_prob_count)

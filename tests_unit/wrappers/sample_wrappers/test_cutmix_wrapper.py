@@ -52,3 +52,19 @@ class TestCutmixWrapper(unittest.TestCase):
         y1 = cutmix_ds.getitem_class(1)
         self.assertEquals([0, 1, 0], y0.tolist())
         self.assertEquals([0, 0.125, 0.875], y1.tolist())
+
+    def test_getitem_class_automatic_noctx(self):
+        rng = torch.Generator().manual_seed(42)
+        data = torch.randn(16, 1, 8, 8, generator=rng)
+        classes = torch.randint(4, size=(len(data),), generator=rng)
+        ds = ClassificationDataset(x=data, classes=classes)
+        cutmix_ds = CutmixWrapper(dataset=ds, alpha=1., p=1., seed=101)
+
+        max_nonzero_class_prob_count = 0
+        for i in range(len(data)):
+            y = cutmix_ds.getitem_class(i)
+            self.assertTrue(torch.allclose(torch.tensor(1.), y.sum()))
+            nonzero_class_prob_count = (y != 0.).sum()
+            max_nonzero_class_prob_count = max(max_nonzero_class_prob_count, nonzero_class_prob_count)
+            self.assertLessEqual(nonzero_class_prob_count, 2)
+        self.assertEqual(2, max_nonzero_class_prob_count)
