@@ -4,7 +4,7 @@ import numpy as np
 from torch.nn.functional import one_hot
 
 class MixWrapper(KDWrapper):
-    def __init__(self, *args, cutmix_alpha, mixup_alpha, p, cutmix_p, seed=None, **kwargs):
+    def __init__(self, *args, cutmix_alpha, mixup_alpha, p=1., cutmix_p=.5, seed=None, **kwargs):
         super().__init__(*args, **kwargs)
         assert isinstance(cutmix_alpha, (int, float)) and 0. < cutmix_alpha
         assert isinstance(mixup_alpha, (int, float)) and 0. < mixup_alpha
