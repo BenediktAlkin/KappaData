@@ -1,6 +1,7 @@
 ## tests
 
 - mixup with p
+- all mix wrappers: automatic tests with and without context information
 
 ## code
 
