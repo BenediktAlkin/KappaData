@@ -12,6 +12,7 @@ with [pytorch](https://pytorch.org/)
   - limit size to a % 
   - [Mixup](https://arxiv.org/abs/1710.09412)
   - [Cutmix](https://arxiv.org/abs/1905.04899)
+  - label smoothing
   - ...
 
 # Modular datasets
@@ -117,6 +118,7 @@ This allows implementing more complex transformations. KappaData implements the 
 - [Mixup](https://arxiv.org/abs/1710.09412) or [Cutmix](https://arxiv.org/abs/1905.04899) 
   `kappadata.MixWrapper(dataset=ds, cutmix_alpha=1., mixup_alpha=1., p=1., cutmix_p=0.5)`
 - TODO sampling multiple views
+- label smoothing `kappadata.LabelSmoothingWrapper(dataset=ds, smoothing=.1)`
 
 
 ## Augmentation parameters
