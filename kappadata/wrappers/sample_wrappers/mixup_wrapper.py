@@ -13,7 +13,7 @@ class MixupWrapper(KDWrapper):
         self.rng = np.random.default_rng(seed=seed)
 
     def _get_params(self, ctx):
-        if ctx is None or "mixup_lambda" not in ctx:
+        if ctx is None or "mixup_apply" not in ctx:
             apply = self.rng.random() < self.p
             if ctx is not None:
                 ctx["mixup_apply"] = apply
@@ -24,6 +24,8 @@ class MixupWrapper(KDWrapper):
                     ctx["mixup_lambda"] = lamb
                     ctx["mixup_idx2"] = idx2
             else:
+                ctx["mixup_lambda"] = -1
+                ctx["mixup_idx2"] = -1
                 return False, None, None
         else:
             apply = ctx["mixup_apply"]

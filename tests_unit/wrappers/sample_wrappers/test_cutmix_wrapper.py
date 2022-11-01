@@ -39,7 +39,7 @@ class TestCutmixWrapper(unittest.TestCase):
         self.assertTrue(torch.all(data[0, :, :, :left[0]] == x[0, :, :, :left[0]]))
         self.assertTrue(torch.all(data[0, :, :, right[0]:] == x[0, :, :, right[0]:]))
         # ds[1] is "interpolated" with itself
-        self.assertTrue(torch.allclose(data[1], x[1]))
+        self.assertTrue(torch.all(data[1] == x[1]))
         self.assertTrue(torch.all(lamb[1] * data[1] + (1. - lamb[1]) * data[1] == x[1]))
 
     def test_getitem_class(self):

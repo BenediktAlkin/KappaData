@@ -14,7 +14,7 @@ class CutmixWrapper(KDWrapper):
 
     @staticmethod
     def _context_has_params(ctx):
-        return ctx is not None and "cutmix_lambda" in ctx
+        return ctx is not None and "cutmix_apply" in ctx
 
     def _get_params(self, ctx, h=None, w=None):
         if not self._context_has_params(ctx):
@@ -33,6 +33,9 @@ class CutmixWrapper(KDWrapper):
                     ctx["cutmix_idx2"] = idx2
                     ctx["cutmix_bbox"] = bbox
             else:
+                ctx["cutmix_lambda"] = -1
+                ctx["cutmix_idx2"] = -1
+                ctx["cutmix_bbox"] = (-1, -1, -1, -1)
                 return False, None, None, None
         else:
             apply = ctx["cutmix_apply"]
@@ -82,10 +85,10 @@ class CutmixWrapper(KDWrapper):
 
     def getitem_class(self, idx, ctx=None):
         if self._context_has_params(ctx):
-            apply, lamb, idx2, bbox = self._get_params(ctx=ctx)
+            apply, lamb, idx2, _ = self._get_params(ctx=ctx)
         else:
             h, w = self.getitem_x(idx, ctx).shape[1:]
-            apply, lamb, idx2, bbox = self._get_params(ctx=ctx, h=h, w=w)
+            apply, lamb, idx2, _ = self._get_params(ctx=ctx, h=h, w=w)
         y1 = self._getitem_class(idx, ctx)
         if not apply:
             return y1
