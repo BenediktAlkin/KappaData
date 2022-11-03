@@ -1,3 +1,6 @@
+## features
+- collate mixup/cutmix
+
 ## tests
 
 - mixup with p
