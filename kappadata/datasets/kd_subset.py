@@ -27,7 +27,7 @@ class KDSubset(Subset):
     @property
     def root_dataset(self):
         return self.dataset.root_dataset
-    
+
     def has_wrapper(self, wrapper):
         if self == wrapper:
             return True

@@ -1,10 +1,11 @@
-import torch
 import unittest
-from tests_util.classification_dataset import ClassificationDataset
+
+import torch
+
 from kappadata.wrappers.sample_wrappers.cutmix_wrapper import CutmixWrapper
 from kappadata.wrappers.sample_wrappers.mixup_wrapper import MixupWrapper
-from kappadata.wrappers.mode_wrapper import ModeWrapper
-from torch.utils.data import DataLoader
+from tests_util.classification_dataset import ClassificationDataset
+
 
 class TestCutmixMixupCombination(unittest.TestCase):
     def test_getitem_class_manual(self):
@@ -34,7 +35,3 @@ class TestCutmixMixupCombination(unittest.TestCase):
             max_nonzero_class_prob_count = max(max_nonzero_class_prob_count, nonzero_class_prob_count)
             self.assertLessEqual(nonzero_class_prob_count, 4)
         self.assertEqual(4, max_nonzero_class_prob_count)
-
-
-
-

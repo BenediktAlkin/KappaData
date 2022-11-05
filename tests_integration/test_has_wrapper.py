@@ -45,6 +45,3 @@ class TestHasWrapper(unittest.TestCase):
         self.assertFalse(wrapper1.has_wrapper(wrapper3))
         self.assertFalse(wrapper1.has_wrapper(wrapper4))
         self.assertFalse(wrapper1.has_wrapper(wrapper5))
-
-
-

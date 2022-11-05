@@ -40,6 +40,3 @@ class TestHasWrapper(unittest.TestCase):
         self.assertFalse(wrapper1.has_wrapper_type(ShuffleWrapper))
         self.assertFalse(wrapper1.has_wrapper_type(MixupWrapper))
         self.assertFalse(wrapper1.has_wrapper_type(RepeatWrapper))
-
-
-

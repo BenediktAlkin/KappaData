@@ -7,13 +7,13 @@ with [pytorch](https://pytorch.org/)
 
 - modular datasets
 - caching datasets in-memory
-- various dataset filters and other dataset manipulation 
-  - filter by class 
-  - limit size to a % 
-  - [Mixup](https://arxiv.org/abs/1710.09412)
-  - [Cutmix](https://arxiv.org/abs/1905.04899)
-  - label smoothing
-  - ...
+- various dataset filters and other dataset manipulation
+    - filter by class
+    - limit size to a %
+    - [Mixup](https://arxiv.org/abs/1710.09412)
+    - [Cutmix](https://arxiv.org/abs/1905.04899)
+    - label smoothing
+    - ...
 
 # Modular datasets
 
@@ -39,8 +39,8 @@ class ImageClassificationDataset(torch.utils.data.Dataset):
 ```
 
 If your training process contains something that only requires the class labels, the dataset has to additionally load
-all the images which can take a long time (whereas loading only labels is very fast).
-With KappaData the `__getitem__` method is split into subparts:
+all the images which can take a long time (whereas loading only labels is very fast). With KappaData the `__getitem__`
+method is split into subparts:
 
 ```
 # inherit from kappadata.KDDataset
@@ -72,12 +72,11 @@ for x, y in kappadata.ModeWrapper(ds, mode="x y"):
 [torch.utils.data.ConcatDataset](https://pytorch.org/docs/stable/data.html#torch.utils.data.ConcatDataset)
 can be used by simply replacing them with `kappadata.KDSubset`/`kappadata.KDConcatDataset`.
 
-
-
 # Wrappers
 
 ## "Dataset Wrappers"
-KappaData implements various ways to manipulate datasets (`kappadata.wrappers.dataset_wrappers`). 
+
+KappaData implements various ways to manipulate datasets (`kappadata.wrappers.dataset_wrappers`).
 
 - Filter by class
     - `kappadata.ClassFilterWrapper(ds, valid_classes=[0, 1])`
@@ -94,15 +93,18 @@ KappaData implements various ways to manipulate datasets (`kappadata.wrappers.da
     - `kappadata.ShuffleWrapper(ds, seed=5)`
 
 ## "Sample Wrappers"
-KappaData implements various ways to manipulate how samples are sampled from the underlying dataset 
-(`kappadata.wrappers.sample_wrappers`). "Sample Wrappers" are similar to transforms in that they transform the sample
-in some way, but "Sample Wrappers" are more powerful because they have full access to the underlying dataset whereas
-normal transforms only have access to a single sample.
+
+KappaData implements various ways to manipulate how samples are sampled from the underlying dataset
+(`kappadata.wrappers.sample_wrappers`). "Sample Wrappers" are similar to transforms in that they transform the sample in
+some way, but "Sample Wrappers" are more powerful because they have full access to the underlying dataset whereas normal
+transforms only have access to a single sample.
+
 ```
 class Transform:
   def forward(x):
     # only x can be manipulated (e.g. normalized, image-transforms, ...)
 ```
+
 ```
 class SampleWrapper(kd.KDWrapper):
   def getitem_x(idx, ctx=None):
@@ -113,18 +115,18 @@ class SampleWrapper(kd.KDWrapper):
 ```
 
 This allows implementing more complex transformations. KappaData implements the following SampleWrappers:
+
 - [Mixup](https://arxiv.org/abs/1710.09412) `kappadata.MixupWrapper(dataset=ds, alpha=1., p=1.)`
 - [Cutmix](https://arxiv.org/abs/1905.04899) `kappadata.CutmixWrapper(dataset=ds, alpha=1., p=1.)`
-- [Mixup](https://arxiv.org/abs/1710.09412) or [Cutmix](https://arxiv.org/abs/1905.04899) 
+- [Mixup](https://arxiv.org/abs/1710.09412) or [Cutmix](https://arxiv.org/abs/1905.04899)
   `kappadata.MixWrapper(dataset=ds, cutmix_alpha=1., mixup_alpha=1., p=1., cutmix_p=0.5)`
 - TODO sampling multiple views
 - label smoothing `kappadata.LabelSmoothingWrapper(dataset=ds, smoothing=.1)`
 
-
 ## Augmentation parameters
 
-With KappaData you can also retrieve various properties of your data prepocessing (e.g. augmentation parameters).
-The following example shows how you can retrieve the parameters
+With KappaData you can also retrieve various properties of your data prepocessing (e.g. augmentation parameters). The
+following example shows how you can retrieve the parameters
 of [torchvision.transforms.RandomResizedCrop](https://pytorch.org/vision/main/generated/torchvision.transforms.RandomResizedCrop.html)
 .
 
@@ -165,19 +167,17 @@ for (x, y), ctx in kappadata.ModeWrapper(ds, mode="x y", return_ctx=True):
 ## SharedDictDataset
 
 `kappadata.SharedDictDataset` provides a wrapper to store arbitrary datasets in-memory via a dictionary shared between
-all
-worker processes (using [python multiprocessing](https://docs.python.org/3/library/multiprocessing.html) data
-structures).
-The shared memory part is important
+all worker processes (using [python multiprocessing](https://docs.python.org/3/library/multiprocessing.html) data
+structures). The shared memory part is important
 for [dataloading](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader)
 with `num_workers > 0`. Small and medium sized datasets can be cached in-memory to avoid bottlenecks when loading data
-from a disk. For example even the full [ImageNet](https://www.image-net.org/) can be cached on many servers
-as it has ~130GB and its not too uncommon for GPU servers to have more RAM than that.
+from a disk. For example even the full [ImageNet](https://www.image-net.org/) can be cached on many servers as it has ~
+130GB and its not too uncommon for GPU servers to have more RAM than that.
 
 ## RedisDataset [EXPERIMENTAL]
 
-`kappadata.RedisDataset` provides an in-memory cache via the [redis](https://redis.io/) in-memory database.
-This enables sharing data between multiple GPU-proceses (not only worker processes) for multi-GPU training.
+`kappadata.RedisDataset` provides an in-memory cache via the [redis](https://redis.io/) in-memory database. This enables
+sharing data between multiple GPU-proceses (not only worker processes) for multi-GPU training.
 
 ## Caching image datasets
 

@@ -26,7 +26,7 @@ class KDDataset(Dataset):
     @property
     def root_dataset(self):
         return self
-    
+
     @staticmethod
     def has_wrapper(wrapper):
         return False

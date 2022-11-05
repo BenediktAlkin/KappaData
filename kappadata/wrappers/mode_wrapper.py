@@ -45,7 +45,6 @@ class ModeWrapper(KDDataset):
             return items, ctx
         return items
 
-
     def __len__(self):
         return len(self.dataset)
 

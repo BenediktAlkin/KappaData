@@ -1,7 +1,9 @@
 ## features
+
 - collate integration
 - collate mixup/cutmix
-- mixup/cutmix with binary label 
+- mixup/cutmix with binary label
+
 ## tests
 
 - mixup with p
@@ -13,7 +15,7 @@
 - think about a clean solution to avoid context overwriting (e.g. two mixup wrappers)
 - MultiViewWrapper
 - modewrapper which excludes some kind of wrapper (e.g. exclude MixupWrapper)
-  - maybe some shallow copy solution (?)
+    - maybe some shallow copy solution (?)
 
 - concatdataset handling of recursive stuff
 - check if copying folders is faster than individual files
