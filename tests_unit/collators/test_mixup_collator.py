@@ -6,7 +6,7 @@ from kappadata.collators.mixup_collator import MixupCollator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.collators.custom_collator import CustomCollator
 
-class TestMixupCollateFn(unittest.TestCase):
+class TestMixupCollator(unittest.TestCase):
     def test(self):
         rng = torch.Generator().manual_seed(1235)
         x = torch.randn(4, 1, 8, 8, generator=rng)
