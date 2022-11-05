@@ -1,6 +1,7 @@
 ## features
+- collate integration
 - collate mixup/cutmix
-
+- mixup/cutmix with binary label 
 ## tests
 
 - mixup with p
