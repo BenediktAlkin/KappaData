@@ -16,9 +16,10 @@ class TestPadSequencesCollator(unittest.TestCase):
         lengths = torch.randint(maxlen, size=(4,), generator=rng)
         maxlen = lengths.max().item()
         ds = SequenceIndexDataset(lengths=lengths)
-        ds = ModeWrapper(dataset=ds, mode="x")
+        ds_mode = "x"
+        ds = ModeWrapper(dataset=ds, mode=ds_mode)
 
-        collator = ComposeCollator(collators=[PadSequencesCollator()])
+        collator = ComposeCollator(collators=[PadSequencesCollator()], dataset_mode=ds_mode)
         dl = DataLoader(ds, batch_size=len(lengths), collate_fn=collator)
         x = next(iter(dl))
 
@@ -35,9 +36,10 @@ class TestPadSequencesCollator(unittest.TestCase):
         maxlen = max(expected_seqlen)
         expected_classes = [torch.randint(n_classes, size=(seqlen,), generator=rng) for seqlen in expected_seqlen]
         ds = SequenceClassificationDataset(classes=expected_classes)
-        ds = ModeWrapper(dataset=ds, mode="x classes seqlen")
+        ds_mode = "x classes seqlen"
+        ds = ModeWrapper(dataset=ds, mode=ds_mode)
 
-        collator = ComposeCollator(collators=[PadSequencesCollator()])
+        collator = ComposeCollator(collators=[PadSequencesCollator()], dataset_mode=ds_mode)
         dl = DataLoader(ds, batch_size=len(expected_classes), collate_fn=collator)
         x, classes, seqlen = next(iter(dl))
 

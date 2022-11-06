@@ -6,14 +6,11 @@ from torch.utils.data import default_collate
 
 
 class PadSequencesCollator(KDCollator):
-    def __init__(self, dataset_mode=None, **kwargs):
-        super().__init__(dataset_mode=dataset_mode, **kwargs)
-
     @property
     def default_collate_mode(self):
         return None
 
-    def collate(self, batch, ctx=None):
+    def collate(self, batch, _, ctx=None):
         if isinstance(batch[0], tuple):
             result = []
             for i in range(len(batch[0])):

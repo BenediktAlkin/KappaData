@@ -4,9 +4,10 @@ from .kd_collator import KDCollator
 
 
 class ComposeCollator:
-    def __init__(self, collators, return_ctx=False):
+    def __init__(self, collators, dataset_mode, return_ctx=False):
         assert isinstance(collators, list) and all(isinstance(c, KDCollator) for c in collators)
         self.collators = collators
+        self.dataset_mode = dataset_mode
         self.return_ctx = return_ctx
 
         self.default_collate_modes = [c.default_collate_mode for c in collators]
@@ -22,8 +23,8 @@ class ComposeCollator:
             if default_collate_mode == "before" and not called_default_collate:
                 batch = default_collate(batch)
                 called_default_collate = True
-            
-            batch = collator.collate(batch, ctx)
+
+            batch = collator.collate(batch, self.dataset_mode, ctx)
 
             if default_collate_mode == "after":
                 assert not called_default_collate

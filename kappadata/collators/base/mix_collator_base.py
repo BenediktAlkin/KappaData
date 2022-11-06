@@ -16,25 +16,15 @@ class MixCollatorBase(KDCollator):
             self.rng.manual_seed(seed)
         self.np_rng = np.random.default_rng(seed=seed)
 
-        # create bool flags
-        if self.dataset_mode == "x":
-            self._is_x = True
-            self._is_xy = False
-        elif self.dataset_mode == "x class":
-            self._is_x = False
-            self._is_xy = True
-        else:
-            raise NotImplementedError
-
     @property
     def default_collate_mode(self):
         return "before"
 
-    def collate(self, batch, ctx=None):
-        if self._is_x:
+    def collate(self, batch, dataset_mode, ctx=None):
+        if dataset_mode == "x":
             x = batch
             y = None
-        elif self._is_xy:
+        elif dataset_mode == "x class":
             x, y = batch
             y = to_onehot_matrix(y, n_classes=self.n_classes).type(torch.float32)
         else:

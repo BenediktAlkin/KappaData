@@ -19,8 +19,8 @@ class TestMixupCollator(unittest.TestCase):
         ds_mode = "x class"
         ds = ModeWrapper(dataset=ds, mode=ds_mode)
 
-        mix_collator = MixupCollator(alpha=1., p=1., seed=3, n_classes=n_classes, dataset_mode=ds_mode)
-        collator = ComposeCollator(collators=[mix_collator])
+        mix_collator = MixupCollator(alpha=1., p=1., seed=3, n_classes=n_classes)
+        collator = ComposeCollator(collators=[mix_collator], dataset_mode=ds_mode)
         dl = DataLoader(ds, batch_size=len(x), collate_fn=collator)
         _ = next(iter(dl))
         # TODO

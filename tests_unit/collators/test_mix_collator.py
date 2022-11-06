@@ -27,9 +27,8 @@ class TestMixCollator(unittest.TestCase):
             mode="batch",
             seed=3,
             n_classes=n_classes,
-            dataset_mode=ds_mode,
         )
-        collator = ComposeCollator(collators=[mix_collator])
+        collator = ComposeCollator(collators=[mix_collator], dataset_mode=ds_mode)
         dl = DataLoader(ds, batch_size=len(x), collate_fn=collator)
         _ = next(iter(dl))
         # TODO
