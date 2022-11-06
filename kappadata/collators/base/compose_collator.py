@@ -5,7 +5,7 @@ from .kd_collator import KDCollator
 
 class ComposeCollator:
     def __init__(self, collators, dataset_mode, return_ctx=False):
-        assert isinstance(collators, list) and all(isinstance(c, KDCollator) for c in collators)
+        assert isinstance(collators, list) and len(collators) > 0 and all(isinstance(c, KDCollator) for c in collators)
         self.collators = collators
         self.dataset_mode = dataset_mode
         self.return_ctx = return_ctx
