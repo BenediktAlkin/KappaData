@@ -7,6 +7,7 @@ import kappadata.wrappers.dataset_wrappers
 import kappadata.wrappers.sample_wrappers
 from .caching.redis_dataset import RedisDataset
 from .caching.shared_dict_dataset import SharedDictDataset
+from .collators.base.kd_collator import KDCollator
 from .copying import copy_folder_from_global_to_local
 from .datasets.kd_concat_dataset import KDConcatDataset
 from .datasets.kd_dataset import KDDataset
