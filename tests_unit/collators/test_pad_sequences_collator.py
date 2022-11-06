@@ -10,18 +10,21 @@ from tests_util.sequence_index_dataset import SequenceIndexDataset
 from tests_util.sequence_classification_dataset import SequenceClassificationDataset
 
 class TestPadSequencesCollator(unittest.TestCase):
-    def test_getitem_x(self):
+    def _test_getitem_x(self, return_ctx):
         rng = torch.Generator().manual_seed(1235)
         maxlen = 5
         lengths = torch.randint(maxlen, size=(4,), generator=rng)
         maxlen = lengths.max().item()
         ds = SequenceIndexDataset(lengths=lengths)
         ds_mode = "x"
-        ds = ModeWrapper(dataset=ds, mode=ds_mode)
+        ds = ModeWrapper(dataset=ds, mode=ds_mode, return_ctx=return_ctx)
 
         collator = ComposeCollator(collators=[PadSequencesCollator()], dataset_mode=ds_mode)
         dl = DataLoader(ds, batch_size=len(lengths), collate_fn=collator)
-        x = next(iter(dl))
+        if return_ctx:
+            x, _ = next(iter(dl))
+        else:
+            x = next(iter(dl))
 
         for i in range(len(lengths)):
             expected = list(range(i, i + lengths[i]))
@@ -29,7 +32,13 @@ class TestPadSequencesCollator(unittest.TestCase):
             self.assertEqual(expected, actual)
             self.assertEqual([0.] * (maxlen - lengths[i]), x[i][lengths[i]:].tolist())
 
-    def test_getitem_x_classes(self):
+    def test_getitem_x(self):
+        self._test_getitem_x(return_ctx=False)
+
+    def test_getitem_x_ctx(self):
+        self._test_getitem_x(return_ctx=True)
+
+    def _test_getitem_x_classes(self, return_ctx):
         rng = torch.Generator().manual_seed(1235)
         n_classes = 4
         expected_seqlen = [4, 2, 3, 1]
@@ -37,11 +46,14 @@ class TestPadSequencesCollator(unittest.TestCase):
         expected_classes = [torch.randint(n_classes, size=(seqlen,), generator=rng) for seqlen in expected_seqlen]
         ds = SequenceClassificationDataset(classes=expected_classes)
         ds_mode = "x classes seqlen"
-        ds = ModeWrapper(dataset=ds, mode=ds_mode)
+        ds = ModeWrapper(dataset=ds, mode=ds_mode, return_ctx=return_ctx)
 
         collator = ComposeCollator(collators=[PadSequencesCollator()], dataset_mode=ds_mode)
         dl = DataLoader(ds, batch_size=len(expected_classes), collate_fn=collator)
-        x, classes, seqlen = next(iter(dl))
+        if return_ctx:
+            (x, classes, seqlen), _ = next(iter(dl))
+        else:
+            x, classes, seqlen = next(iter(dl))
 
         self.assertEqual((4,), seqlen.shape)
         for i in range(len(expected_seqlen)):
@@ -55,3 +67,9 @@ class TestPadSequencesCollator(unittest.TestCase):
             actual_y = classes[i][:expected_seqlen[i]].tolist()
             self.assertEqual(expected_y, actual_y)
             self.assertEqual([0.] * (maxlen - expected_seqlen[i]), classes[i][expected_seqlen[i]:].tolist())
+
+    def test_x_classes(self):
+        self._test_getitem_x_classes(return_ctx=False)
+
+    def test_x_classes_ctx(self):
+        self._test_getitem_x_classes(return_ctx=True)

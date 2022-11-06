@@ -12,6 +12,11 @@ class PadSequencesCollator(KDCollator):
 
     def collate(self, batch, _, ctx=None):
         if isinstance(batch[0], tuple):
+            if isinstance(batch[0][0], tuple) and isinstance(batch[0][1], dict):
+                # return_ctx=True
+                data = [b[0] for b in batch]
+                contexts = [b[1] for b in batch]
+                return self.collate(data, _, ctx), self.collate(contexts, _, ctx)
             result = []
             for i in range(len(batch[0])):
                 first_item = batch[0][i]
@@ -21,4 +26,6 @@ class PadSequencesCollator(KDCollator):
                 else:
                     result.append(default_collate(items))
             return tuple(result)
+        elif isinstance(batch[0], dict):
+            return default_collate(batch)
         return pad_sequence(batch, batch_first=True)
