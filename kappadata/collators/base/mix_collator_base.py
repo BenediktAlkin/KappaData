@@ -1,10 +1,10 @@
 import numpy as np
 import torch
 from kappadata.functional import to_onehot_matrix
-from .collator_base import CollatorBase
+from .kd_collator import KDCollator
 
 
-class MixCollatorBase(CollatorBase):
+class MixCollatorBase(KDCollator):
     def __init__(self, p=1., n_classes=None, seed=None, **kwargs):
         super().__init__(**kwargs)
         assert isinstance(p, (int, float)) and 0. < p <= 1.
@@ -25,6 +25,10 @@ class MixCollatorBase(CollatorBase):
             self._is_xy = True
         else:
             raise NotImplementedError
+
+    @property
+    def default_collate_mode(self):
+        return "before"
 
     def collate(self, batch, ctx=None):
         if self._is_x:
