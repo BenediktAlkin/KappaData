@@ -2,3 +2,4 @@ torch
 redis
 Pillow
 numpy
+einops

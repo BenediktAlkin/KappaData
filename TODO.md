@@ -10,6 +10,10 @@
 - collate mixup/cutmix tests
 - mixup/cutmix with binary label
 
+## other
+
+- check why some torchvision.transforms are nn.Module and some are not
+
 ## tests
 
 - mixup with p

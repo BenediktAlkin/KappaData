@@ -1,7 +1,7 @@
 import numpy as np
 
 from kappadata.datasets.kd_subset import KDSubset
-from kappadata.utils import get_class_counts
+from kappadata.utils.class_counts import get_class_counts
 
 
 class OversamplingWrapper(KDSubset):
