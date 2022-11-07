@@ -1,9 +1,12 @@
-import torch
 import unittest
-from tests_util.classification_dataset import ClassificationDataset
-from kappadata.wrappers.sample_wrappers.mixup_wrapper import MixupWrapper
-from kappadata.wrappers.mode_wrapper import ModeWrapper
+
+import torch
 from torch.utils.data import DataLoader
+
+from kappadata.wrappers.mode_wrapper import ModeWrapper
+from kappadata.wrappers.sample_wrappers.mixup_wrapper import MixupWrapper
+from tests_util.classification_dataset import ClassificationDataset
+
 
 class TestMixupWrapper(unittest.TestCase):
     def test_ctor_arg_checks(self):
@@ -31,7 +34,6 @@ class TestMixupWrapper(unittest.TestCase):
         # ds[1] is "interpolated" with itself (floating point errors occour)
         self.assertTrue(torch.allclose(data[1], x[1]))
         self.assertTrue(torch.all(lamb[1] * data[1] + (1. - lamb[1]) * data[1] == x[1]))
-
 
     def test_getitem_class(self):
         rng = torch.Generator().manual_seed(63)

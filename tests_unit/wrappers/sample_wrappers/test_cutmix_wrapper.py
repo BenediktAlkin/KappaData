@@ -1,9 +1,12 @@
-import torch
 import unittest
-from tests_util.classification_dataset import ClassificationDataset
-from kappadata.wrappers.sample_wrappers.cutmix_wrapper import CutmixWrapper
-from kappadata.wrappers.mode_wrapper import ModeWrapper
+
+import torch
 from torch.utils.data import DataLoader
+
+from kappadata.wrappers.mode_wrapper import ModeWrapper
+from kappadata.wrappers.sample_wrappers.cutmix_wrapper import CutmixWrapper
+from tests_util.classification_dataset import ClassificationDataset
+
 
 class TestCutmixWrapper(unittest.TestCase):
     def test_ctor_arg_checks(self):

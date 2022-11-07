@@ -25,7 +25,7 @@ class KDWrapper(KDDataset):
     def root_dataset(self):
         # KDDataset implements root_dataset -> __getitem__ doesn't trigger
         return self.dataset.root_dataset
-    
+
     def has_wrapper(self, wrapper):
         if self == wrapper:
             return True

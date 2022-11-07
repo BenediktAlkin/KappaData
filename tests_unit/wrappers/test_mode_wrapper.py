@@ -112,4 +112,3 @@ class TestModeWrapper(unittest.TestCase):
         root_ds = IndexDataset(size=3)
         wrapper = ModeWrapper(dataset=root_ds, mode="index x", return_ctx=False)
         self.assertEqual([ModeWrapper], wrapper.all_wrapper_types)
-

@@ -24,7 +24,10 @@ class TestAllWrapperTypes(unittest.TestCase):
             [ShuffleWrapper, MixupWrapper, RepeatWrapper, PercentFilterWrapper],
             wrapper4.all_wrapper_types,
         )
-        self.assertEqual([ShuffleWrapper, MixupWrapper, RepeatWrapper, PercentFilterWrapper], wrapper4.all_wrapper_types)
+        self.assertEqual(
+            [ShuffleWrapper, MixupWrapper, RepeatWrapper, PercentFilterWrapper],
+            wrapper4.all_wrapper_types,
+        )
         self.assertEqual([MixupWrapper, RepeatWrapper, PercentFilterWrapper], wrapper3.all_wrapper_types)
         self.assertEqual([RepeatWrapper, PercentFilterWrapper], wrapper2.all_wrapper_types)
         self.assertEqual([PercentFilterWrapper], wrapper1.all_wrapper_types)

@@ -1,16 +1,11 @@
-import torch
-from kappadata.datasets.kd_wrapper import KDWrapper
-import numpy as np
-from torch.nn.functional import one_hot
+from .base.mix_wrapper_base import MixWrapperBase
 
-class MixupWrapper(KDWrapper):
-    def __init__(self, *args, alpha, p=1., seed=None, **kwargs):
+
+class MixupWrapper(MixWrapperBase):
+    def __init__(self, *args, alpha, **kwargs):
         super().__init__(*args, **kwargs)
         assert isinstance(alpha, (int, float)) and 0. < alpha
-        assert isinstance(p, (int, float)) and 0. < p <= 1.
         self.alpha = alpha
-        self.p = p
-        self.rng = np.random.default_rng(seed=seed)
 
     def _get_params(self, ctx):
         if ctx is None or "mixup_apply" not in ctx:
@@ -44,15 +39,6 @@ class MixupWrapper(KDWrapper):
         x2 = self.dataset.getitem_x(idx2, ctx)
         return lamb * x1 + (1. - lamb) * x2
 
-
-    def _getitem_class(self, idx, ctx):
-        y = self.dataset.getitem_class(idx, ctx)
-        if not torch.is_tensor(y):
-            y = torch.tensor(y)
-        if y.ndim == 0:
-            y = one_hot(y, num_classes=self.dataset.n_classes)
-        return y
-
     def getitem_class(self, idx, ctx=None):
         apply, lamb, idx2 = self._get_params(ctx)
         y1 = self._getitem_class(idx, ctx)
@@ -60,4 +46,3 @@ class MixupWrapper(KDWrapper):
             return y1
         y2 = self._getitem_class(idx2, ctx)
         return lamb * y1 + (1. - lamb) * y2
-

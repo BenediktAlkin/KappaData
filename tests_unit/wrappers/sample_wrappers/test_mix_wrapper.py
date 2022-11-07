@@ -1,15 +1,18 @@
-import torch
 import unittest
-from tests_util.classification_dataset import ClassificationDataset
-from kappadata.wrappers.sample_wrappers.mix_wrapper import MixWrapper
-from kappadata.wrappers.mode_wrapper import ModeWrapper
+
+import torch
 from torch.utils.data import DataLoader
+
+from kappadata.wrappers.mode_wrapper import ModeWrapper
+from kappadata.wrappers.sample_wrappers.mix_wrapper import MixWrapper
+from tests_util.classification_dataset import ClassificationDataset
+
 
 class TestMixWrapper(unittest.TestCase):
     def test_ctor_arg_checks(self):
         def ctor(**kwargs):
             return MixWrapper(dataset=None, **kwargs)
-        
+
         self.assertRaises(AssertionError, lambda: ctor(cutmix_alpha="a", mixup_alpha=1., p=1., cutmix_p=0.5))
         self.assertRaises(AssertionError, lambda: ctor(cutmix_alpha=None, mixup_alpha=1., p=1., cutmix_p=0.5))
         self.assertRaises(AssertionError, lambda: ctor(cutmix_alpha=-0.1, mixup_alpha=1., p=1., cutmix_p=0.5))
@@ -28,9 +31,9 @@ class TestMixWrapper(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: ctor(cutmix_alpha=1., mixup_alpha=1., p=1., cutmix_p=0.))
         self.assertRaises(AssertionError, lambda: ctor(cutmix_alpha=1., mixup_alpha=1., p=1., cutmix_p=-2.))
         _ = MixWrapper(
-            dataset=ClassificationDataset(x=torch.randn(2, 1), classes=list(range(2))), 
+            dataset=ClassificationDataset(x=torch.randn(2, 1), classes=list(range(2))),
             cutmix_alpha=1.,
-            mixup_alpha = 1.,
+            mixup_alpha=1.,
             p=1.,
             cutmix_p=0.5,
         )
@@ -71,7 +74,6 @@ class TestMixWrapper(unittest.TestCase):
                     self.assertTrue(torch.all(data[i, :, :, right[i]:] == x[i, :, :, right[i]:]))
                 else:
                     self.assertTrue(torch.all(lamb[i] * data[i] + (1. - lamb[i]) * data[idx2[i]] == x[i]))
-
 
     def test_getitem_class(self):
         rng = torch.Generator().manual_seed(63)

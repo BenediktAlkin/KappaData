@@ -2,17 +2,24 @@
 
 make mixup/cutmix more performant with https://pytorch.org/blog/extending-torchvisions-transforms-to-object-detection-segmentation-and-video-tasks/?utm_source=twitter&utm_medium=organic_social&utm_campaign=evergreen
 
+## features
+
+- look at differences to timm mixes
+- collate mixup/cutmix tests
+- mixup/cutmix with binary label
+
 ## tests
 
 - mixup with p
 - all mix wrappers: automatic tests with and without context information
+- xtransformwrapper tests
 
 ## code
 
 - think about a clean solution to avoid context overwriting (e.g. two mixup wrappers)
 - MultiViewWrapper
 - modewrapper which excludes some kind of wrapper (e.g. exclude MixupWrapper)
-  - maybe some shallow copy solution (?)
+    - maybe some shallow copy solution (?)
 
 - concatdataset handling of recursive stuff
 - check if copying folders is faster than individual files

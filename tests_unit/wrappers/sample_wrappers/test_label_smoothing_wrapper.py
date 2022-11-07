@@ -1,9 +1,10 @@
-import torch
 import unittest
-from tests_util.class_dataset import ClassDataset
+
+import torch
+
 from kappadata.wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
-from kappadata.wrappers.mode_wrapper import ModeWrapper
-from torch.utils.data import DataLoader
+from tests_util.class_dataset import ClassDataset
+
 
 class TestLabelSmoothingWrapper(unittest.TestCase):
     def test_ctor_arg_checks(self):

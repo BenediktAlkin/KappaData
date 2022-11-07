@@ -1,16 +1,14 @@
 import torch
-from kappadata.datasets.kd_wrapper import KDWrapper
-import numpy as np
-from torch.nn.functional import one_hot
 
-class CutmixWrapper(KDWrapper):
-    def __init__(self, *args, alpha, p=1., seed=None, **kwargs):
+from kappadata.functional import get_random_bbox, get_area_of_bbox, cutmix_single
+from .base.mix_wrapper_base import MixWrapperBase
+
+
+class CutmixWrapper(MixWrapperBase):
+    def __init__(self, *args, alpha, **kwargs):
         super().__init__(*args, **kwargs)
         assert isinstance(alpha, (int, float)) and 0. < alpha
-        assert isinstance(p, (int, float)) and 0. < p <= 1.
         self.alpha = alpha
-        self.p = p
-        self.rng = np.random.default_rng(seed=seed)
 
     @staticmethod
     def _context_has_params(ctx):
@@ -24,10 +22,9 @@ class CutmixWrapper(KDWrapper):
             if apply:
                 lamb = self.rng.beta(self.alpha, self.alpha)
                 idx2 = self.rng.integers(0, len(self))
-                bbox = self._rand_bbox(h=h, w=w, lamb=lamb)
+                bbox = get_random_bbox(h=h, w=w, lamb=lamb, rng=self.rng)
                 # correct lambda to actual area
-                top, left, bot, right = bbox
-                lamb = 1 - (right - left) * (bot - top) / (h * w)
+                lamb = get_area_of_bbox(bbox=bbox, h=h, w=w)
                 if ctx is not None:
                     ctx["cutmix_lambda"] = lamb
                     ctx["cutmix_idx2"] = idx2
@@ -47,21 +44,6 @@ class CutmixWrapper(KDWrapper):
                 return False, None, None, None
         return True, lamb, idx2, bbox
 
-    def _rand_bbox(self, h, w, lamb):
-        cut_ratio = np.sqrt(1. - lamb)
-        cut_h = int(h * cut_ratio)
-        cut_w = int(w * cut_ratio)
-
-        h_center = self.rng.integers(h)
-        w_center = self.rng.integers(w)
-
-        left = np.clip(w_center - cut_w // 2, 0, w)
-        right = np.clip(w_center + cut_w // 2, 0, w)
-        top = np.clip(h_center - cut_h // 2, 0, h)
-        bot = np.clip(h_center + cut_h // 2, 0, h)
-
-        return top, left, bot, right
-
     def getitem_x(self, idx, ctx=None):
         x1 = self.dataset.getitem_x(idx, ctx)
         assert torch.is_tensor(x1) and x1.ndim == 3, "convert image to tensor before CutmixWrapper"
@@ -71,17 +53,7 @@ class CutmixWrapper(KDWrapper):
             return x1
         x2 = self.dataset.getitem_x(idx2, ctx)
         assert x1.shape == x2.shape
-        top, left, bot, right = bbox
-        x1[:, top:bot, left:right] = x2[:, top:bot, left:right]
-        return x1
-
-    def _getitem_class(self, idx, ctx):
-        y = self.dataset.getitem_class(idx, ctx)
-        if not torch.is_tensor(y):
-            y = torch.tensor(y)
-        if y.ndim == 0:
-            y = one_hot(y, num_classes=self.dataset.n_classes)
-        return y
+        return cutmix_single(x1=x1, x2=x2, bbox=bbox)
 
     def getitem_class(self, idx, ctx=None):
         if self._context_has_params(ctx):
@@ -94,4 +66,3 @@ class CutmixWrapper(KDWrapper):
             return y1
         y2 = self._getitem_class(idx2, ctx)
         return lamb * y1 + (1. - lamb) * y2
-
