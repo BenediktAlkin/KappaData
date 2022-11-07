@@ -2,6 +2,7 @@
 *.json
 *.png
 *.jpg
+*.JPEG
 *.mp4
 
 temp/

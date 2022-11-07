@@ -1,9 +1,9 @@
 import torch
 from torchvision.transforms.functional import to_tensor
+from .base.kd_transform import KDTransform
 
-
-class ImagePosEmbedGrid:
-    def __call__(self, x):
+class ImagePosEmbedGrid(KDTransform):
+    def __call__(self, x, _=None):
         if not torch.is_tensor(x):
             x = to_tensor(x)
         _, h, w = x.shape
