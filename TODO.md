@@ -1,6 +1,8 @@
 ##
 
-make mixup/cutmix more performant with https://pytorch.org/blog/extending-torchvisions-transforms-to-object-detection-segmentation-and-video-tasks/?utm_source=twitter&utm_medium=organic_social&utm_campaign=evergreen
+- https://pytorch.org/blog/extending-torchvisions-transforms-to-object-detection-segmentation-and-video-tasks/?utm_source=twitter&utm_medium=organic_social&utm_campaign=evergreen
+- make mixup/cutmix more performant with 
+- also the label classes seem useful 
 
 ## features
 
