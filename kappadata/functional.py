@@ -36,10 +36,12 @@ def to_onehot_matrix(y, n_classes):
         y = one_hot(y, num_classes=n_classes)
     return y
 
+
 def cutmix_batch(x1, x2, bbox):
     for i in range(len(x1)):
         cutmix_single(x1=x1[i], x2=x2[i], bbox=bbox[i])
     return x1
+
 
 def cutmix_single(x1, x2, bbox):
     top, left, bot, right = bbox

@@ -6,8 +6,9 @@ from torch.utils.data import DataLoader
 from kappadata.collators.base.compose_collator import ComposeCollator
 from kappadata.collators.pad_sequences_collator import PadSequencesCollator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
-from tests_util.sequence_index_dataset import SequenceIndexDataset
 from tests_util.sequence_classification_dataset import SequenceClassificationDataset
+from tests_util.sequence_index_dataset import SequenceIndexDataset
+
 
 class TestPadSequencesCollator(unittest.TestCase):
     def _test_getitem_x(self, return_ctx):

@@ -2,6 +2,7 @@ import kappadata.caching
 import kappadata.copying
 import kappadata.datasets
 import kappadata.loading
+import kappadata.transforms
 import kappadata.wrappers
 import kappadata.wrappers.dataset_wrappers
 import kappadata.wrappers.sample_wrappers

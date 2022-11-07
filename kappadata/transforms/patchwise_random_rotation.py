@@ -1,5 +1,6 @@
 import torch
 from torchvision.transforms.functional import rotate
+
 from .base.kd_transform import KDTransform
 
 
@@ -17,4 +18,3 @@ class PatchwiseRandomRotation(KDTransform):
         for i in range(l):
             x[:, i] = rotate(x[:, i], angle=rotations[i].item())
         return x
-

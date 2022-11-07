@@ -1,7 +1,8 @@
-import torch
 import einops
-from kappadata.utils.param_checking import to_2tuple
+import torch
 from torchvision.transforms.functional import to_tensor
+
+from kappadata.utils.param_checking import to_2tuple
 from .base.kd_transform import KDTransform
 
 
@@ -26,4 +27,3 @@ class PatchifyImage(KDTransform):
         # reshape to patches
         x = einops.rearrange(x, "c (lh ph) (lw pw) -> c (lh lw) ph pw", lh=lh, ph=self.patch_h, lw=lw, pw=self.patch_w)
         return x
-

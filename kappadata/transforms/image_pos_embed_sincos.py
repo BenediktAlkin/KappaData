@@ -1,8 +1,9 @@
 import torch
 from torchvision.transforms.functional import to_tensor
+
 from kappadata.utils.pos_embed import get_2d_sincos_pos_embed
-import einops
 from .base.kd_transform import KDTransform
+
 
 class ImagePosEmbedSincos(KDTransform):
     def __init__(self, dim=4):
@@ -15,4 +16,3 @@ class ImagePosEmbedSincos(KDTransform):
         _, h, w = x.shape
         pos_embed = get_2d_sincos_pos_embed(embed_dim=self.dim, h=h, w=w)
         return torch.concat([x, pos_embed])
-

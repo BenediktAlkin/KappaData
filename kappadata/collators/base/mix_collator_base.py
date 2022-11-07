@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+
 from kappadata.functional import to_onehot_matrix
 from .kd_collator import KDCollator
 

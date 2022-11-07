@@ -1,7 +1,9 @@
 import unittest
 
 import torch
+
 from kappadata.transforms.image_pos_embed_grid import ImagePosEmbedGrid
+
 
 class TestImagePosEmbedSincos(unittest.TestCase):
     def test(self):

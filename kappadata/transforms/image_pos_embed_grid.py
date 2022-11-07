@@ -1,6 +1,8 @@
 import torch
 from torchvision.transforms.functional import to_tensor
+
 from .base.kd_transform import KDTransform
+
 
 class ImagePosEmbedGrid(KDTransform):
     def __call__(self, x, _=None):
@@ -12,4 +14,3 @@ class ImagePosEmbedGrid(KDTransform):
         grid_h, grid_w = torch.meshgrid(h_coords, w_coords, indexing="ij")
 
         return torch.concat([x, grid_h.unsqueeze(0), grid_w.unsqueeze(0)])
-

@@ -1,6 +1,6 @@
 import torch
 
-from kappadata.functional import get_random_bbox, get_area_of_bbox, cutmix_batch
+from kappadata.functional import get_random_bbox, cutmix_batch
 from .base.mix_collator_base import MixCollatorBase
 
 

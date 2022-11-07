@@ -1,5 +1,5 @@
-import torch
 import einops
+
 from .base.kd_transform import KDTransform
 
 
@@ -11,4 +11,3 @@ class UnpatchifyImage(KDTransform):
             lh=ctx["patchify_lh"],
             lw=ctx["patchify_lw"],
         )
-

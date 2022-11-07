@@ -1,6 +1,8 @@
+import unittest
+
 import einops
 import torch
-import unittest
+
 from kappadata.transforms.patchify_image import PatchifyImage
 
 
