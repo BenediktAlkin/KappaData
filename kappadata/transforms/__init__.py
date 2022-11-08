@@ -1,3 +1,4 @@
+from .base.kd_compose import KDCompose
 from .base.kd_transform import KDTransform
 from .image_pos_embed_grid import ImagePosEmbedGrid
 from .image_pos_embed_sincos import ImagePosEmbedSincos
