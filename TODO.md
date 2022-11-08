@@ -1,4 +1,5 @@
 - add retrieving via ctx. to readme
+- transforms cant use rng because `TypeError: cannot pickle 'torch._C.Generator' object`
 
 ## features
 
