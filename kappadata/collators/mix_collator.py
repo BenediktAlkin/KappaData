@@ -1,8 +1,8 @@
 import torch
 
-from kappadata.functional.mixup import mixup_roll, mixup_idx2
-from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
 from kappadata.functional.cutmix import cutmix_batch, get_random_bbox
+from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
+from kappadata.functional.mixup import mixup_roll, mixup_idx2
 from .base.mix_collator_base import MixCollatorBase
 
 
@@ -70,7 +70,6 @@ class MixCollator(MixCollatorBase):
         if y is None:
             return mixed_x
         return mixed_x, mixed_y
-
 
     def _collate_samplewise(self, apply, x, y, batch_size, ctx):
         use_cutmix_size = 1 if self._is_batch_mode else batch_size

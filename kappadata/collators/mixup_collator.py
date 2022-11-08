@@ -1,8 +1,8 @@
 import torch
 
-from .base.mix_collator_base import MixCollatorBase
-from kappadata.functional.mixup import mixup_roll, mixup_idx2
 from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
+from kappadata.functional.mixup import mixup_roll, mixup_idx2
+from .base.mix_collator_base import MixCollatorBase
 
 
 class MixupCollator(MixCollatorBase):

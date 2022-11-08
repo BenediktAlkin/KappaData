@@ -1,7 +1,7 @@
 import torch
 
-from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
 from kappadata.functional.cutmix import cutmix_batch, get_random_bbox
+from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
 from .base.mix_collator_base import MixCollatorBase
 
 
@@ -39,7 +39,6 @@ class CutmixCollator(MixCollatorBase):
             ctx["cutmix_lambda"] = lamb
             ctx["cutmix_idx2"] = idx2
             ctx["cutmix_bbox"] = bbox
-
 
         # cutmix
         mixed_x = cutmix_batch(x1=x, x2=x[idx2], bbox=bbox, inplace=False)

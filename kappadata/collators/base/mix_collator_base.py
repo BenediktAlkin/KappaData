@@ -2,7 +2,6 @@ import numpy as np
 import torch
 
 from kappadata.functional.onehot import to_onehot_matrix
-from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
 from .kd_collator import KDCollator
 
 

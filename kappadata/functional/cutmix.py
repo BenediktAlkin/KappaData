@@ -1,6 +1,5 @@
 import torch
-import numpy as np
-import math
+
 
 def get_random_bbox(h, w, lamb, rng):
     batch_size = len(lamb)
@@ -34,4 +33,3 @@ def cutmix_sample_inplace(x1, x2, bbox):
     top, left, bot, right = bbox
     x1[..., top:bot, left:right] = x2[..., top:bot, left:right]
     return x1
-

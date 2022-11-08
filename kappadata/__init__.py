@@ -24,4 +24,3 @@ from .wrappers.dataset_wrappers.repeat_wrapper import RepeatWrapper
 from .wrappers.dataset_wrappers.shuffle_wrapper import ShuffleWrapper
 from .wrappers.dataset_wrappers.subset_wrapper import SubsetWrapper
 from .wrappers.mode_wrapper import ModeWrapper
-from .wrappers.sample_wrappers.mixup_wrapper import MixupWrapper

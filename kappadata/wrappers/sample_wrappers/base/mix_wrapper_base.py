@@ -2,8 +2,8 @@ import numpy as np
 import torch
 
 from kappadata.datasets.kd_wrapper import KDWrapper
+from kappadata.functional.mix import sample_permutation, mix_y_y2
 from kappadata.functional.onehot import to_onehot_vector
-from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2, mix_y_y2
 
 
 class MixWrapperBase(KDWrapper):
@@ -48,7 +48,6 @@ class MixWrapperBase(KDWrapper):
                 ctx[ctx_apply_key] = apply
                 ctx[f"{self._ctx_prefix}_idx2"] = idx2
         return apply, params
-
 
     def getitem_x(self, idx, ctx=None):
         x1 = self.dataset.getitem_x(idx, ctx)
