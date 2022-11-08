@@ -1,7 +1,7 @@
 from .kd_transform import KDTransform
 from torchvision.transforms import Compose
 
-class KDCompose(KDTransform):
+class KDComposeTransform(KDTransform):
     def __init__(self, transforms):
         self.transforms = transforms
 

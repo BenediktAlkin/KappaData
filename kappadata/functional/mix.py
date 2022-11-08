@@ -23,4 +23,4 @@ def mix_y_y2(y, y2, lamb):
 def mix_y_inplace(y, lamb):
     if y is None:
         return y
-    return y.roll(1, 0).mul_(lamb).add_(y.mul(1. - lamb))
+    return y.roll(1, 0).mul_(1. - lamb).add_(y.mul(lamb))

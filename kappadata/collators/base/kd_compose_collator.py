@@ -3,7 +3,7 @@ from torch.utils.data import default_collate
 from .kd_collator import KDCollator
 
 
-class ComposeCollator:
+class KDComposeCollator:
     def __init__(self, collators, dataset_mode, return_ctx=False):
         assert isinstance(collators, list) and len(collators) > 0 and all(isinstance(c, KDCollator) for c in collators)
         self.collators = collators
