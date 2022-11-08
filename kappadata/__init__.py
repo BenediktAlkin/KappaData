@@ -16,7 +16,7 @@ from .datasets.kd_concat_dataset import KDConcatDataset
 from .datasets.kd_dataset import KDDataset
 from .datasets.kd_subset import KDSubset
 from .datasets.kd_wrapper import KDWrapper
-from .transforms.base.kd_compose_transform import KDCompose
+from .transforms.base.kd_compose_transform import KDComposeTransform
 from .transforms.base.kd_transform import KDTransform
 from .wrappers.dataset_wrappers.class_filter_wrapper import ClassFilterWrapper
 from .wrappers.dataset_wrappers.oversampling_wrapper import OversamplingWrapper
