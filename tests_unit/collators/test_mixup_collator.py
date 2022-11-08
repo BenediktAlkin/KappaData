@@ -38,6 +38,7 @@ class TestMixupCollator(unittest.TestCase):
         expected_y = og_y * lamb_y + og_y.roll(shifts=1, dims=0) * (1. - lamb_y)
         self.assertTrue(torch.all(y == expected_y))
 
-        # check y has probability mass at most 2 entries
+        # check y has probability mass at most 2 entries and it sums to 1
         n_probabilty_masses = (y > 0).sum(dim=1)
         self.assertTrue(torch.all(torch.logical_or(n_probabilty_masses == 1, n_probabilty_masses == 2)))
+        self.assertTrue(torch.all(y.sum(dim=1) == 1.))
