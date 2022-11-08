@@ -6,6 +6,9 @@ from kappadata.transforms.patchify_image import PatchifyImage
 from kappadata.transforms.patchwise_random_rotation import PatchwiseRandomRotation
 from kappadata.transforms.unpatchify_image import UnpatchifyImage
 
+from unittest.mock import patch
+from functools import partial
+
 
 class TestPatchifyRotateUnpatchifyImage(unittest.TestCase):
     def test(self):
@@ -25,7 +28,11 @@ class TestPatchifyRotateUnpatchifyImage(unittest.TestCase):
         #            [15, 16]
         target = torch.tensor([6, 5, 4, 8, 2, 1, 3, 7, 13, 9, 11, 12, 14, 10, 15, 16]).view(1, 4, 4)
         forward = PatchifyImage(patch_size=2)
-        rotate = PatchwiseRandomRotation(seed=6)
-        backward = UnpatchifyImage()
-        ctx = {}
-        self.assertTrue(torch.all(target == backward(rotate(forward(source, ctx), ctx), ctx)))
+        rng = torch.Generator().manual_seed(6)
+        mocked_randint = partial(torch.randint, generator=rng)
+
+        with patch("torch.randint", mocked_randint):
+            rotate = PatchwiseRandomRotation()
+            backward = UnpatchifyImage()
+            ctx = {}
+            self.assertTrue(torch.all(target == backward(rotate(forward(source, ctx), ctx), ctx)))
