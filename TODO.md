@@ -1,3 +1,4 @@
+- add retrieving via ctx. to readme
 
 ## features
 
