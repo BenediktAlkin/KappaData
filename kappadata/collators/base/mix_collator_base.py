@@ -1,21 +1,24 @@
 import numpy as np
 import torch
 
-from kappadata.functional import to_onehot_matrix
+from kappadata.functional.onehot import to_onehot_matrix
+from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
 from .kd_collator import KDCollator
 
 
 class MixCollatorBase(KDCollator):
-    def __init__(self, p=1., n_classes=None, seed=None, **kwargs):
+    def __init__(self, p=1., p_mode="batch", n_classes=None, seed=None, **kwargs):
         super().__init__(**kwargs)
         assert isinstance(p, (int, float)) and 0. < p <= 1.
+        assert p_mode in ["batch", "sample"]
         assert n_classes is None or (isinstance(n_classes, int) and n_classes > 1)
         self.p = p
+        self._is_batch_p_mode = p_mode == "batch"
         self.n_classes = n_classes
-        self.rng = torch.Generator()
-        if seed is not None:
-            self.rng.manual_seed(seed)
         self.np_rng = np.random.default_rng(seed=seed)
+        self.th_rng = torch.Generator()
+        if seed is not None:
+            self.th_rng.manual_seed(seed + 1)
 
     @property
     def default_collate_mode(self):
@@ -31,14 +34,17 @@ class MixCollatorBase(KDCollator):
         else:
             raise NotImplementedError
         batch_size = len(x)
-        return self._collate(x, y, batch_size, ctx)
+        if self._is_batch_p_mode:
+            apply = torch.rand(size=(), generator=self.th_rng) < self.p
+            if apply:
+                return self._collate_batchwise(x, y, batch_size, ctx)
+            return x, y
+        else:
+            apply = torch.rand(size=(batch_size,), generator=self.th_rng) < self.p
+            return self._collate_samplewise(apply=apply, x=x, y=y, batch_size=batch_size, ctx=ctx)
 
-    def _collate(self, x, y, batch_size, ctx):
+    def _collate_batchwise(self, x, y, batch_size, ctx):
         raise NotImplementedError
 
-    @staticmethod
-    def _mix_y(y, lamb, idx2):
-        if y is None:
-            return y
-        lamb_y = lamb.view(-1, 1)
-        return lamb_y * y + (1. - lamb_y) * y[idx2]
+    def _collate_samplewise(self, apply, x, y, batch_size, ctx):
+        raise NotImplementedError

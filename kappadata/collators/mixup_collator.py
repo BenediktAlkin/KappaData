@@ -1,6 +1,8 @@
 import torch
 
 from .base.mix_collator_base import MixCollatorBase
+from kappadata.functional.mixup import mixup_roll, mixup_idx2
+from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
 
 
 class MixupCollator(MixCollatorBase):
@@ -9,23 +11,40 @@ class MixupCollator(MixCollatorBase):
         assert isinstance(alpha, (int, float)) and 0. < alpha
         self.alpha = alpha
 
-    def _collate(self, x, y, batch_size, ctx):
-        apply = torch.rand(size=(batch_size,), generator=self.rng) < self.p
-        lamb = torch.from_numpy(self.np_rng.beta(self.alpha, self.alpha, size=batch_size)).type(torch.float32)
-        idx2 = torch.from_numpy(self.np_rng.permutation(batch_size)).type(torch.long)
+    def _collate_batchwise(self, x, y, batch_size, ctx):
+        # get parameters
+        lamb = sample_lambda(alpha=self.alpha, size=batch_size, rng=self.np_rng)
 
+        # store parameters
+        if ctx is not None:
+            ctx["mixup_lambda"] = lamb
+
+        # mixup
+        x = mixup_roll(x, lamb.view(-1, *[1] * (x.ndim - 1)))
+        y = mix_y_inplace(y, lamb.view(-1, 1))
+        return x, y
+
+    def _collate_samplewise(self, apply, x, y, batch_size, ctx):
+        # get parameters
+        lamb = sample_lambda(alpha=self.alpha, size=batch_size, rng=self.np_rng)
+        idx2 = sample_permutation(batch_size=batch_size, rng=self.np_rng)
+
+        # store parameters
         if ctx is not None:
             ctx["mixup_lambda"] = lamb
             ctx["mixup_idx2"] = idx2
 
         # add dimensions for broadcasting
-        apply_x = apply.view(-1, *[1] * (x.ndim - 1))
         lamb_x = lamb.view(-1, *[1] * (x.ndim - 1))
+        apply_x = apply.view(-1, *[1] * (x.ndim - 1))
 
-        mixed_x = lamb_x * x + (1. - lamb_x) * x[idx2]
+        # mixup x
+        mixed_x = mixup_idx2(x=x, idx2=idx2, lamb=lamb_x)
         result_x = torch.where(apply_x, mixed_x, x)
-        mixed_y = self._mix_y(y=y, lamb=lamb, idx2=idx2)
+        if y is None:
+            return result_x
+
+        # mixup y
+        mixed_y = mix_y_idx2(y=y, idx2=idx2, lamb=lamb)
         result_y = torch.where(apply.view(-1, 1), mixed_y, y)
-        if result_y is not None:
-            return result_x, result_y
-        return result_x
+        return result_x, result_y

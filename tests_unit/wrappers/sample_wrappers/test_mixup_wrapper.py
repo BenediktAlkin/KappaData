@@ -21,7 +21,7 @@ class TestMixupWrapper(unittest.TestCase):
 
     def test_getitem_x_class(self):
         rng = torch.Generator().manual_seed(63)
-        data = torch.randn(2, 4, generator=rng)
+        data = torch.randn(1, 2, 4, generator=rng)
         classes = torch.randint(4, size=(2,), generator=rng)
         ds = ClassificationDataset(x=data, classes=classes)
         mixup_ds = MixupWrapper(dataset=ds, alpha=1., p=1., seed=103)

@@ -30,7 +30,7 @@ class TestCutmixWrapper(unittest.TestCase):
         lamb = ctxs["cutmix_lambda"]
         idx2 = ctxs["cutmix_idx2"]
         top, left, bot, right = ctxs["cutmix_bbox"]
-        self.assertTrue(torch.all(idx2 == torch.tensor([1, 1])))
+        self.assertEqual([0, 0], idx2.tolist())
 
         # check replaced patch
         replaced_expected = data[1, :, top[0]:bot[0], left[0]:right[0]]
@@ -54,7 +54,7 @@ class TestCutmixWrapper(unittest.TestCase):
         y0 = cutmix_ds.getitem_class(0)
         y1 = cutmix_ds.getitem_class(1)
         self.assertEquals([0, 1, 0], y0.tolist())
-        self.assertEquals([0, 0.125, 0.875], y1.tolist())
+        self.assertEquals([0, 0.25, 0.75], y1.tolist())
 
     def test_getitem_class_automatic_noctx(self):
         rng = torch.Generator().manual_seed(42)

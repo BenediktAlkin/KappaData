@@ -1,5 +1,7 @@
 from .base.mix_wrapper_base import MixWrapperBase
 
+from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
+from kappadata.functional.mixup import mixup_inplace
 
 class MixupWrapper(MixWrapperBase):
     def __init__(self, *args, alpha, **kwargs):
@@ -7,42 +9,21 @@ class MixupWrapper(MixWrapperBase):
         assert isinstance(alpha, (int, float)) and 0. < alpha
         self.alpha = alpha
 
-    def _get_params(self, ctx):
-        if ctx is None or "mixup_apply" not in ctx:
-            apply = self.rng.random() < self.p
-            if ctx is not None:
-                ctx["mixup_apply"] = apply
-            if apply:
-                lamb = self.rng.beta(self.alpha, self.alpha)
-                idx2 = self.rng.integers(0, len(self))
-                if ctx is not None:
-                    ctx["mixup_lambda"] = lamb
-                    ctx["mixup_idx2"] = idx2
-            else:
-                ctx["mixup_lambda"] = -1
-                ctx["mixup_idx2"] = -1
-                return False, None, None
-        else:
-            apply = ctx["mixup_apply"]
-            if apply:
-                lamb = ctx["mixup_lambda"]
-                idx2 = ctx["mixup_idx2"]
-            else:
-                return False, None, None
-        return True, lamb, idx2
+    @property
+    def _ctx_prefix(self):
+        return "mixup"
 
-    def getitem_x(self, idx, ctx=None):
-        apply, lamb, idx2 = self._get_params(ctx)
-        x1 = self.dataset.getitem_x(idx, ctx)
-        if not apply:
-            return x1
-        x2 = self.dataset.getitem_x(idx2, ctx)
-        return lamb * x1 + (1. - lamb) * x2
+    def _set_noapply_ctx_values(self, ctx):
+        pass
 
-    def getitem_class(self, idx, ctx=None):
-        apply, lamb, idx2 = self._get_params(ctx)
-        y1 = self._getitem_class(idx, ctx)
-        if not apply:
-            return y1
-        y2 = self._getitem_class(idx2, ctx)
-        return lamb * y1 + (1. - lamb) * y2
+    def _get_params_from_ctx(self, ctx):
+        return dict(lamb=ctx["mixup_lambda"])
+
+    def _sample_params(self, idx, x1, ctx):
+        lamb = sample_lambda(alpha=self.alpha, size=1, rng=self.np_rng).item()
+        if ctx is not None:
+            ctx["mixup_lambda"] = lamb
+        return dict(lamb=lamb)
+
+    def _apply(self, x1, x2, params):
+        return mixup_inplace(x1=x1, x2=x2, lamb=params["mixup_lambda"])

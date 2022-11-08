@@ -1,6 +1,8 @@
 import torch
 
-from kappadata.functional import get_random_bbox, get_area_of_bbox, cutmix_single
+from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
+from kappadata.functional.cutmix import get_random_bbox, cutmix_sample_inplace
+from kappadata.functional.mixup import mixup_inplace
 from .base.mix_wrapper_base import MixWrapperBase
 
 
@@ -14,87 +16,39 @@ class MixWrapper(MixWrapperBase):
         self.mixup_alpha = mixup_alpha
         self.cutmix_p = cutmix_p
 
-    def _get_apply_and_usecutmix(self, ctx):
-        if ctx is None or "mix_apply" not in ctx:
-            apply = self.rng.random() < self.p
-            if apply:
-                use_cutmix = self.rng.random() < self.cutmix_p
-            else:
-                use_cutmix = False
-            if ctx is not None:
-                ctx["mix_apply"] = apply
-                ctx["mix_usecutmix"] = use_cutmix
-                if not apply:
-                    ctx["mix_idx2"] = -1
-                    ctx["mix_lambda"] = -1
-                    ctx["mix_bbox"] = (-1, -1, -1, -1)
-        else:
-            apply = ctx["mix_apply"]
-            use_cutmix = ctx["mix_usecutmix"]
-        return apply, use_cutmix
+    @property
+    def _ctx_prefix(self):
+        return "mix"
 
-    def _get_idx2(self, ctx):
-        if ctx is not None and "mix_idx2" in ctx:
-            return ctx["mix_idx2"]
-        idx2 = self.rng.integers(0, len(self))
-        if ctx is not None:
-            ctx["mix_idx2"] = idx2
-        return idx2
+    def _set_noapply_ctx_values(self, ctx):
+        ctx["mix_usecutmix"] = -1
+        ctx["mix_bbox"] = (-1, -1, -1, -1)
 
-    def _get_cutmix_params(self, ctx, h=None, w=None):
-        if ctx is None or "mix_lambda" not in ctx:
-            lamb = self.rng.beta(self.cutmix_alpha, self.cutmix_alpha)
-            bbox = get_random_bbox(h=h, w=w, lamb=lamb, rng=self.rng)
-            # correct lambda to actual area
-            lamb = get_area_of_bbox(bbox=bbox, h=h, w=w)
-            if ctx is not None:
-                ctx["mix_lambda"] = lamb
-                ctx["mix_bbox"] = bbox
-        else:
-            lamb = ctx["mix_lambda"]
-            bbox = ctx["mix_bbox"]
-        return lamb, bbox
+    def _get_params_from_ctx(self, ctx):
+        return dict(use_cutmix=ctx["mix_usecutmix"], bbox=ctx["mix_bbox"])
 
-    def _get_mixup_params(self, ctx):
-        if ctx is None or "mix_lambda" not in ctx:
-            lamb = self.rng.beta(self.cutmix_alpha, self.cutmix_alpha)
-            if ctx is not None:
-                ctx["mix_lambda"] = lamb
-                ctx["mix_bbox"] = (-1, -1, -1, -1)
-        else:
-            lamb = ctx["mix_lambda"]
-        return lamb
-
-    def getitem_x(self, idx, ctx=None):
-        apply, use_cutmix = self._get_apply_and_usecutmix(ctx)
-        x1 = self.dataset.getitem_x(idx, ctx)
-        if not apply:
-            return x1
-        idx2 = self._get_idx2(ctx)
-        x2 = self.dataset.getitem_x(idx2, ctx)
+    def _sample_params(self, idx, x1, ctx):
+        use_cutmix = torch.rand(size=(1,), generator=self.th_rng) < self.cutmix_p
         if use_cutmix:
-            assert torch.is_tensor(x1) and x1.ndim == 3, "convert image to tensor before MixWrapper"
-            assert x1.shape == x2.shape
-            h, w = x1.shape[1:]
-            lamb, bbox = self._get_cutmix_params(ctx=ctx, h=h, w=w)
-            return cutmix_single(x1=x1, x2=x2, bbox=bbox)
-        else:
-            lamb = self._get_mixup_params(ctx=ctx)
-            return lamb * x1 + (1. - lamb) * x2
-
-    def getitem_class(self, idx, ctx=None):
-        apply, use_cutmix = self._get_apply_and_usecutmix(ctx)
-        if not apply:
-            return self._getitem_class(idx, ctx)
-        if use_cutmix:
-            if ctx is not None and "mix_bbox" in ctx:
-                lamb, _ = self._get_cutmix_params(ctx=ctx)
+            if x1 is None:
+                _, h, w = self.getitem_x(idx, ctx).shape
             else:
-                h, w = self.getitem_x(idx, ctx).shape[1:]
-                lamb, _ = self._get_cutmix_params(ctx=ctx, h=h, w=w)
+                _, h, w = x1.shape
+            lamb = sample_lambda(alpha=self.cutmix_alpha, size=1, rng=self.np_rng).item()
+            bbox, lamb = get_random_bbox(h=h, w=w, lamb=lamb, rng=self.th_rng)
+            lamb = lamb.item()
+            if ctx is not None:
+                ctx["cutmix_lambda"] = lamb
+                ctx["cutmix_bbox"] = bbox
+            return dict(use_cutmix=use_cutmix, bbox=bbox, lamb=lamb)
         else:
-            lamb = self._get_mixup_params(ctx)
-        y1 = self._getitem_class(idx, ctx)
-        idx2 = self._get_idx2(ctx)
-        y2 = self._getitem_class(idx2, ctx)
-        return lamb * y1 + (1. - lamb) * y2
+            lamb = sample_lambda(alpha=self.mixup_alpha, size=1, rng=self.np_rng).item()
+            return dict(use_cutmix=use_cutmix, lamb=lamb)
+
+    def _apply(self, x1, x2, params):
+        if params["use_cutmix"]:
+            return cutmix_sample_inplace(x1=x1, x2=x2, bbox=params["bbox"])
+        else:
+            return mixup_inplace(x1=x1, x2=x2, lamb=params["lamb"])
+
+
