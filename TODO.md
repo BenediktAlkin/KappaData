@@ -1,11 +1,7 @@
 ##
 
-- https://pytorch.org/blog/extending-torchvisions-transforms-to-object-detection-segmentation-and-video-tasks/?utm_source=twitter&utm_medium=organic_social&utm_campaign=evergreen
-- make mixup/cutmix more performant with
-- also the label classes seem useful
 - seed for augmentations per epochs (generate a testset with augmentations)
 - add retrieving via ctx. to readme
-- transforms cant use rng because `TypeError: cannot pickle 'torch._C.Generator' object`
 
 ## features
 
@@ -35,6 +31,10 @@
 - test ClassFilterWrapper with string labels
 - check how test requirements are correctly handled
     - currently `# noinspection PyPackageRequirements` is needed for pyfakefs
+
+## NOTES
+
+- transforms cant use torch rng `TypeError: cannot pickle 'torch._C.Generator' object` -> use np for random generator
 
 ## caching
 
