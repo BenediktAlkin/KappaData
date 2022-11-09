@@ -15,6 +15,7 @@ class KDComposeCollator:
 
     def __call__(self, batch):
         called_default_collate = False
+        removed_ctx_from_batch = False
         ctx = {}
         for collator, default_collate_mode in zip(self.collators, self.default_collate_modes):
             if default_collate_mode is None:
@@ -22,7 +23,16 @@ class KDComposeCollator:
 
             if default_collate_mode == "before" and not called_default_collate:
                 batch = default_collate(batch)
+                if self.return_ctx:
+                    batch, ctx = batch
                 called_default_collate = True
+
+            if not called_default_collate and self.return_ctx and not removed_ctx_from_batch:
+                # remove ctx from batch
+                batch, ctx = zip(*batch)
+                ctx = default_collate(ctx)
+                removed_ctx_from_batch = True
+
 
             batch = collator.collate(batch, self.dataset_mode, ctx)
 
