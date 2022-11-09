@@ -1,17 +1,17 @@
 import torch
 from torchvision.transforms.functional import rotate
+import numpy as np
+from .base.kd_stochastic_transform import KDStochasticTransform
 
-from .base.kd_transform import KDTransform
 
-
-class PatchwiseRandomRotation(KDTransform):
+class PatchwiseRandomRotation(KDStochasticTransform):
     def __call__(self, x, ctx=None):
         c, l, patch_h, patch_w = x.shape
         # sample rotations
-        rotations = torch.randint(0, 4, size=(l,)) * 90
+        rotations = self.rng.integers(0, 4, size=l) * 90
         if ctx is not None:
             ctx["patchwise_random_rotation"] = rotations
         # rotate patches
         for i in range(l):
-            x[:, i] = rotate(x[:, i], angle=rotations[i].item())
+            x[:, i] = rotate(x[:, i], angle=float(rotations[i]))
         return x
