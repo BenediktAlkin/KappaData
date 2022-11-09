@@ -8,6 +8,7 @@
 - look at differences to timm mixes
 - collate mixup/cutmix tests
 - mixup/cutmix with binary label
+- deterministic mix collators
 
 ## other
 
