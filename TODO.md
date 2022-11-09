@@ -3,6 +3,7 @@
 - https://pytorch.org/blog/extending-torchvisions-transforms-to-object-detection-segmentation-and-video-tasks/?utm_source=twitter&utm_medium=organic_social&utm_campaign=evergreen
 - make mixup/cutmix more performant with
 - also the label classes seem useful
+- seed for augmentations per epochs (generate a testset with augmentations)
 
 ## features
 
