@@ -18,7 +18,7 @@ class TestMixupCollator(unittest.TestCase):
         classes = torch.randint(n_classes, size=(len(og_x),), generator=rng)
         ds = ClassificationDataset(x=og_x, classes=classes)
         ds_mode = "x class"
-        ds = ModeWrapper(dataset=ds, mode=ds_mode)
+        ds = ModeWrapper(dataset=ds, mode=ds_mode, return_ctx=True)
 
         # mixup
         mix_collator = MixupCollator(alpha=1., p=1., seed=3, n_classes=n_classes)

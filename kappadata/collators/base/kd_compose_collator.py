@@ -25,12 +25,15 @@ class KDComposeCollator:
                 batch = default_collate(batch)
                 if self.return_ctx:
                     batch, ctx = batch
+                    assert isinstance(ctx, dict), \
+                        "ModeWrapper.return_ctx should be equal to KDComposeCollator.return_ctx"
                 called_default_collate = True
 
             if not called_default_collate and self.return_ctx and not removed_ctx_from_batch:
                 # remove ctx from batch
                 batch, ctx = zip(*batch)
                 ctx = default_collate(ctx)
+                assert isinstance(ctx, dict), "ModeWrapper.return_ctx should be equal to KDComposeCollator.return_ctx"
                 removed_ctx_from_batch = True
 
 
