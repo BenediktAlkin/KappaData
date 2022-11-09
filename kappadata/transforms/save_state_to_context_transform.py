@@ -4,7 +4,7 @@ from torchvision.transforms.functional import to_tensor
 from .base.kd_transform import KDTransform
 
 
-class MemorizeStateTransform(KDTransform):
+class SaveStateToContextTransform(KDTransform):
     def __init__(self, state_name):
         self.state_name = state_name
 

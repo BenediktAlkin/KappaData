@@ -1,6 +1,9 @@
 import unittest
+
 import torch
+
 from kappadata.transforms.image_range_norm import ImageRangeNorm
+
 
 class TestImageRangeNorm(unittest.TestCase):
     def test_3d(self):

@@ -1,6 +1,8 @@
 import torch
 
-from kappadata.functional import get_random_bbox, cutmix_batch
+from kappadata.functional.cutmix import cutmix_batch, get_random_bbox
+from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
+from kappadata.functional.mixup import mixup_roll, mixup_idx2
 from .base.mix_collator_base import MixCollatorBase
 
 
@@ -13,18 +15,66 @@ class MixCollator(MixCollatorBase):
         assert mode in ["sample", "batch"]
         self.cutmix_alpha = cutmix_alpha
         self.mixup_alpha = mixup_alpha
-        self.mode = mode
         self.cutmix_p = cutmix_p
-        self._is_batch_mode = self.mode == "batch"
+        self._is_batch_mode = mode == "batch"
 
-    def _collate(self, x, y, batch_size, ctx):
+    def _collate_batchwise(self, x, y, batch_size, ctx):
+        use_cutmix_size = 1 if self._is_batch_mode else batch_size
+        use_cutmix = torch.rand(size=(use_cutmix_size,), generator=self.th_rng) < self.cutmix_p
+
+        if ctx is not None:
+            ctx["use_cutmix"] = use_cutmix
+
         if self._is_batch_mode:
-            use_cutmix_size = 1
+            if use_cutmix:
+                # apply cutmix to whole batch
+                lamb = sample_lambda(alpha=self.cutmix_alpha, size=batch_size, rng=self.np_rng)
+                h, w = x.shape[2:]
+                bbox, lamb = get_random_bbox(h=h, w=w, lamb=lamb, rng=self.th_rng)
+                if ctx is not None:
+                    ctx["mix_lambda"] = lamb
+                    ctx["mix_bbox"] = bbox
+                mixed_x = cutmix_batch(x1=x, x2=x.roll(1, 0), bbox=bbox, inplace=True)
+            else:
+                # apply mixup to whole batch
+                lamb = sample_lambda(alpha=self.mixup_alpha, size=batch_size, rng=self.np_rng)
+                if ctx is not None:
+                    ctx["mix_lambda"] = lamb
+                    ctx["mix_bbox"] = None
+                mixed_x = mixup_roll(x, lamb.view(-1, *[1] * (x.ndim - 1)))
+            mixed_y = mix_y_inplace(y=y, lamb=lamb.view(-1, 1)) if y is not None else None
         else:
-            use_cutmix_size = batch_size
-        apply = torch.rand(size=(batch_size,), generator=self.rng) < self.p
-        idx2 = torch.from_numpy(self.np_rng.permutation(batch_size)).type(torch.long)
-        use_cutmix = torch.rand(size=(use_cutmix_size,), generator=self.rng) < self.cutmix_p
+            # decide per sample wheter or not to apply cutmix or mixup
+            # cutmix params
+            cutmix_lamb = sample_lambda(alpha=self.cutmix_alpha, size=batch_size, rng=self.np_rng)
+            h, w = x.shape[2:]
+            bbox, cutmix_lamb = get_random_bbox(h=h, w=w, lamb=cutmix_lamb, rng=self.th_rng)
+            # mixup params
+            mixup_lamb = sample_lambda(alpha=self.mixup_alpha, size=batch_size, rng=self.np_rng)
+
+            if ctx is not None:
+                ctx["mix_mixup_lambda"] = mixup_lamb
+                ctx["mix_cutmix_lambda"] = cutmix_lamb
+                ctx["mix_bbox"] = bbox
+
+            cutmixed_x = cutmix_batch(x1=x, x2=x.roll(1, 0), bbox=bbox, inplace=False)
+            mixuped_x = mixup_roll(x=x, lamb=mixup_lamb.view(-1, *[1] * (x.ndim - 1)))
+            mixed_x = torch.where(use_cutmix.view(-1, *[1] * (x.ndim - 1)), cutmixed_x, mixuped_x)
+
+            if y is not None:
+                cutmixed_y = mix_y_inplace(y=y, lamb=cutmix_lamb.view(-1, 1))
+                mixuped_y = mix_y_inplace(y=y, lamb=mixup_lamb.view(-1, 1))
+                mixed_y = torch.where(use_cutmix.view(-1, 1), cutmixed_y, mixuped_y)
+            else:
+                mixed_y = None
+        if y is None:
+            return mixed_x
+        return mixed_x, mixed_y
+
+    def _collate_samplewise(self, apply, x, y, batch_size, ctx):
+        use_cutmix_size = 1 if self._is_batch_mode else batch_size
+        idx2 = sample_permutation(size=batch_size, rng=self.np_rng)
+        use_cutmix = torch.rand(size=(use_cutmix_size,), generator=self.th_rng) < self.cutmix_p
 
         if ctx is not None:
             ctx["mix_idx2"] = idx2
@@ -32,62 +82,50 @@ class MixCollator(MixCollatorBase):
 
         if self._is_batch_mode:
             if use_cutmix:
-                cutmix_lamb = torch.from_numpy(self.np_rng.beta(self.cutmix_alpha, self.cutmix_alpha, size=batch_size))
-                cutmix_lamb = cutmix_lamb.type(torch.float32)
-                # TODO batch version
+                # apply cutmix to whole batch
+                lamb = sample_lambda(alpha=self.cutmix_alpha, size=batch_size, rng=self.np_rng)
                 h, w = x.shape[2:]
-                bbox = [get_random_bbox(h=h, w=w, lamb=lamb, rng=self.np_rng) for lamb in cutmix_lamb]
+                bbox, lamb = get_random_bbox(h=h, w=w, lamb=lamb, rng=self.th_rng)
                 if ctx is not None:
-                    ctx["mix_lambda"] = cutmix_lamb
+                    ctx["mix_lambda"] = lamb
                     ctx["mix_bbox"] = bbox
-                x_clone = x.clone()
-                mixed_x = cutmix_batch(x1=x_clone, x2=x_clone[idx2], bbox=bbox)
-                mixed_y = self._mix_y(y=y, lamb=cutmix_lamb.view(-1, 1), idx2=idx2)
+                mixed_x = cutmix_batch(x1=x_clone, x2=x_clone[idx2], bbox=bbox, inplace=False)
             else:
-                mixup_lamb = torch.from_numpy(self.np_rng.beta(self.mixup_alpha, self.mixup_alpha, size=batch_size))
-                mixup_lamb = mixup_lamb.type(torch.float32)
+                # apply mixup to whole batch
+                lamb = sample_lambda(alpha=self.mixup_alpha, size=batch_size, rng=self.np_rng)
                 if ctx is not None:
-                    ctx["mix_lambda"] = mixup_lamb
+                    ctx["mix_lambda"] = lamb
                     ctx["mix_bbox"] = None
-                mixup_lamb_x = mixup_lamb.view(-1, *[1] * (x.ndim - 1))
-                mixed_x = mixup_lamb_x * x + (1. - mixup_lamb_x) * x[idx2]
-                mixed_y = self._mix_y(y=y, lamb=mixup_lamb.view(-1, 1), idx2=idx2)
+                mixed_x = mixup_idx2(x=x, idx2=idx2, lamb=lamb.view(-1, *[1] * (x.ndim - 1)))
+            mixed_y = mix_y_idx2(y=y, lamb=lamb.view(-1, 1), idx2=idx2) if y is not None else None
         else:
+            # decide per sample wheter or not to apply cutmix or mixup
             # cutmix params
-            cutmix_lamb = torch.from_numpy(self.np_rng.beta(self.cutmix_alpha, self.cutmix_alpha, size=batch_size))
-            cutmix_lamb = cutmix_lamb.type(torch.float32)
-            # TODO batch version
+            cutmix_lamb = sample_lambda(alpha=self.cutmix_alpha, size=batch_size, rng=self.np_rng)
             h, w = x.shape[2:]
-            bbox = [get_random_bbox(h=h, w=w, lamb=lamb, rng=self.np_rng) for lamb in cutmix_lamb]
+            bbox, cutmix_lamb = get_random_bbox(h=h, w=w, lamb=cutmix_lamb, rng=self.th_rng)
             # mixup params
-            mixup_lamb = torch.from_numpy(self.np_rng.beta(self.mixup_alpha, self.mixup_alpha, size=batch_size))
-            mixup_lamb = mixup_lamb.type(torch.float32)
+            mixup_lamb = sample_lambda(alpha=self.mixup_alpha, size=batch_size, rng=self.np_rng)
 
             if ctx is not None:
                 ctx["mix_mixup_lambda"] = mixup_lamb
                 ctx["mix_cutmix_lambda"] = cutmix_lamb
                 ctx["mix_bbox"] = bbox
 
-            mixup_lamb_x = mixup_lamb.view(-1, *[1] * (x.ndim - 1))
-            use_cutmix_x = use_cutmix.view(-1, *[1] * (x.ndim - 1))
-            x_clone = x.clone()
-            cutmixed_x = cutmix_batch(x1=x_clone, x2=x_clone[idx2], bbox=bbox)
-            mixuped_x = mixup_lamb_x * x + (1. - mixup_lamb_x) * x[idx2]
-            mixed_x = torch.where(use_cutmix_x, cutmixed_x, mixuped_x)
+            cutmixed_x = cutmix_batch(x1=x, x2=x[idx2], bbox=bbox, inplace=False)
+            mixuped_x = mixup_idx2(x=x, idx2=idx2, lamb=mixup_lamb.view(-1, *[1] * (x.ndim - 1)))
+            mixed_x = torch.where(use_cutmix.view(-1, *[1] * (x.ndim - 1)), cutmixed_x, mixuped_x)
 
-            cutmixed_y = self._mix_y(y=y, lamb=cutmix_lamb.view(-1, 1), idx2=idx2)
-            mixuped_y = self._mix_y(y=y, lamb=mixup_lamb.view(-1, 1), idx2=idx2)
-            mixed_y = torch.where(use_cutmix.view(-1, 1), cutmixed_y, mixuped_y)
+            if y is not None:
+                cutmixed_y = mix_y_idx2(y=y, idx2=idx2, lamb=cutmix_lamb.view(-1, 1))
+                mixuped_y = mix_y_idx2(y=y, idx2=idx2, lamb=mixup_lamb.view(-1, 1))
+                mixed_y = torch.where(use_cutmix.view(-1, 1), cutmixed_y, mixuped_y)
+            else:
+                mixed_y = None
 
         # filter by apply
-        apply_x = apply.view(-1, *[1] * (x.ndim - 1))
-        result_x = torch.where(apply_x, mixed_x, x)
-        if y is not None:
-            apply_y = apply.view(-1, 1)
-            result_y = torch.where(apply_y, mixed_y, y)
-        else:
-            result_y = None
-
-        if result_y is not None:
-            return result_x, result_y
-        return result_x
+        result_x = torch.where(apply.view(-1, *[1] * (x.ndim - 1)), mixed_x, x)
+        if y is None:
+            return result_x
+        result_y = torch.where(apply.view(-1, 1), mixed_y, y)
+        return result_x, result_y

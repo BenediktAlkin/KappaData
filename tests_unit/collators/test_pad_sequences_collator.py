@@ -3,7 +3,7 @@ import unittest
 import torch
 from torch.utils.data import DataLoader
 
-from kappadata.collators.base.compose_collator import ComposeCollator
+from kappadata.collators.base.kd_compose_collator import KDComposeCollator
 from kappadata.collators.pad_sequences_collator import PadSequencesCollator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from tests_util.sequence_classification_dataset import SequenceClassificationDataset
@@ -20,7 +20,7 @@ class TestPadSequencesCollator(unittest.TestCase):
         ds_mode = "x"
         ds = ModeWrapper(dataset=ds, mode=ds_mode, return_ctx=return_ctx)
 
-        collator = ComposeCollator(collators=[PadSequencesCollator()], dataset_mode=ds_mode)
+        collator = KDComposeCollator(collators=[PadSequencesCollator()], dataset_mode=ds_mode)
         dl = DataLoader(ds, batch_size=len(lengths), collate_fn=collator)
         if return_ctx:
             x, _ = next(iter(dl))
@@ -49,7 +49,7 @@ class TestPadSequencesCollator(unittest.TestCase):
         ds_mode = "x classes seqlen"
         ds = ModeWrapper(dataset=ds, mode=ds_mode, return_ctx=return_ctx)
 
-        collator = ComposeCollator(collators=[PadSequencesCollator()], dataset_mode=ds_mode)
+        collator = KDComposeCollator(collators=[PadSequencesCollator()], dataset_mode=ds_mode)
         dl = DataLoader(ds, batch_size=len(expected_classes), collate_fn=collator)
         if return_ctx:
             (x, classes, seqlen), _ = next(iter(dl))

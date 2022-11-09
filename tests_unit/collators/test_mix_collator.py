@@ -3,7 +3,7 @@ import unittest
 import torch
 from torch.utils.data import DataLoader
 
-from kappadata.collators.base.compose_collator import ComposeCollator
+from kappadata.collators.base.kd_compose_collator import KDComposeCollator
 from kappadata.collators.mix_collator import MixCollator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from tests_util.classification_dataset import ClassificationDataset
@@ -28,7 +28,7 @@ class TestMixCollator(unittest.TestCase):
             seed=3,
             n_classes=n_classes,
         )
-        collator = ComposeCollator(collators=[mix_collator], dataset_mode=ds_mode)
+        collator = KDComposeCollator(collators=[mix_collator], dataset_mode=ds_mode)
         dl = DataLoader(ds, batch_size=len(x), collate_fn=collator)
         _ = next(iter(dl))
         # TODO

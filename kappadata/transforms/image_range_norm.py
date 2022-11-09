@@ -1,6 +1,8 @@
 import torch
 from torchvision.transforms.functional import to_tensor, normalize
+
 from .base.kd_transform import KDTransform
+
 
 class ImageRangeNorm(KDTransform):
     def __call__(self, x, _=None):

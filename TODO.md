@@ -4,10 +4,11 @@
 - make mixup/cutmix more performant with
 - also the label classes seem useful
 - seed for augmentations per epochs (generate a testset with augmentations)
+- add retrieving via ctx. to readme
+- transforms cant use rng because `TypeError: cannot pickle 'torch._C.Generator' object`
 
 ## features
 
-- ComposeTransform for KDTransform
 - look at differences to timm mixes
 - collate mixup/cutmix tests
 - mixup/cutmix with binary label
@@ -18,15 +19,15 @@
 
 ## tests
 
+- test mixup collators
 - mixup with p
 - all mix wrappers: automatic tests with and without context information
 - xtransformwrapper tests
 
 ## code
 
-- think about a clean solution to avoid context overwriting (e.g. two mixup wrappers)
 - MultiViewWrapper
-- modewrapper which excludes some kind of wrapper (e.g. exclude MixupWrapper)
+- modewrapper which excludes some kind of wrapper (e.g. exclude LabelSmoothingWrapper)
     - maybe some shallow copy solution (?)
 
 - concatdataset handling of recursive stuff

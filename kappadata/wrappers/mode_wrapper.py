@@ -1,4 +1,5 @@
 from kappadata.datasets.kd_dataset import KDDataset
+from functools import partial
 
 
 class ModeWrapper(KDDataset):
@@ -13,6 +14,9 @@ class ModeWrapper(KDDataset):
         for item in items:
             if item == "index":
                 self._getitem_fns.append(self._getitem_index)
+            elif item.startswith("ctx."):
+                ctx_key = item[len("ctx."):]
+                self._getitem_fns.append(partial(self._getitem_from_ctx, ctx_key=ctx_key))
             else:
                 fn_name = f"getitem_{item}"
                 assert hasattr(self.dataset, fn_name), f"{type(self.dataset.root_dataset)} has no method getitem_{item}"
@@ -21,6 +25,10 @@ class ModeWrapper(KDDataset):
     @staticmethod
     def _getitem_index(idx, _=None):
         return idx
+
+    @staticmethod
+    def _getitem_from_ctx(_, ctx, ctx_key):
+        return ctx[ctx_key]
 
     def __getitem__(self, idx):
         if isinstance(idx, slice):
