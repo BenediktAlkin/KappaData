@@ -1,9 +1,12 @@
 import unittest
-from torchvision.transforms import RandomCrop
-from kappadata.transforms.kd_random_crop import KDRandomCrop
-import torch
 from unittest.mock import patch
+
 import numpy as np
+import torch
+from torchvision.transforms import RandomCrop
+
+from kappadata.transforms.kd_random_crop import KDRandomCrop
+
 
 class TestKDRandomResizedCrop(unittest.TestCase):
     def test_equivalent_to_torchvision(self):
@@ -16,5 +19,3 @@ class TestKDRandomResizedCrop(unittest.TestCase):
             expected = tv_rc(x)
         actual = kd_rc(x)
         self.assertTrue(torch.all(expected == actual))
-
-

@@ -5,9 +5,9 @@ from torch.utils.data import DataLoader
 
 from kappadata.collators.base.kd_compose_collator import KDComposeCollator
 from kappadata.collators.mixup_collator import MixupCollator
+from kappadata.functional.onehot import to_onehot_matrix
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from tests_util.classification_dataset import ClassificationDataset
-from kappadata.functional.onehot import to_onehot_matrix
 
 
 class TestMixupCollator(unittest.TestCase):

@@ -1,5 +1,6 @@
-from kappadata.datasets.kd_dataset import KDDataset
 from functools import partial
+
+from kappadata.datasets.kd_dataset import KDDataset
 
 
 class ModeWrapper(KDDataset):

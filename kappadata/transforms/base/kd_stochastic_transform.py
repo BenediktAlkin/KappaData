@@ -2,6 +2,7 @@ import numpy as np
 
 from .kd_transform import KDTransform
 
+
 class KDStochasticTransform(KDTransform):
     def __init__(self, seed=None):
         super().__init__()

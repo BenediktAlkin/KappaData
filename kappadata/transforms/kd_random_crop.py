@@ -1,9 +1,9 @@
-import numpy as np
-import torch
 from .base.kd_stochastic_transform import KDStochasticTransform
-from torchvision.transforms import RandomCrop, InterpolationMode
-from torchvision.transforms.functional import resized_crop, get_image_size, pad, crop
+from torchvision.transforms.functional import get_image_size, pad, crop
+
 from kappadata.utils.param_checking import to_2tuple
+from .base.kd_stochastic_transform import KDStochasticTransform
+
 
 class KDRandomCrop(KDStochasticTransform):
     def __init__(self, size, padding=None, pad_if_needed=False, fill=0, padding_mode="constant", **kwargs):

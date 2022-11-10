@@ -1,9 +1,12 @@
 import unittest
-from torchvision.transforms import RandomHorizontalFlip
-from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
-import torch
 from unittest.mock import patch
+
 import numpy as np
+import torch
+from torchvision.transforms import RandomHorizontalFlip
+
+from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
+
 
 class TestKDRandomHorizontalFlip(unittest.TestCase):
     def test_equivalent_to_torchvision(self):
@@ -17,5 +20,3 @@ class TestKDRandomHorizontalFlip(unittest.TestCase):
                 expected = tv_hf(x)
         actual = kd_hf(x)
         self.assertTrue(torch.all(expected == actual))
-
-

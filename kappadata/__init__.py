@@ -8,8 +8,8 @@ import kappadata.wrappers.dataset_wrappers
 import kappadata.wrappers.sample_wrappers
 from .caching.redis_dataset import RedisDataset
 from .caching.shared_dict_dataset import SharedDictDataset
-from .collators.base.kd_compose_collator import KDComposeCollator
 from .collators.base.kd_collator import KDCollator
+from .collators.base.kd_compose_collator import KDComposeCollator
 from .collators.pad_sequences_collator import PadSequencesCollator
 from .copying import copy_folder_from_global_to_local
 from .datasets.kd_concat_dataset import KDConcatDataset

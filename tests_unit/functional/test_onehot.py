@@ -1,7 +1,9 @@
 import unittest
+
 import torch
 
 from kappadata.functional.onehot import to_onehot_vector, to_onehot_matrix
+
 
 class TestOnehot(unittest.TestCase):
     def test_to_onehot_vector(self):
@@ -22,7 +24,6 @@ class TestOnehot(unittest.TestCase):
         source = torch.tensor([0., 1., 0.])
         actual = to_onehot_vector(y=source, n_classes=3)
         self.assertTrue(torch.all(source == actual))
-
 
     def test_to_onehot_matrix(self):
         classes = torch.tensor([0, 1, 5, 3, 4])

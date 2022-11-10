@@ -1,6 +1,5 @@
-import torch
 from torchvision.transforms.functional import rotate
-import numpy as np
+
 from .base.kd_stochastic_transform import KDStochasticTransform
 
 

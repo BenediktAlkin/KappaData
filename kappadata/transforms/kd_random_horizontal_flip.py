@@ -1,4 +1,3 @@
-from .base.kd_stochastic_transform import KDStochasticTransform
 from torchvision.transforms.functional import hflip
 
 from .base.kd_stochastic_transform import KDStochasticTransform

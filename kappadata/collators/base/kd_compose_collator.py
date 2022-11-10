@@ -36,7 +36,6 @@ class KDComposeCollator:
                 assert isinstance(ctx, dict), "ModeWrapper.return_ctx should be equal to KDComposeCollator.return_ctx"
                 removed_ctx_from_batch = True
 
-
             batch = collator.collate(batch, self.dataset_mode, ctx)
 
             if default_collate_mode == "after":
