@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from .base.kd_stochastic_transform import KDStochasticTransform
 from torchvision.transforms import RandomCrop, InterpolationMode
-from torchvision.transforms.functional import resized_crop, get_image_size, get_dimensions, pad, crop
+from torchvision.transforms.functional import resized_crop, get_image_size, pad, crop
 from kappadata.utils.param_checking import to_2tuple
 
 class KDRandomCrop(KDStochasticTransform):
@@ -18,7 +18,7 @@ class KDRandomCrop(KDStochasticTransform):
         if self.padding is not None:
             img = pad(img, self.padding, self.fill, self.padding_mode)
 
-        _, height, width = get_dimensions(img)
+        width, height = get_image_size(img)
         # pad the width if needed
         if self.pad_if_needed and width < self.size[1]:
             padding = [self.size[1] - width, 0]
@@ -35,7 +35,7 @@ class KDRandomCrop(KDStochasticTransform):
         return crop(img, i, j, h, w)
 
     def get_params(self, img):
-        _, h, w = get_dimensions(img)
+        w, h = get_image_size(img)
         th, tw = self.size
 
         if h + 1 < th or w + 1 < tw:

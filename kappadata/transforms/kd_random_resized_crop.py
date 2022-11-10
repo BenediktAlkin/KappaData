@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from .base.kd_stochastic_transform import KDStochasticTransform
 from torchvision.transforms import RandomResizedCrop, InterpolationMode
-from torchvision.transforms.functional import resized_crop, get_image_size, get_dimensions
+from torchvision.transforms.functional import resized_crop, get_image_size
 from kappadata.utils.param_checking import to_2tuple
 
 class KDRandomResizedCrop(KDStochasticTransform):
@@ -32,7 +32,7 @@ class KDRandomResizedCrop(KDStochasticTransform):
 
     def get_params(self, img):
         # same as torchvision.transform.RandomResizedCrop but with rng
-        _, height, width = get_dimensions(img)
+        width, height = get_image_size(img)
         area = height * width
 
         log_ratio = torch.log(torch.tensor(self.ratio))
