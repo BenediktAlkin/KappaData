@@ -1,5 +1,5 @@
 from .kd_transform import KDTransform
-
+from .kd_stochastic_transform import KDStochasticTransform
 
 class KDComposeTransform(KDTransform):
     def __init__(self, transforms):
