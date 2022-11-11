@@ -9,5 +9,17 @@ class ImageRangeNorm(KDTransform):
         if not torch.is_tensor(x):
             x = to_tensor(x)
         n_channels = x.size(0)
-        values = tuple(0.5 for _ in range(n_channels))
+        values = tuple(.5 for _ in range(n_channels))
         return normalize(x, mean=values, std=values, inplace=True)
+
+    @staticmethod
+    def denormalize(x):
+        if not torch.is_tensor(x):
+            x = to_tensor(x)
+        n_channels = x.size(0)
+        stds = tuple(2. for _ in range(n_channels))
+        means = tuple(-.5 for _ in range(n_channels))
+        zeros = tuple(0. for _ in range(n_channels))
+        ones = tuple(1. for _ in range(n_channels))
+        normalize(x, mean=zeros, std=stds, inplace=True)
+        return normalize(x, mean=means, std=ones, inplace=True)
