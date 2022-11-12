@@ -15,8 +15,7 @@ class TestKDRandomHorizontalFlip(unittest.TestCase):
         tv_hf = RandomHorizontalFlip()
 
         patch_rng = np.random.default_rng(seed=5)
-        with patch("torch.Tensor.uniform_", lambda _, low, high: torch.tensor([patch_rng.uniform(low, high)])):
-            with patch("torch.randint", lambda low, high, size: torch.tensor([int(patch_rng.integers(low, high))])):
-                expected = tv_hf(x)
+        with patch("torch.rand", lambda size: torch.tensor([patch_rng.random(size=size)])):
+            expected = tv_hf(x)
         actual = kd_hf(x)
         self.assertTrue(torch.all(expected == actual))
