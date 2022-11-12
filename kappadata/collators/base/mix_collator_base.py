@@ -30,6 +30,9 @@ class MixCollatorBase(KDCollator):
         elif dataset_mode == "x class":
             x, y = batch
             y = to_onehot_matrix(y, n_classes=self.n_classes).type(torch.float32)
+        elif dataset_mode == "index x class":
+            _, x, y = batch
+            y = to_onehot_matrix(y, n_classes=self.n_classes).type(torch.float32)
         else:
             raise NotImplementedError
         batch_size = len(x)
