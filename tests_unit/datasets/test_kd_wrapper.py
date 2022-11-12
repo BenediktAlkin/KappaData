@@ -9,15 +9,15 @@ class TestKDWrapper(unittest.TestCase):
     def test_getattr_getitem(self):
         root_ds = IndexDataset(size=3)
         ds = KDWrapper(root_ds)
-        self.assertEquals(0, ds.getitem_x(0))
-        self.assertEquals(1, ds.getitem_x(1))
-        self.assertEquals(2, ds.getitem_x(2))
+        self.assertEqual(0, ds.getitem_x(0))
+        self.assertEqual(1, ds.getitem_x(1))
+        self.assertEqual(2, ds.getitem_x(2))
 
     def test_getattr_getitem_recursive(self):
         root_ds = IndexDataset(size=2)
         ds = KDWrapper(KDWrapper(root_ds))
-        self.assertEquals(0, ds.getitem_x(0))
-        self.assertEquals(1, ds.getitem_x(1))
+        self.assertEqual(0, ds.getitem_x(0))
+        self.assertEqual(1, ds.getitem_x(1))
 
     def test_getattr_dataset(self):
         root_ds = IndexDataset(size=3)
