@@ -25,13 +25,15 @@ class MixCollatorBase(KDCollator):
 
     def collate(self, batch, dataset_mode, ctx=None):
         if dataset_mode == "x":
+            idx = None
             x = batch
             y = None
         elif dataset_mode == "x class":
+            idx = None
             x, y = batch
             y = to_onehot_matrix(y, n_classes=self.n_classes).type(torch.float32)
         elif dataset_mode == "index x class":
-            _, x, y = batch
+            idx, x, y = batch
             y = to_onehot_matrix(y, n_classes=self.n_classes).type(torch.float32)
         else:
             raise NotImplementedError
@@ -39,11 +41,18 @@ class MixCollatorBase(KDCollator):
         if self._is_batch_p_mode:
             apply = torch.rand(size=(), generator=self.th_rng) < self.p
             if apply:
-                return self._collate_batchwise(x, y, batch_size, ctx)
-            return x, y
+                x, y = self._collate_batchwise(x, y, batch_size, ctx)
         else:
             apply = torch.rand(size=(batch_size,), generator=self.th_rng) < self.p
-            return self._collate_samplewise(apply=apply, x=x, y=y, batch_size=batch_size, ctx=ctx)
+            x, y = self._collate_samplewise(apply=apply, x=x, y=y, batch_size=batch_size, ctx=ctx)
+        if dataset_mode == "x":
+            return x
+        elif dataset_mode == "x class":
+            return x, y
+        elif dataset_mode == "index x class":
+            return idx, x, y
+        else:
+            raise NotImplementedError
 
     def _collate_batchwise(self, x, y, batch_size, ctx):
         raise NotImplementedError
