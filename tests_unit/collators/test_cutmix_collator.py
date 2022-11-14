@@ -12,7 +12,7 @@ from tests_util.classification_dataset import ClassificationDataset
 class TestCutmixCollator(unittest.TestCase):
     def test(self):
         rng = torch.Generator().manual_seed(1235)
-        x = torch.randn(4, 1, 8, 8, generator=rng)
+        x = torch.randn(6, 1, 8, 8, generator=rng)
         n_classes = 4
         classes = torch.randint(n_classes, size=(len(x),), generator=rng)
         ds = ClassificationDataset(x=x, classes=classes)

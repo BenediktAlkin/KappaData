@@ -14,7 +14,7 @@ def get_random_bbox(h, w, lamb, rng):
     bot = torch.clamp(bbox_hcenter + bbox_h_half, max=h).type(torch.long)
     left = torch.clamp(bbox_wcenter - bbox_w_half, min=0).type(torch.long)
     right = torch.clamp(bbox_wcenter + bbox_w_half, max=w).type(torch.long)
-    bbox = (top, left, bot, right)
+    bbox = torch.stack([top, left, bot, right], dim=1)
 
     lamb_adjusted = 1.0 - (bot - top) * (right - left) / (h * w)
 
