@@ -11,8 +11,8 @@ class ModeWrapper(KDDataset):
         self.return_ctx = return_ctx
 
         self._getitem_fns = []
-        items = mode.split(" ")
-        for item in items:
+        self.items = mode.split(" ")
+        for item in self.items:
             if item == "index":
                 self._getitem_fns.append(self._getitem_index)
             elif item.startswith("ctx."):
@@ -22,6 +22,20 @@ class ModeWrapper(KDDataset):
                 fn_name = f"getitem_{item}"
                 assert hasattr(self.dataset, fn_name), f"{type(self.dataset.root_dataset)} has no method getitem_{item}"
                 self._getitem_fns.append(getattr(self.dataset, fn_name))
+
+    @staticmethod
+    def has_item(mode, item):
+        return item in mode.split(" ")
+
+    @staticmethod
+    def get_item(mode, item, batch):
+        idx = mode.split(" ").index(item)
+        return batch[idx]
+
+    @staticmethod
+    def set_item(mode, item, batch, value):
+        idx = mode.split(" ").index(item)
+        return tuple(it if i != idx else value for i, it in enumerate(batch))
 
     @staticmethod
     def _getitem_index(idx, _=None):
