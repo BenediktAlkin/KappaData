@@ -13,7 +13,7 @@ class ImageRangeNorm(KDTransform):
         return normalize(x, mean=values, std=values, inplace=True)
 
     @staticmethod
-    def denormalize(x):
+    def denormalize(x, inplace=True):
         if not torch.is_tensor(x):
             x = to_tensor(x)
         n_channels = x.size(0)
@@ -21,5 +21,5 @@ class ImageRangeNorm(KDTransform):
         means = tuple(-.5 for _ in range(n_channels))
         zeros = tuple(0. for _ in range(n_channels))
         ones = tuple(1. for _ in range(n_channels))
-        normalize(x, mean=zeros, std=stds, inplace=True)
-        return normalize(x, mean=means, std=ones, inplace=True)
+        normalize(x, mean=zeros, std=stds, inplace=inplace)
+        return normalize(x, mean=means, std=ones, inplace=inplace)
