@@ -21,5 +21,5 @@ class ImageRangeNorm(KDTransform):
         means = tuple(-.5 for _ in range(n_channels))
         zeros = tuple(0. for _ in range(n_channels))
         ones = tuple(1. for _ in range(n_channels))
-        normalize(x, mean=zeros, std=stds, inplace=inplace)
+        x = normalize(x, mean=zeros, std=stds, inplace=inplace)
         return normalize(x, mean=means, std=ones, inplace=inplace)
