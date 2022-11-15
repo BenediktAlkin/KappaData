@@ -3,7 +3,7 @@ import torch
 
 from kappadata.functional.onehot import to_onehot_matrix
 from .kd_collator import KDCollator
-
+from kappadata.wrappers.mode_wrapper import ModeWrapper
 
 class MixCollatorBase(KDCollator):
     def __init__(self, p=1., p_mode="batch", n_classes=None, seed=None, **kwargs):
@@ -24,19 +24,14 @@ class MixCollatorBase(KDCollator):
         return "before"
 
     def collate(self, batch, dataset_mode, ctx=None):
-        if dataset_mode == "x":
-            idx = None
-            x = batch
-            y = None
-        elif dataset_mode == "x class":
-            idx = None
-            x, y = batch
+        idx, x, y = None, None, None
+        if ModeWrapper.has_item(mode=dataset_mode, item="index"):
+            idx = ModeWrapper.get_item(mode=dataset_mode, item="index", batch=batch)
+        if ModeWrapper.has_item(mode=dataset_mode, item="x"):
+            x = ModeWrapper.get_item(mode=dataset_mode, item="x", batch=batch)
+        if ModeWrapper.has_item(mode=dataset_mode, item="class"):
+            y = ModeWrapper.get_item(mode=dataset_mode, item="class", batch=batch)
             y = to_onehot_matrix(y, n_classes=self.n_classes).type(torch.float32)
-        elif dataset_mode == "index x class":
-            idx, x, y = batch
-            y = to_onehot_matrix(y, n_classes=self.n_classes).type(torch.float32)
-        else:
-            raise NotImplementedError
         batch_size = len(x)
         if self._is_batch_p_mode:
             apply = torch.rand(size=(), generator=self.th_rng) < self.p
@@ -45,14 +40,14 @@ class MixCollatorBase(KDCollator):
         else:
             apply = torch.rand(size=(batch_size,), generator=self.th_rng) < self.p
             x, y = self._collate_samplewise(apply=apply, x=x, y=y, batch_size=batch_size, ctx=ctx)
-        if dataset_mode == "x":
-            return x
-        elif dataset_mode == "x class":
-            return x, y
-        elif dataset_mode == "index x class":
-            return idx, x, y
-        else:
-            raise NotImplementedError
+
+        if idx is not None:
+            batch = ModeWrapper.set_item(mode=dataset_mode, item="index", batch=batch, value=idx)
+        if x is not None:
+            batch = ModeWrapper.set_item(mode=dataset_mode, item="x", batch=batch, value=x)
+        if y is not None:
+            batch = ModeWrapper.set_item(mode=dataset_mode, item="class", batch=batch, value=y)
+        return batch
 
     def _collate_batchwise(self, x, y, batch_size, ctx):
         raise NotImplementedError
