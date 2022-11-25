@@ -1,9 +1,9 @@
 import torchvision.transforms.functional as F
 
-from .kd_random_apply import KDRandomApply
+from .base.kd_random_apply_base import KDRandomApplyBase
 
 
-class KDRandomGrayscale(KDRandomApply):
+class KDRandomGrayscale(KDRandomApplyBase):
     def __init__(self, p=0.1, **kwargs):
         super().__init__(p=p, **kwargs)
 

@@ -1,7 +1,7 @@
-from .base.kd_stochastic_transform import KDStochasticTransform
+from kappadata.transforms.base.kd_stochastic_transform import KDStochasticTransform
 
 
-class KDRandomApply(KDStochasticTransform):
+class KDRandomApplyBase(KDStochasticTransform):
     def __init__(self, p, **kwargs):
         super().__init__(**kwargs)
         self.p = p

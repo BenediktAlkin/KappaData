@@ -1,9 +1,9 @@
 from torchvision.transforms.functional import hflip
 
-from .kd_random_apply import KDRandomApply
+from .base.kd_random_apply_base import KDRandomApplyBase
 
 
-class KDRandomHorizontalFlip(KDRandomApply):
+class KDRandomHorizontalFlip(KDRandomApplyBase):
     def __init__(self, p=0.5, **kwargs):
         super().__init__(p=p, **kwargs)
 
