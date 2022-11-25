@@ -9,7 +9,7 @@ class KDRandomApplyBase(KDStochasticTransform):
     def __call__(self, x, ctx=None):
         apply = self.rng.uniform() < self.p
         if apply:
-            return self.forward()
+            return self.forward(x, ctx)
         return x
 
     def forward(self, x, ctx):
