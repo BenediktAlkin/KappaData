@@ -1,19 +1,14 @@
 import torchvision.transforms.functional as F
 
-from .base.kd_stochastic_transform import KDStochasticTransform
+from .kd_random_apply import KDRandomApply
 
 
-class KDRandomGrayscale(KDStochasticTransform):
+class KDRandomGrayscale(KDRandomApply):
     def __init__(self, p=0.1, **kwargs):
-        super().__init__(**kwargs)
-        self.p = p
+        super().__init__(p=p, **kwargs)
 
-    def __call__(self, x, ctx=None):
-        apply = self.rng.uniform() < self.p
+    def forward(self, x, ctx):
         if ctx is not None:
-            ctx["random_grayscale"] = apply
-
+            ctx["random_grayscale"] = True
         num_output_channels = F.get_image_num_channels(x)
-        if apply:
-            return F.rgb_to_grayscale(x, num_output_channels=num_output_channels)
-        return x
+        return F.rgb_to_grayscale(x, num_output_channels=num_output_channels)

@@ -1,17 +1,13 @@
 from torchvision.transforms.functional import hflip
 
-from .base.kd_stochastic_transform import KDStochasticTransform
+from .kd_random_apply import KDRandomApply
 
 
-class KDRandomHorizontalFlip(KDStochasticTransform):
+class KDRandomHorizontalFlip(KDRandomApply):
     def __init__(self, p=0.5, **kwargs):
-        super().__init__(**kwargs)
-        self.p = p
+        super().__init__(p=p, **kwargs)
 
-    def __call__(self, x, ctx=None):
-        apply = self.rng.uniform() < self.p
+    def forward(self, x, ctx):
         if ctx is not None:
-            ctx["random_hflip"] = apply
-        if apply:
-            return hflip(x)
-        return x
+            ctx["random_hflip"] = True
+        return hflip(x)
