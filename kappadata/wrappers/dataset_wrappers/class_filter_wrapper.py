@@ -33,7 +33,7 @@ class ClassFilterWrapper(KDSubset):
 
         # use numpy for better performance
         # NOTE: np.isin requires list (not set)
-        all_indices = np.arange(len(dataset))
+        all_indices = np.arange(len(dataset), dtype=np.int32)
         classes = np.array([dataset.getitem_class(i) for i in all_indices])
         if self.valid_classes is not None:
             indices = all_indices[np.isin(classes, list(self.valid_classes))]

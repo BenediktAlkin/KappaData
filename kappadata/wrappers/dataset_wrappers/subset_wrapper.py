@@ -13,7 +13,7 @@ class SubsetWrapper(KDSubset):
             end_index = end_index or len(dataset)
             end_index = min(end_index, len(dataset))
             start_index = start_index or 0
-            indices = np.arange(start_index, end_index)
+            indices = np.arange(start_index, end_index, dtype=np.int32)
         else:
             assert start_index is None and end_index is None
             for i in indices:

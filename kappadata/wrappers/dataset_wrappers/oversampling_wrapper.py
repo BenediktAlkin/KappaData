@@ -11,7 +11,7 @@ class OversamplingWrapper(KDSubset):
         classes = np.array([dataset.getitem_class(i) for i in range(len(dataset))])
         class_counts = get_class_counts(classes, dataset.n_classes)
         max_class_count = np.max(class_counts)
-        indices = np.arange(len(dataset))
+        indices = np.arange(len(dataset), dtype=np.int32)
         if self.strategy == "multiply":
             # append miniority classes as long as they are not bigger than the majority class
             for i in range(len(class_counts)):
@@ -21,7 +21,7 @@ class OversamplingWrapper(KDSubset):
                 multiply_factor = int(np.floor(max_class_count / class_counts[i])) - 1
                 if multiply_factor > 0:
                     # get indices of samples with class to oversample
-                    all_indices = np.arange(len(dataset))
+                    all_indices = np.arange(len(dataset), dtype=np.int32)
                     sample_idxs = all_indices[classes == i]
                     indices = np.concatenate([indices, np.tile(sample_idxs, multiply_factor)])
         else:
