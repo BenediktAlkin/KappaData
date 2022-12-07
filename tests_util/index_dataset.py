@@ -5,11 +5,11 @@ class IndexDataset(KDDataset):
     def __init__(self, size):
         super().__init__()
         self.size = size
+        self.indices = list(range(size))
         self.disposed = False
 
-    @staticmethod
-    def getitem_x(idx, _=None):
-        return idx
+    def getitem_x(self, idx, _=None):
+        return self.indices[idx]
 
     def __len__(self):
         return self.size

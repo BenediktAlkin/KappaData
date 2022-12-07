@@ -19,6 +19,17 @@ class TestSubsetWrapper(unittest.TestCase):
         self.assertEqual(3, len(ds))
         self.assertEqual([3, 2, 5], [ds.getitem_x(i) for i in range(len(ds))])
 
+    def test_check_indices(self):
+        ds = IndexDataset(size=10)
+        with self.assertRaises(AssertionError):
+            SubsetWrapper(ds, indices=[10])
+        with self.assertRaises(AssertionError):
+            SubsetWrapper(ds, indices=[-11])
+        last = SubsetWrapper(ds, indices=[9])
+        first = SubsetWrapper(ds, indices=[-10])
+        self.assertEqual(9, last.getitem_x(0))
+        self.assertEqual(0, first.getitem_x(0))
+
     def test_start_index(self):
         ds = SubsetWrapper(IndexDataset(size=10), start_index=6)
         self.assertEqual(4, len(ds))

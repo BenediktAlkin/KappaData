@@ -16,4 +16,6 @@ class SubsetWrapper(KDSubset):
             indices = np.arange(start_index, end_index)
         else:
             assert start_index is None and end_index is None
+            for i in indices:
+                assert -len(dataset) <= i < len(dataset)
         super().__init__(dataset=dataset, indices=indices)
