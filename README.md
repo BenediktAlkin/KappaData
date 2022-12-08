@@ -7,6 +7,10 @@ with [pytorch](https://pytorch.org/)
 
 - modular datasets
 - caching datasets in-memory
+- additional transforms
+  - allow deterministic augmentations (e.g. for calculating the test loss on augmented samples) 
+  - [RandAugment](https://arxiv.org/abs/1909.13719)
+  - patchwise augmentations
 - various dataset filters and other dataset manipulation
     - filter by class
     - limit size to a %
