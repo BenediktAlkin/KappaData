@@ -61,8 +61,8 @@ class KDRandAugment(KDStochasticTransform):
         ]
         self.magnitude = magnitude / 10
         self.magnitude_std = magnitude_std
-        self.magnitude_min = magnitude_min
-        self.magnitude_max = magnitude_max
+        self.magnitude_min = magnitude_min / 10
+        self.magnitude_max = magnitude_max / 10
         if magnitude_std == 0.:
             self.sample_magnitude = self._sample_magnitude_const
         elif magnitude_std == float("inf"):
