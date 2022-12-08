@@ -25,17 +25,20 @@ class KDRandAugment(KDStochasticTransform):
 
     def __init__(
             self,
-            num_ops,
-            magnitude,
-            interpolation,
-            magnitude_std=0.,
-            magnitude_min=0.,
-            magnitude_max=10.,
+            num_ops: int,
+            magnitude: int,
+            interpolation: str,
+            magnitude_std: float = 0.,
+            magnitude_min: float = 0.,
+            magnitude_max: float = 10.,
             **kwargs,
     ):
         super().__init__(**kwargs)
         assert isinstance(num_ops, int) and 0 <= num_ops
         assert isinstance(magnitude, int) and 0 <= magnitude <= 10
+        assert isinstance(magnitude_std, float) and 0. <= magnitude_std
+        assert isinstance(magnitude_min, float) and 0. <= magnitude_min <= magnitude
+        assert isinstance(magnitude_max, float) and magnitude <= magnitude <= 10.
         self.num_ops = num_ops
         if isinstance(interpolation, str):
             interpolation = InterpolationMode(interpolation)
@@ -71,7 +74,7 @@ class KDRandAugment(KDStochasticTransform):
         return self.magnitude
 
     def _sample_magnitude_uniform(self):
-        return self.rng.uniform(0, self.magnitude)
+        return self.rng.uniform(self.magnitude_min, self.magnitude)
 
     def _sample_magnitude_normal(self):
         sampled = self.magnitude + self.rng.normal(0, self.magnitude_std / 10)
