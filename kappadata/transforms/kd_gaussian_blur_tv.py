@@ -1,16 +1,16 @@
 import torchvision.transforms.functional as F
 from torchvision.transforms import GaussianBlur
 
-from .base.kd_stochastic_transform import KDStochasticTransform
+from .base.kd_random_apply_base import KDRandomApplyBase
 
 
-class KDGaussianBlur(KDStochasticTransform):
-    def __init__(self, kernel_size, sigma, **kwargs):
-        super().__init__(**kwargs)
+class KDGaussianBlurTV(KDRandomApplyBase):
+    def __init__(self, kernel_size, sigma, p=1., **kwargs):
+        super().__init__(p=p, **kwargs)
         # GaussianBlur preprocesses the parameters -> just use original implementation to store parameters
         self.tv_gaussianblur = GaussianBlur(kernel_size=kernel_size, sigma=sigma)
 
-    def __call__(self, x, ctx=None):
+    def forward(self, x, ctx):
         sigma = self.get_params()
         if ctx is not None:
             ctx["gaussian_blur"] = dict(sigma=sigma)

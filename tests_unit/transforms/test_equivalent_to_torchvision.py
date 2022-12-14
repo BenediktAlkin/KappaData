@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch
+from PIL import ImageFilter
 
 import numpy as np
 import torch
@@ -11,9 +12,11 @@ from torchvision.transforms import (
     RandomHorizontalFlip,
     RandomResizedCrop,
 )
+from torchvision.transforms.functional import to_pil_image, to_tensor
 
 from kappadata.transforms.kd_color_jitter import KDColorJitter
-from kappadata.transforms.kd_gaussian_blur import KDGaussianBlur
+from kappadata.transforms.kd_gaussian_blur_tv import KDGaussianBlurTV
+from kappadata.transforms.kd_gaussian_blur_pil import KDGaussianBlurPIL
 from kappadata.transforms.kd_random_crop import KDRandomCrop
 from kappadata.transforms.kd_random_grayscale import KDRandomGrayscale
 from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
@@ -38,9 +41,10 @@ class TestEquivalentToTorchvision(unittest.TestCase):
 
         for _ in range(10):
             x = torch.randn(3, 32, 32, generator=data_rng)
+            x = to_pil_image(x)
 
-            expected = tv_transform(x)
-            actual = kd_transform(x)
+            expected = to_tensor(tv_transform(x))
+            actual = to_tensor(kd_transform(x))
             self.assertTrue(torch.all(expected == actual))
 
 
@@ -51,11 +55,25 @@ class TestEquivalentToTorchvision(unittest.TestCase):
             kwargs=dict(brightness=0.8, contrast=0.8, saturation=0.8, hue=0.2),
         )
 
-    def test_gaussian_blur(self):
+    def test_gaussian_blur_tv(self):
         self._run(
-            kd_class=KDGaussianBlur,
+            kd_class=KDGaussianBlurTV,
             tv_class=GaussianBlur,
-            kwargs=dict(kernel_size=3, sigma=[1., 2.]),
+            kwargs=dict(kernel_size=23, sigma=[0.1, 2.]),
+        )
+
+    def test_gaussian_blur_pil(self):
+        class GaussianBlurPIL:
+            def __init__(self, sigma):
+                self.sigma = sigma
+
+            def __call__(self, x):
+                return x.filter(ImageFilter.GaussianBlur(self.sigma))
+
+        self._run(
+            kd_class=KDGaussianBlurPIL,
+            tv_class=GaussianBlurPIL,
+            kwargs=dict(sigma=2.),
         )
 
     def test_random_crop(self):
