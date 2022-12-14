@@ -4,8 +4,8 @@ from .base.kd_random_apply_base import KDRandomApplyBase
 
 
 class KDRandomGrayscale(KDRandomApplyBase):
-    def __init__(self, p=0.1, **kwargs):
-        super().__init__(p=p, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def forward(self, x, ctx):
         if ctx is not None:

@@ -1,16 +1,16 @@
 import torchvision.transforms.functional as F
 from torchvision.transforms import ColorJitter
 
-from .base.kd_random_apply_base import KDRandomApplyBase
+from .base.kd_stochastic_transform import KDStochasticTransform
 
 
-class KDColorJitter(KDRandomApplyBase):
-    def __init__(self, brightness, contrast, saturation, hue, p=1., **kwargs):
-        super().__init__(p=p, **kwargs)
+class KDColorJitter(KDStochasticTransform):
+    def __init__(self, brightness, contrast, saturation, hue, **kwargs):
+        super().__init__(**kwargs)
         # ColorJitter preprocesses the parameters -> just use original implementation to store parameters
         self.tv_colorjitter = ColorJitter(brightness=brightness, contrast=contrast, saturation=saturation, hue=hue)
 
-    def forward(self, x, ctx):
+    def __call__(self, x, ctx=None):
         fn_idx, brightness_factor, contrast_factor, saturation_factor, hue_factor = self.get_params()
         if ctx is not None:
             ctx["color_jitter"] = dict(
