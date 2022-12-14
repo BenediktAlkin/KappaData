@@ -1,5 +1,6 @@
 ##
 
+- label smoothing for multiclass
 - seed for augmentations per epochs (generate a testset with augmentations)
 - add retrieving via ctx. to readme
 
