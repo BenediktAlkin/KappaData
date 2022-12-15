@@ -8,6 +8,6 @@ class KDRandomSolarize(KDRandomApplyBase):
         self.threshold = threshold
 
     def forward(self, x, ctx):
-        if ctx is not None:
-            ctx["random_solarize"] = True
+        # if ctx is not None:
+        #     ctx["random_solarize"] = True
         return F.solarize(x, self.threshold)
