@@ -10,6 +10,10 @@ class TestSubsetWrapper(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: SubsetWrapper(None, indices=[0, 1], end_index=0))
         self.assertRaises(AssertionError, lambda: SubsetWrapper(None, start_index=3.4))
         self.assertRaises(AssertionError, lambda: SubsetWrapper(None, end_index=3.4))
+        self.assertRaises(AssertionError, lambda: SubsetWrapper(IndexDataset(size=10), end_index=3, start_index=4))
+        self.assertRaises(AssertionError, lambda: SubsetWrapper(None, start_percent=5))
+        self.assertRaises(AssertionError, lambda: SubsetWrapper(None, end_percent=5))
+        self.assertRaises(AssertionError, lambda: SubsetWrapper(None, start_percent=0.25, end_percent=0.1))
         _ = SubsetWrapper(IndexDataset(size=5), indices=[0, 1])
         _ = SubsetWrapper(IndexDataset(size=5), start_index=3)
         _ = SubsetWrapper(IndexDataset(size=5), end_index=3)
@@ -44,3 +48,33 @@ class TestSubsetWrapper(unittest.TestCase):
         ds = SubsetWrapper(IndexDataset(size=10), start_index=3, end_index=6)
         self.assertEqual(3, len(ds))
         self.assertEqual([3, 4, 5], [ds.getitem_x(i) for i in range(len(ds))])
+
+    def test_start_percent(self):
+        ds = SubsetWrapper(IndexDataset(size=10), start_percent=0.8)
+        self.assertEqual(2, len(ds))
+        self.assertEqual([8, 9], [ds.getitem_x(i) for i in range(len(ds))])
+
+    def test_start_percent_round(self):
+        ds = SubsetWrapper(IndexDataset(size=10), start_percent=0.75)
+        self.assertEqual(3, len(ds))
+        self.assertEqual([7, 8, 9], [ds.getitem_x(i) for i in range(len(ds))])
+
+    def test_end_percent(self):
+        ds = SubsetWrapper(IndexDataset(size=10), end_percent=0.2)
+        self.assertEqual(2, len(ds))
+        self.assertEqual([0, 1], [ds.getitem_x(i) for i in range(len(ds))])
+
+    def test_end_percent_round(self):
+        ds = SubsetWrapper(IndexDataset(size=10), end_percent=0.25)
+        self.assertEqual(2, len(ds))
+        self.assertEqual([0, 1], [ds.getitem_x(i) for i in range(len(ds))])
+
+    def test_start_and_end_percent(self):
+        ds = SubsetWrapper(IndexDataset(size=10), start_percent=0.2, end_percent=0.7)
+        self.assertEqual(5, len(ds))
+        self.assertEqual([2, 3, 4, 5, 6], [ds.getitem_x(i) for i in range(len(ds))])
+
+    def test_start_and_end_percent_round(self):
+        ds = SubsetWrapper(IndexDataset(size=10), start_percent=0.25, end_percent=0.75)
+        self.assertEqual(5, len(ds))
+        self.assertEqual([2, 3, 4, 5, 6], [ds.getitem_x(i) for i in range(len(ds))])

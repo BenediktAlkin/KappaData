@@ -8,6 +8,6 @@ class KDRandomHorizontalFlip(KDRandomApplyBase):
         super().__init__(p=p, **kwargs)
 
     def forward(self, x, ctx):
-        if ctx is not None:
-            ctx["random_hflip"] = True
+        # if ctx is not None:
+        #     ctx["random_hflip"] = True
         return hflip(x)

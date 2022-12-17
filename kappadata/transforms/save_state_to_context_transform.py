@@ -1,6 +1,5 @@
 import torch
 from torchvision.transforms.functional import to_tensor
-
 from .base.kd_transform import KDTransform
 
 
@@ -10,7 +9,8 @@ class SaveStateToContextTransform(KDTransform):
 
     def __call__(self, x, ctx=None):
         if ctx is not None:
-            if not torch.is_tensor(x):
-                x = to_tensor(x)
-            ctx[self.state_name] = x.clone()
+            if torch.is_tensor(x):
+                ctx[self.state_name] = x.clone()
+            else:
+                ctx[self.state_name] = to_tensor(x)
         return x

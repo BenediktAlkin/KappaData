@@ -12,8 +12,8 @@ class KDGaussianBlurPIL(KDStochasticTransform):
 
     def __call__(self, x, ctx=None):
         sigma = self.get_params()
-        if ctx is not None:
-            ctx["gaussian_blur"] = dict(sigma=sigma)
+        # if ctx is not None:
+        #     ctx["gaussian_blur"] = dict(sigma=sigma)
         return x.filter(ImageFilter.GaussianBlur(radius=sigma))
 
     def get_params(self):
