@@ -17,15 +17,12 @@ class TestInfiniteRandomSampler(unittest.TestCase):
         return ds, n_epochs, n_samples, n_batches, samples_per_batch
 
     def test_single(self):
-        infinite_rng = torch.Generator().manual_seed(5)
-        finite_rng = torch.Generator().manual_seed(5)
+        rng = torch.Generator().manual_seed(5)
         batch_size = 2
-        ds, n_epochs, n_samples, n_batches, samples_per_batch = self.init(size=2, n_epochs=5, batch_size=batch_size)
-        sampler = InfiniteRandomSampler(data_source=ds, generator=infinite_rng)
+        ds, n_epochs, n_samples, n_batches, samples_per_batch = self.init(size=10, n_epochs=5, batch_size=batch_size)
+        sampler = InfiniteRandomSampler(dataset_size=len(ds), batch_size=1, generator=rng)
         self.assertEquals(ds.size, len(sampler))
-
-        infinite_loader = DataLoader(ds, batch_size=batch_size, sampler=sampler, generator=infinite_rng)
-        finite_loader = DataLoader(ds, batch_size=batch_size, drop_last=True, shuffle=True, generator=finite_rng)
+        infinite_loader = DataLoader(ds, batch_size=batch_size, sampler=sampler, generator=rng)
 
         infinite_samples = []
         infinite_iter = iter(infinite_loader)
