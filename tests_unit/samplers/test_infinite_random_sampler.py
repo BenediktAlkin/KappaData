@@ -4,6 +4,7 @@ from tests_util.index_dataset import IndexDataset
 from torch.utils.data import DataLoader, DistributedSampler, RandomSampler
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.samplers.infinite_random_sampler import InfiniteRandomSampler
+from kappadata.samplers.infinite_distributed_sampler import InfiniteDistributedSampler
 
 
 class TestInfiniteRandomSampler(unittest.TestCase):
@@ -13,28 +14,110 @@ class TestInfiniteRandomSampler(unittest.TestCase):
         batches_per_epoch = int(ds.size / batch_size)
         n_batches = n_epochs * batches_per_epoch
         n_samples = n_batches * batch_size
-        samples_per_batch = batch_size * batches_per_epoch
-        return ds, n_epochs, n_samples, n_batches, samples_per_batch
+        samples_per_epoch = batch_size * batches_per_epoch
+        return ds, n_epochs, n_samples, n_batches, samples_per_epoch
 
     def test_single(self):
-        rng = torch.Generator().manual_seed(5)
-        batch_size = 2
-        ds, n_epochs, n_samples, n_batches, samples_per_batch = self.init(size=10, n_epochs=5, batch_size=batch_size)
-        sampler = InfiniteRandomSampler(dataset_size=len(ds), batch_size=1, generator=rng)
-        self.assertEquals(ds.size, len(sampler))
-        infinite_loader = DataLoader(ds, batch_size=batch_size, sampler=sampler, generator=rng)
+        for batch_size in [1, 2, 4, 8, 16, 32, 64, 128]:
+            for size in [1_000, 10_000]:
+                infinite_sampler_rng = torch.Generator().manual_seed(5)
+                infinite_loader_rng = torch.Generator().manual_seed(6)
+                finite_sampler_rng = torch.Generator().manual_seed(5)
+                finite_loader_rng = torch.Generator().manual_seed(6)
+                ds, n_epochs, n_samples, n_batches, samples_per_epoch = self.init(
+                    size=size,
+                    n_epochs=2,
+                    batch_size=batch_size,
+                )
+                sampler = InfiniteRandomSampler(
+                    data_source=ds,
+                    batch_size=batch_size,
+                    generator=infinite_sampler_rng,
+                    drop_last=True,
+                )
+                self.assertEquals(ds.size, len(sampler))
+                infinite_loader = DataLoader(
+                    ds,
+                    batch_size=batch_size,
+                    sampler=sampler,
+                    generator=infinite_loader_rng,
+                    drop_last=True,
+                )
+                finite_sampler = RandomSampler(data_source=ds, generator=finite_sampler_rng)
+                finite_loader = DataLoader(
+                    ds,
+                    batch_size=batch_size,
+                    sampler=finite_sampler,
+                    generator=finite_loader_rng,
+                    drop_last=True,
+                )
 
-        infinite_samples = []
-        infinite_iter = iter(infinite_loader)
-        for i in range(n_batches):
-            infinite_samples.append(next(infinite_iter).clone())
-        infinite_samples = torch.concat(infinite_samples)
-        finite_samples = []
-        for i in range(n_epochs):
-            for x in finite_loader:
-                finite_samples.append(x.clone())
-        finite_samples = torch.concat(finite_samples)
-        self.assertEquals(finite_samples.tolist(), infinite_samples.tolist())
+                infinite_samples = []
+                infinite_iter = iter(infinite_loader)
+                for i in range(n_batches):
+                    infinite_samples.append(next(infinite_iter).clone())
+                infinite_samples = torch.concat(infinite_samples)
+                finite_samples = []
+                for i in range(n_epochs):
+                    for x in finite_loader:
+                        finite_samples.append(x.clone())
+                finite_samples = torch.concat(finite_samples)
+                self.assertEquals(finite_samples.tolist(), infinite_samples.tolist())
 
     def test_distributed(self):
-        raise NotImplementedError
+        for batch_size in [2, 4, 8, 16, 32, 64, 128]:
+            for size in [1_000, 10_000]:
+                for world_size in [2, 4, 8]:
+                    if batch_size < world_size:
+                        continue
+                    ds, n_epochs, n_samples, n_batches, samples_per_epoch = self.init(
+                        size=size,
+                        n_epochs=2,
+                        batch_size=batch_size,
+                    )
+                    batch_size_per_device = batch_size // world_size
+                    infinite_samples = []
+                    finite_samples = []
+                    for rank in range(world_size):
+                        infinite_loader_rng = torch.Generator().manual_seed(6)
+                        sampler = InfiniteDistributedSampler(
+                            dataset=ds,
+                            batch_size=batch_size_per_device,
+                            drop_last_batch=True,
+                            num_replicas=world_size,
+                            rank=rank,
+                            seed=5,
+                        )
+                        infinite_loader = DataLoader(
+                            ds,
+                            batch_size=batch_size_per_device,
+                            sampler=sampler,
+                            generator=infinite_loader_rng,
+                            drop_last=True,
+                        )
+
+                        finite_loader_rng = torch.Generator().manual_seed(6)
+                        finite_sampler = DistributedSampler(
+                            dataset=ds,
+                            shuffle=True,
+                            num_replicas=world_size,
+                            rank=rank,
+                            seed=5,
+                        )
+                        finite_loader = DataLoader(
+                            ds,
+                            batch_size=batch_size_per_device,
+                            sampler=finite_sampler,
+                            generator=finite_loader_rng,
+                            drop_last=True,
+                        )
+
+                        infinite_iter = iter(infinite_loader)
+                        for i in range(n_batches):
+                            infinite_samples.append(next(infinite_iter).clone())
+                        for i in range(n_epochs):
+                            for x in finite_loader:
+                                finite_samples.append(x.clone())
+                    infinite_samples = torch.concat(infinite_samples)
+                    finite_samples = torch.concat(finite_samples)
+                    self.assertEquals(finite_samples.tolist(), infinite_samples.tolist())

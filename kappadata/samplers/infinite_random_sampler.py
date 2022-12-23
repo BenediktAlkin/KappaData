@@ -1,18 +1,18 @@
-import torch
+from torch.utils.data.sampler import RandomSampler
 
-class InfiniteRandomSampler:
-    def __init__(self, dataset_size, batch_size, drop_last=False, generator=None):
-        super().__init__()
-        self.dataset_size = dataset_size
-        if drop_last:
-            self.sampler_size = dataset_size // batch_size * batch_size
-        else:
-            self.sampler_size = dataset_size
+class InfiniteRandomSampler(RandomSampler):
+    def __init__(self, data_source, batch_size, drop_last, generator=None):
+        super().__init__(data_source=data_source, generator=generator)
+        self.batch_size = batch_size
+        self.drop_last = drop_last
         self.generator = generator
 
     def __iter__(self):
+        if self.drop_last:
+            samples_per_batch = len(self.data_source) // self.batch_size * self.batch_size
+        else:
+            samples_per_batch = len(self.data_source)
         while True:
-            yield from torch.randperm(self.dataset_size, generator=self.generator)[:self.sampler_size].tolist()
-
-    def __len__(self) -> int:
-        return self.sampler_size
+            idxs = list(super().__iter__())
+            assert len(idxs) == len(self.data_source)
+            yield from idxs[:samples_per_batch]
