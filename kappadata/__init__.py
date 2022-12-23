@@ -6,6 +6,7 @@ import kappadata.transforms
 import kappadata.wrappers
 import kappadata.wrappers.dataset_wrappers
 import kappadata.wrappers.sample_wrappers
+from .batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
 from .caching.redis_dataset import RedisDataset
 from .caching.shared_dict_dataset import SharedDictDataset
 from .collators.base.kd_collator import KDCollator
