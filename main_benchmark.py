@@ -5,6 +5,7 @@ import sys
 from functools import partial
 from pathlib import Path
 
+# noinspection PyPackageRequirements
 import kappaprofiler as kp
 from torch.utils.data import DataLoader, Dataset
 from torchvision.datasets import ImageFolder
