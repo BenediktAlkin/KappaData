@@ -64,8 +64,8 @@ def main():
             print(f"epoch {i+1}")
             for j in range(batches_per_epoch):
                 with kp.Stopwatch() as sw2:
-                    next(iterator)
-                print(f"batch {j+1} {sw2.elapsed_seconds}")
+                    x = next(iterator)
+                print(f"batch {j+1} {sw2.elapsed_seconds} {x.tolist()}")
     print(sw1.elapsed_seconds)
 
 
