@@ -18,7 +18,6 @@ from .datasets.kd_subset import KDSubset
 from .datasets.kd_wrapper import KDWrapper
 from .transforms.base.kd_compose_transform import KDComposeTransform
 from .transforms.base.kd_transform import KDTransform
-from .samplers.infinite_random_sampler import InfiniteRandomSampler
 from .wrappers.dataset_wrappers.class_filter_wrapper import ClassFilterWrapper
 from .wrappers.dataset_wrappers.oversampling_wrapper import OversamplingWrapper
 from .wrappers.dataset_wrappers.percent_filter_wrapper import PercentFilterWrapper
