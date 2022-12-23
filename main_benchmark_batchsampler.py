@@ -15,10 +15,13 @@ class SleepDataset(Dataset):
         sleep(0.1)
         return idx
 
+    def __len__(self):
+        return self.size
+
 def main():
     dataset = SleepDataset(size=1000)
     batch_size = 256
-    epochs = 100
+    epochs = 10
     num_workers = 10
 
     # torch
