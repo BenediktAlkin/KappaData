@@ -30,6 +30,7 @@ def unzip_imagefolder_classwise(src, dst, num_workers=0, log_fn=print):
     assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
     dst_path = Path(dst).expanduser()
     dst_path.mkdir(exist_ok=True, parents=True)
+    log_fn(f"unzipping from {src_path} to {dst_path}")
 
     # compose jobs
     jobargs = []
@@ -49,4 +50,4 @@ def unzip_imagefolder_classwise(src, dst, num_workers=0, log_fn=print):
         pool = joblib.Parallel(n_jobs=num_workers)
         pool(jobs)
     end_time = time()
-    log_fn(f"unzipping {len(jobargs)} from {src_path} to {dst_path} took {end_time - start_time:.2f}s")
+    log_fn(f"unzipping {len(jobargs)} folders took {end_time - start_time:.2f}s")
