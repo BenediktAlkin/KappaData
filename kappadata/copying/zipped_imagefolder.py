@@ -17,3 +17,16 @@ def create_zipped_imagefolder_classwise(src, dst):
             format="zip",
             root_dir=src_uri,
         )
+
+def unzip_imagefolder_classwise(src, dst):
+    src_path = Path(src).expanduser()
+    assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
+    dst_path = Path(dst).expanduser()
+    dst_path.mkdir(exist_ok=True, parents=True)
+
+    for item in os.listdir(src_path):
+        assert item.endswith(".zip")
+        dst_uri = (dst_path / item).with_suffix("")
+        with zipfile.ZipFile(src_path / item) as f:
+            f.extractall(dst_uri)
+        break

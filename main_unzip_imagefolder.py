@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from kappadata.copying.zipped_imagefolder import create_zipped_imagefolder_classwise
+from kappadata.copying.zipped_imagefolder import unzip_imagefolder_classwise
 
 def parse_args():
     parser = ArgumentParser()
@@ -8,7 +8,7 @@ def parse_args():
     return vars(parser.parse_args())
 
 def main(src, dst):
-    create_zipped_imagefolder_classwise(src=src, dst=dst)
+    unzip_imagefolder_classwise(src=src, dst=dst)
 
 
 if __name__ == "__main__":
