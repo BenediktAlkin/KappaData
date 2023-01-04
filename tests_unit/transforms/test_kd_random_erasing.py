@@ -25,11 +25,11 @@ class TestKDRandomErasing(unittest.TestCase):
     def test_equivalent_to_timm(self):
         images = torch.randn(16, 3, 32, 32, generator=torch.Generator().manual_seed(3))
         timm_fn = RandomErasing(probability=0.25, mode="pixel", device="cpu")
-        kd_fn = KDRandomErasing(p=0.25, mode="pixelwise")
+        kd_fn = KDRandomErasing(p=0.25, mode="pixelwise", seed=5)
 
-        timm_images = self._run(lambda: self._forward(images, timm_fn))
-        kd_images = self._forward(images, kd_fn)
+        timm_images = self._run(lambda: self._forward(images.clone(), timm_fn))
+        kd_images = self._forward(images.clone(), kd_fn)
         for i, (timm_image, kd_image) in enumerate(zip(timm_images, kd_images)):
-            self.assertTrue(torch.all(timm_image == kd_image))
+            self.assertTrue(torch.all(timm_image == kd_image), f"images are unequal idx={i}")
 
 

@@ -9,18 +9,21 @@ from .base.kd_stochastic_transform import KDStochasticTransform
 
 class KDRandAugment(KDStochasticTransform):
     """
-    reimplementation based on the original paper https://arxiv.org/abs/1909.13719
-    note that other implementations are vastly different:
+    reimplementation based on timm
+    note that different implementations are vastly different from each other:
     - timm:
       - each transform has a chance of 50% to be applied
         - number of applied transforms is stochastic
         - num_ops is essentially halved
       - magnitude std
-      - more transforms than the original (solarize_add)
+      - more transforms than the original (solarize_add, invert)
       - no identity transform (is essentially there because of the 50% apply rate)
     - torchvision:
       - magnitude is in [0, num_magnitude_bins)
         - if the range of a value would be in [0.0, 1.0] magnitude 9 would by default actually result in 0.3 (31 bins)
+    - original: https://arxiv.org/abs/1909.13719
+      - exactly num_ops operations are sampled
+      - ops include identity
     """
 
     def __init__(
@@ -44,13 +47,15 @@ class KDRandAugment(KDStochasticTransform):
             interpolation = InterpolationMode(interpolation)
         self.interpolation = interpolation
         self.ops = [
-            self.identity,
+            # self.identity, # timm applies each transform with 50% probability
             self.auto_contrast,
             self.equalize,
+            self.invert, # not in original publication (but timm uses it)
             self.rotate,
-            self.solarize,
-            self.color,
             self.posterize,
+            self.solarize,
+            self.solarize_add, # not in original publication (but timm uses it)
+            self.color,
             self.contrast,
             self.brightness,
             self.sharpness,
@@ -78,19 +83,24 @@ class KDRandAugment(KDStochasticTransform):
 
     def _sample_magnitude_normal(self):
         sampled = self.magnitude + self.rng.normal(0, self.magnitude_std / 10)
-        # convert to python float to be consistent with other sampling value dtypes
+        # convert to python float to be consistent with other sampling value dtypes (np.clip converts to np.float64)
         return float(np.clip(sampled, self.magnitude_min, self.magnitude_max))
 
     def __call__(self, x, ctx=None):
         assert not torch.is_tensor(x), "some KDRandAugment transforms require input to be pillow image"
         transforms = self.rng.choice(self.ops, size=self.num_ops)
         for transform in transforms:
-            x = transform(x, self.sample_magnitude())
+            if self.rng.random() < 0.5:
+                x = transform(x, self.sample_magnitude())
         return x
 
     @staticmethod
     def identity(x, _):
         return x
+
+    @staticmethod
+    def invert(x, _):
+        return F.invert(x)
 
     @staticmethod
     def auto_contrast(x, _):
@@ -115,6 +125,26 @@ class KDRandAugment(KDStochasticTransform):
         threshold = 256 - int(256 * magnitude)
         return F.solarize(x, threshold)
 
+    @staticmethod
+    def solarize_add(x, magnitude):
+        # higher -> stronger augmentation
+        # add in [0, 110]
+        # adapted from timm.data.auto_augment.solarize_add
+        add = int(magnitude * 110),
+        thresh = 128
+        lut = []
+        for i in range(256):
+            if i < thresh:
+                lut.append(min(255, i + add))
+            else:
+                lut.append(i)
+        if x.mode == "RGB":
+            # repeat for all 3 channels
+            lut = lut * 3
+        else:
+            assert x.mode == "L"
+        return img.point(lut)
+
     def _adjust_factor(self, magnitude):
         offset = 0.9 * magnitude
         if self.rng.random() < 0.5:
@@ -133,11 +163,11 @@ class KDRandAugment(KDStochasticTransform):
     def posterize(x, magnitude):
         # bits == 0 -> black image
         # bits == 8 -> identity
-        # bits in [4, 8]
         # torchvision uses range [4, 8]
         # timm has multiple versions but the RandAug uses [0, 4]
         # timm notes that AutoAugment uses [4, 8] while TF EfficientNet uses [0, 4]
-        bits = 4 + int(4 * magnitude)
+        bits = 4 - int(4 * magnitude)
+        assert bits > 0
         return F.posterize(x, bits)
 
     def contrast(self, x, magnitude):
