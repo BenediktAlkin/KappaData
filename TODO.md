@@ -1,5 +1,11 @@
 ##
 
+- assert different seeds in compose transform
+- new multiviewwrapper reset_seed
+
+
+
+
 - context of random transform cant be stacked by torch collator as they only write values when they are applied
 - label smoothing for multiclass
 - seed for augmentations per epochs (generate a testset with augmentations)
