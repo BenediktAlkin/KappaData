@@ -48,15 +48,25 @@ class TestKDRandAug(unittest.TestCase):
     def _forward(fn):
         images = [
             to_pil_image(tensor)
-            for tensor in torch.randn(10, 3, 224, 224, generator=torch.Generator().manual_seed(52))
+            for tensor in torch.randn(10000, 3, 224, 224, generator=torch.Generator().manual_seed(52))
         ]
         return [to_tensor(fn(img)) for img in images]
 
     def test_equivalent_to_timm(self):
-        kd_fn = KDRandAugment(num_ops=2, magnitude=9, magnitude_std=0.5, interpolation="bicubic", seed=5)
+        kd_fn = KDRandAugment(
+            num_ops=2,
+            magnitude=9,
+            magnitude_std=0.5,
+            interpolation="bicubic",
+            seed=5,
+            fill_color=tuple([min(255, round(255 * x)) for x in IMAGENET_DEFAULT_MEAN]),
+        )
         timm_fn = self.create_mae_randaug(magnitude=9, magnitude_std=0.5)
 
         timm_images = self._run(lambda: self._forward(timm_fn))
         kd_images = self._forward(kd_fn)
         for i, (timm_image, kd_image) in enumerate(zip(timm_images, kd_images)):
             self.assertTrue(torch.all(timm_image == kd_image), f"images are unequal idx={i}")
+        # TODO posterize can produce black images
+        self.assesrtEqual(0, (torch.stack(timm_images).sum(dim=(1, 2, 3)) == 0).sum())
+        self.assesrtEqual(0, (torch.stack(kd_images).sum(dim=(1, 2, 3)) == 0).sum())

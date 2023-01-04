@@ -4,6 +4,8 @@ import torchvision.transforms.functional as F
 from torchvision.transforms import InterpolationMode
 import numpy as np
 
+from PIL import Image
+
 from .base.kd_stochastic_transform import KDStochasticTransform
 
 
@@ -30,6 +32,7 @@ class KDRandAugment(KDStochasticTransform):
             self,
             num_ops: int,
             magnitude: int,
+            fill_color,
             interpolation: str,
             magnitude_std: float = 0.,
             magnitude_min: float = 0.,
@@ -74,6 +77,7 @@ class KDRandAugment(KDStochasticTransform):
             self.sample_magnitude = self._sample_magnitude_uniform
         else:
             self.sample_magnitude = self._sample_magnitude_normal
+        self.fill_color = fill_color
 
     def _sample_magnitude_const(self):
         return self.magnitude
@@ -130,7 +134,7 @@ class KDRandAugment(KDStochasticTransform):
         # higher -> stronger augmentation
         # add in [0, 110]
         # adapted from timm.data.auto_augment.solarize_add
-        add = int(magnitude * 110),
+        add = int(magnitude * 110)
         thresh = 128
         lut = []
         for i in range(256):
@@ -143,7 +147,7 @@ class KDRandAugment(KDStochasticTransform):
             lut = lut * 3
         else:
             assert x.mode == "L"
-        return img.point(lut)
+        return x.point(lut)
 
     def _adjust_factor(self, magnitude):
         offset = 0.9 * magnitude
@@ -167,7 +171,8 @@ class KDRandAugment(KDStochasticTransform):
         # timm has multiple versions but the RandAug uses [0, 4]
         # timm notes that AutoAugment uses [4, 8] while TF EfficientNet uses [0, 4]
         bits = 4 - int(4 * magnitude)
-        assert bits > 0
+        # TODO
+        #assert bits > 0
         return F.posterize(x, bits)
 
     def contrast(self, x, magnitude):
@@ -205,7 +210,6 @@ class KDRandAugment(KDStochasticTransform):
 
     def shear_x(self, x, magnitude):
         shear_degrees = self._shear_degrees(magnitude)
-        # from torchvision
         return F.affine(
             x,
             angle=0.,
@@ -214,11 +218,11 @@ class KDRandAugment(KDStochasticTransform):
             shear=[shear_degrees, 0.],
             interpolation=self.interpolation,
             center=[0, 0],
+            fill=self.fill_color,
         )
 
     def shear_y(self, x, magnitude):
         shear_degrees = self._shear_degrees(magnitude)
-        # from torchvision
         return F.affine(
             x,
             angle=0.,
@@ -227,35 +231,56 @@ class KDRandAugment(KDStochasticTransform):
             shear=[0., shear_degrees],
             interpolation=self.interpolation,
             center=[0, 0],
+            fill=self.fill_color,
         )
 
     def _translation(self, magnitude):
         # translation in [-0.45, 0.45]
         translation = 0.45 * magnitude
         if self.rng.random() < 0.5:
-            return -translation
-        return translation
+            return translation
+        return -translation
 
     def translate_horizontal(self, x, magnitude):
         # PIL image sizes are (width, height)
-        translation = int(self._translation(magnitude) * x.size[0])
-        return F.affine(
-            x,
-            angle=0.,
-            translate=[translation, 0],
-            scale=1.,
-            interpolation=self.interpolation,
-            shear=[0., 0.],
+        # not sure if this should be rounded to int...timm doesn't do it
+        translation = self._translation(magnitude) * x.size[0]
+        # not sure about the equivalent in torchvision
+        # return F.affine(
+        #     x,
+        #     angle=0.,
+        #     translate=[translation, 0],
+        #     scale=1.,
+        #     interpolation=self.interpolation,
+        #     shear=[0., 0.],
+        #     fill=self.fill_color,
+        # )
+        return x.transform(
+            x.size,
+            Image.AFFINE,
+            (1, 0, translation, 0, 1, 0),
+            fillcolor=self.fill_color,
+            resample=F.pil_modes_mapping[self.interpolation],
         )
 
     def translate_vertical(self, x, magnitude):
         # PIL image sizes are (width, height)
-        translation = int(self._translation(magnitude) * x.size[1])
-        return F.affine(
-            x,
-            angle=0.,
-            translate=[0, translation],
-            scale=1.,
-            interpolation=self.interpolation,
-            shear=[0., 0.],
+        # not sure if this should be rounded to int...timm doesn't do it
+        translation = self._translation(magnitude) * x.size[1]
+        # not sure about the equivalent in torchvision
+        # return F.affine(
+        #     x,
+        #     angle=0.,
+        #     translate=[0, translation],
+        #     scale=1.,
+        #     interpolation=self.interpolation,
+        #     shear=[0., 0.],
+        #     fill=self.fill_color,
+        # )
+        return x.transform(
+            x.size,
+            Image.AFFINE,
+            (1, 0, 0, 0, 1, translation),
+            fillcolor=self.fill_color,
+            resample=F.pil_modes_mapping[self.interpolation],
         )
