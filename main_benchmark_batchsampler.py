@@ -1,9 +1,10 @@
-from torch.utils.data import DataLoader, RandomSampler, Dataset
-from kappadata.batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
 from time import sleep
 
 # noinspection PyPackageRequirements
 import kappaprofiler as kp
+from torch.utils.data import DataLoader, RandomSampler, Dataset
+
+from kappadata.batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
 
 
 class SleepDataset(Dataset):
@@ -17,6 +18,7 @@ class SleepDataset(Dataset):
 
     def __len__(self):
         return self.size
+
 
 def main():
     dataset = SleepDataset(size=1000)
@@ -35,7 +37,7 @@ def main():
     )
     with kp.Stopwatch() as sw1:
         for i in range(epochs):
-            print(f"epoch {i+1}")
+            print(f"epoch {i + 1}")
             iterator = iter(loader)
             batch = 0
             while True:
@@ -61,14 +63,12 @@ def main():
         iterator = iter(loader)
         batches_per_epoch = len(dataset) // batch_size
         for i in range(epochs):
-            print(f"epoch {i+1}")
+            print(f"epoch {i + 1}")
             for j in range(batches_per_epoch):
                 with kp.Stopwatch() as sw2:
                     next(iterator)
-                print(f"batch {j+1} {sw2.elapsed_seconds}")
+                print(f"batch {j + 1} {sw2.elapsed_seconds}")
     print(sw1.elapsed_seconds)
-
-
 
 
 if __name__ == "__main__":

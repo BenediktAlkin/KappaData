@@ -1,5 +1,5 @@
 from torch.utils.data.sampler import BatchSampler
-from torch.utils.data import DataLoader
+
 
 class InfiniteBatchSampler(BatchSampler):
     def __iter__(self):

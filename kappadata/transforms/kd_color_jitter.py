@@ -31,7 +31,6 @@ class KDColorJitter(KDStochasticTransform):
                 x = F.adjust_hue(x, hue_factor)
         return x
 
-
     def get_params(self):
         brightness = self.tv_colorjitter.brightness
         contrast = self.tv_colorjitter.contrast

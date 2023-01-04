@@ -24,12 +24,12 @@ from .transforms.kd_gaussian_blur_pil import KDGaussianBlurPIL
 from .transforms.kd_gaussian_blur_tv import KDGaussianBlurTV
 from .transforms.kd_rand_augment import KDRandAugment
 from .transforms.kd_random_color_jitter import KDRandomColorJitter
+from .transforms.kd_random_gaussian_blur_pil import KDRandomGaussianBlurPIL
+from .transforms.kd_random_gaussian_blur_tv import KDRandomGaussianBlurTV
 from .transforms.kd_random_grayscale import KDRandomGrayscale
 from .transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from .transforms.kd_random_resized_crop import KDRandomResizedCrop
 from .transforms.kd_random_solarize import KDRandomSolarize
-from .transforms.kd_random_gaussian_blur_pil import KDRandomGaussianBlurPIL
-from .transforms.kd_random_gaussian_blur_tv import KDRandomGaussianBlurTV
 from .wrappers.dataset_wrappers.class_filter_wrapper import ClassFilterWrapper
 from .wrappers.dataset_wrappers.oversampling_wrapper import OversamplingWrapper
 from .wrappers.dataset_wrappers.percent_filter_wrapper import PercentFilterWrapper

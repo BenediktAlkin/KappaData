@@ -16,6 +16,5 @@ class KDGaussianBlurTV(KDStochasticTransform):
         #     ctx["gaussian_blur"] = dict(sigma=sigma)
         return F.gaussian_blur(x, self.tv_gaussianblur.kernel_size, [sigma, sigma])
 
-
     def get_params(self):
         return self.rng.uniform(self.tv_gaussianblur.sigma[0], self.tv_gaussianblur.sigma[1])

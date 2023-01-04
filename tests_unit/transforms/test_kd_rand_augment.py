@@ -1,13 +1,14 @@
-import numpy as np
 import unittest
 from unittest.mock import patch
+
+import numpy as np
 import torch
-from torchvision.transforms.functional import to_pil_image, to_tensor
 # noinspection PyPackageRequirements
 from timm.data.auto_augment import rand_augment_transform
 # noinspection PyPackageRequirements
 from timm.data.constants import IMAGENET_DEFAULT_MEAN
 from torchvision.transforms.functional import to_pil_image
+from torchvision.transforms.functional import to_tensor
 
 from kappadata.transforms.kd_rand_augment import KDRandAugment
 
@@ -21,7 +22,6 @@ class TestKDRandAug(unittest.TestCase):
                 with patch("random.uniform", lambda low, high: patch_rng.uniform(low, high)):
                     with patch("random.gauss", lambda mu, sigma: patch_rng.normal(mu, sigma)):
                         return run_fn()
-
 
     def test_doesnt_crash(self):
         kd_ra = KDRandAugment(num_ops=2, magnitude=9, interpolation="nearest")

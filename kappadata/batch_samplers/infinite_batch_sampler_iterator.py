@@ -1,5 +1,6 @@
 from .infinite_batch_sampler import InfiniteBatchSampler
 
+
 class InfiniteBatchSamplerIterator:
     def __init__(self, dataloader):
         self.dataloader = dataloader
@@ -9,7 +10,7 @@ class InfiniteBatchSamplerIterator:
         # adapted from torch.utils.data.sampler.BatchSampler.__len__
         sampler = self.dataloader.batch_sampler
         if sampler.drop_last:
-            batches_per_epoch =  len(sampler.sampler) // sampler.batch_size
+            batches_per_epoch = len(sampler.sampler) // sampler.batch_size
         else:
             batches_per_epoch = (len(sampler.sampler) + sampler.batch_size - 1) // sampler.batch_size
         for batch_idx, batch in enumerate(self.dataloader):

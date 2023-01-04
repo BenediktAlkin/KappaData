@@ -1,4 +1,3 @@
-from .base.kd_stochastic_transform import KDStochasticTransform
 from torchvision.transforms.functional import get_image_size, pad, crop
 
 from kappadata.utils.param_checking import to_2tuple

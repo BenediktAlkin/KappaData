@@ -1,5 +1,3 @@
-from torchvision.transforms.functional import rotate
-
 from .base.kd_stochastic_transform import KDStochasticTransform
 
 

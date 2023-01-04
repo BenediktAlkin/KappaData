@@ -2,8 +2,9 @@ import numpy as np
 import torch
 
 from kappadata.functional.onehot import to_onehot_matrix
-from .kd_collator import KDCollator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
+from .kd_collator import KDCollator
+
 
 class MixCollatorBase(KDCollator):
     def __init__(self, p=1., p_mode="batch", n_classes=None, seed=None, **kwargs):

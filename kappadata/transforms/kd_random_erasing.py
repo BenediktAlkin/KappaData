@@ -1,8 +1,10 @@
-import numpy as np
-import sys
 import math
-from .base.kd_random_apply_base import KDRandomApplyBase
+
+import numpy as np
 import torch
+
+from .base.kd_random_apply_base import KDRandomApplyBase
+
 
 class KDRandomErasing(KDRandomApplyBase):
     """
@@ -12,10 +14,11 @@ class KDRandomErasing(KDRandomApplyBase):
     removed features:
     - support for batchwise apply (intended to be used during dataloading, not during model forward pass)
     """
+
     def __init__(
             self,
             min_area=0.02,
-            max_area=1/3,
+            max_area=1 / 3,
             min_aspect=0.3,
             max_aspect=None,
             mode="zeros",

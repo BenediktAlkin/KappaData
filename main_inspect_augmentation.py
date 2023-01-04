@@ -1,12 +1,16 @@
-from torchvision.datasets import ImageFolder
 from argparse import ArgumentParser
 from pathlib import Path
+
+from torchvision.datasets import ImageFolder
+
 import kappadata as kd
+
 
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--folder", type=str, required=True)
     return vars(parser.parse_args())
+
 
 def main(folder):
     folder = Path(folder).expanduser()
