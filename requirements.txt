@@ -4,3 +4,4 @@ redis
 Pillow
 numpy
 einops
+joblib
