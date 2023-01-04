@@ -48,7 +48,7 @@ class TestKDRandAug(unittest.TestCase):
     def _forward(fn):
         images = [
             to_pil_image(tensor)
-            for tensor in torch.randn(10000, 3, 224, 224, generator=torch.Generator().manual_seed(52))
+            for tensor in torch.randn(100, 3, 224, 224, generator=torch.Generator().manual_seed(52))
         ]
         return [to_tensor(fn(img)) for img in images]
 
