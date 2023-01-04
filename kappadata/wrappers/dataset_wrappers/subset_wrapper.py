@@ -34,4 +34,3 @@ class SubsetWrapper(KDSubset):
             for i in indices:
                 assert -len(dataset) <= i < len(dataset)
         super().__init__(dataset=dataset, indices=indices)
-

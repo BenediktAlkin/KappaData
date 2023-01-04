@@ -1,10 +1,10 @@
 import math
+
+import numpy as np
 import torch
 import torchvision.transforms.functional as F
-from torchvision.transforms import InterpolationMode
-import numpy as np
-
 from PIL import Image
+from torchvision.transforms import InterpolationMode
 
 from .base.kd_stochastic_transform import KDStochasticTransform
 
@@ -53,11 +53,11 @@ class KDRandAugment(KDStochasticTransform):
             # self.identity, # timm applies each transform with 50% probability
             self.auto_contrast,
             self.equalize,
-            self.invert, # not in original publication (but timm uses it)
+            self.invert,  # not in original publication (but timm uses it)
             self.rotate,
             self.posterize,
             self.solarize,
-            self.solarize_add, # not in original publication (but timm uses it)
+            self.solarize_add,  # not in original publication (but timm uses it)
             self.color,
             self.contrast,
             self.brightness,
@@ -172,7 +172,7 @@ class KDRandAugment(KDStochasticTransform):
         # timm notes that AutoAugment uses [4, 8] while TF EfficientNet uses [0, 4]
         bits = 4 - int(4 * magnitude)
         # TODO
-        #assert bits > 0
+        # assert bits > 0
         return F.posterize(x, bits)
 
     def contrast(self, x, magnitude):

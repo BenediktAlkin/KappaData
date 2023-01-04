@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import patch
-from PIL import ImageFilter
 
 import numpy as np
 import torch
+from PIL import ImageFilter
 from torchvision.transforms import (
     ColorJitter,
     GaussianBlur,
@@ -16,8 +16,8 @@ from torchvision.transforms import (
 from torchvision.transforms.functional import to_pil_image, to_tensor
 
 from kappadata.transforms.kd_color_jitter import KDColorJitter
-from kappadata.transforms.kd_gaussian_blur_tv import KDGaussianBlurTV
 from kappadata.transforms.kd_gaussian_blur_pil import KDGaussianBlurPIL
+from kappadata.transforms.kd_gaussian_blur_tv import KDGaussianBlurTV
 from kappadata.transforms.kd_random_crop import KDRandomCrop
 from kappadata.transforms.kd_random_grayscale import KDRandomGrayscale
 from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
@@ -48,7 +48,6 @@ class TestEquivalentToTorchvision(unittest.TestCase):
             expected = to_tensor(tv_transform(x))
             actual = to_tensor(kd_transform(x))
             self.assertTrue(torch.all(expected == actual))
-
 
     def test_color_jitter(self):
         self._run(
@@ -98,7 +97,6 @@ class TestEquivalentToTorchvision(unittest.TestCase):
             tv_class=RandomHorizontalFlip,
             kwargs=dict(p=0.5),
         )
-
 
     def test_random_resized_crop(self):
         self._run(

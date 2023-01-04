@@ -1,11 +1,13 @@
-import numpy as np
 import unittest
 from unittest.mock import patch
 
+import numpy as np
 import torch
 # noinspection PyPackageRequirements
 from timm.data.random_erasing import RandomErasing
+
 from kappadata.transforms.kd_random_erasing import KDRandomErasing
+
 
 class TestKDRandomErasing(unittest.TestCase):
     @staticmethod
@@ -31,5 +33,3 @@ class TestKDRandomErasing(unittest.TestCase):
         kd_images = self._forward(images.clone(), kd_fn)
         for i, (timm_image, kd_image) in enumerate(zip(timm_images, kd_images)):
             self.assertTrue(torch.all(timm_image == kd_image), f"images are unequal idx={i}")
-
-
