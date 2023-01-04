@@ -2,7 +2,7 @@
 
 - assert different seeds in compose transform
 - new multiviewwrapper reset_seed
-
+- randaug no posterize
 
 
 

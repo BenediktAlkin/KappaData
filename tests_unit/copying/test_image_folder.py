@@ -78,7 +78,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
 
     def test_imagenet_autocopy_zip(self):
         global_path, local_path = self._setup_imagenet_zip()
-        msg0 = "extracting folders of '/zip/imagenet/train.zip' to '/local/data/imagenet/train'"
+        msg0 = "extracting '/zip/imagenet/train.zip' to '/local/data/imagenet/train'"
         self._test_imagenet_autocopy(global_path, local_path, was_zip=True, msg0=msg0)
 
     def test_imagenet_autocopy_zip_classwise(self):
@@ -125,13 +125,13 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
 
         self.assertEqual(3, len(logger.msgs))
         msg0 = "found incomplete automatic copy in '/local/data/imagenet/train' -> deleting folder"
-        self.assertTrue(logger.path_msg_equals(msg0, logger.msgs[0]))
-        self.assertTrue(logger.path_msg_equals(msg1, logger.msgs[1]))
+        self.assertTrue(logger.path_msg_equals(msg0, logger.msgs[0]), f"'{msg0}' != '{logger.msgs[0]}'")
+        self.assertTrue(logger.path_msg_equals(msg1, logger.msgs[1]), f"'{msg1}' != '{logger.msgs[1]}'")
         self.assertTrue(logger.path_msg_equals("finished copying data from global to local", logger.msgs[2]))
 
     def test_imagenet_incomplete_copy_folder(self):
         global_path, local_path = self._setup_imagenet()
-        msg1 = "copying '/global/imagenet/train' to '/local/data/imagenet/train'"
+        msg1 = "copying folders of '/global/imagenet/train' to '/local/data/imagenet/train'"
         self._test_imagenet_incomplete_copy(global_path, local_path, was_zip=False, msg1=msg1)
 
     def test_imagenet_incomplete_copy_zip(self):

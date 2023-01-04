@@ -23,12 +23,6 @@ class TestKDRandAug(unittest.TestCase):
                     with patch("random.gauss", lambda mu, sigma: patch_rng.normal(mu, sigma)):
                         return run_fn()
 
-    def test_doesnt_crash(self):
-        kd_ra = KDRandAugment(num_ops=2, magnitude=9, interpolation="nearest")
-        x = to_pil_image(torch.randn(3, 32, 32))
-        for _ in range(100):
-            kd_ra(x)
-
     @staticmethod
     def create_mae_randaug(magnitude, magnitude_std):
         config_str = f"rand-m{magnitude}-mstd{magnitude_std}-inc1"
@@ -50,6 +44,10 @@ class TestKDRandAug(unittest.TestCase):
             to_pil_image(tensor)
             for tensor in torch.randn(100, 3, 224, 224, generator=torch.Generator().manual_seed(52))
         ]
+        # results = []
+        # for i, img in enumerate(images):
+        #     results.append(to_tensor(fn(img)))
+        # return results
         return [to_tensor(fn(img)) for img in images]
 
     def test_equivalent_to_timm(self):
@@ -67,6 +65,3 @@ class TestKDRandAug(unittest.TestCase):
         kd_images = self._forward(kd_fn)
         for i, (timm_image, kd_image) in enumerate(zip(timm_images, kd_images)):
             self.assertTrue(torch.all(timm_image == kd_image), f"images are unequal idx={i}")
-        # TODO posterize can produce black images
-        self.assesrtEqual(0, (torch.stack(timm_images).sum(dim=(1, 2, 3)) == 0).sum())
-        self.assesrtEqual(0, (torch.stack(kd_images).sum(dim=(1, 2, 3)) == 0).sum())

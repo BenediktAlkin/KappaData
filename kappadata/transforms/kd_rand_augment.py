@@ -26,6 +26,7 @@ class KDRandAugment(KDStochasticTransform):
     - original: https://arxiv.org/abs/1909.13719
       - exactly num_ops operations are sampled
       - ops include identity
+    NOTE: it is possible that posterize deletes the whole image
     """
 
     def __init__(
@@ -117,9 +118,9 @@ class KDRandAugment(KDStochasticTransform):
     def rotate(self, x, magnitude):
         # degrees in [-30, 30]
         degrees = 30 * magnitude
-        if self.rng.random() < 0.5:
+        if self.rng.random() > 0.5:
             degrees = -degrees
-        return F.rotate(x, degrees, interpolation=self.interpolation)
+        return F.rotate(x, degrees, interpolation=self.interpolation, fill=self.fill_color)
 
     @staticmethod
     def solarize(x, magnitude):
@@ -203,35 +204,50 @@ class KDRandAugment(KDStochasticTransform):
         # angle in [-0.3, 0.3]
         angle = 0.3 * magnitude
         # degrees roughly in [-16.7, 16.7]
-        degrees = math.degrees(math.atan(angle))
         if self.rng.random() < 0.5:
-            return -degrees
-        return degrees
+            return angle
+        return -angle
 
     def shear_x(self, x, magnitude):
         shear_degrees = self._shear_degrees(magnitude)
-        return F.affine(
-            x,
-            angle=0.,
-            translate=[0, 0],
-            scale=1.,
-            shear=[shear_degrees, 0.],
-            interpolation=self.interpolation,
-            center=[0, 0],
-            fill=self.fill_color,
+        # not sure about the equivalent in torchvision
+        # return F.affine(
+        #     x,
+        #     angle=0.,
+        #     translate=[0, 0],
+        #     scale=1.,
+        #     shear=[shear_degrees, 0.],
+        #     interpolation=self.interpolation,
+        #     center=[0, 0],
+        #     fill=self.fill_color,
+        # )
+        return x.transform(
+            x.size,
+            Image.AFFINE,
+            (1, shear_degrees, 0, 0, 1, 0),
+            fillcolor=self.fill_color,
+            resample=F.pil_modes_mapping[self.interpolation],
         )
 
     def shear_y(self, x, magnitude):
         shear_degrees = self._shear_degrees(magnitude)
-        return F.affine(
-            x,
-            angle=0.,
-            translate=[0, 0],
-            scale=1.,
-            shear=[0., shear_degrees],
-            interpolation=self.interpolation,
-            center=[0, 0],
-            fill=self.fill_color,
+        # not sure about the equivalent in torchvision
+        # return F.affine(
+        #     x,
+        #     angle=0.,
+        #     translate=[0, 0],
+        #     scale=1.,
+        #     shear=[0., shear_degrees],
+        #     interpolation=self.interpolation,
+        #     center=[0, 0],
+        #     fill=self.fill_color,
+        # )
+        return x.transform(
+            x.size,
+            Image.AFFINE,
+            (1, 0, 0, shear_degrees, 1, 0),
+            fillcolor=self.fill_color,
+            resample=F.pil_modes_mapping[self.interpolation],
         )
 
     def _translation(self, magnitude):
