@@ -69,7 +69,7 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
         if len(zips) >= len(items) // 2:
             # extract all zip folders into dst (e.g. imagenet1k/train/n01558993.zip
             was_zip_classwise = True
-            log(log_fn, f"extracting {len(zips)} zips from '{src_path}' to '{dst_path}'")
+            log(log_fn, f"extracting {len(zips)} zips from '{src_path}' to '{dst_path}' using {num_workers} workers")
             unzip_imagefolder_classwise(src=src_path, dst=dst_path, num_workers=num_workers)
         else:
             # copy folders which contain the raw files (not zipped or anything)

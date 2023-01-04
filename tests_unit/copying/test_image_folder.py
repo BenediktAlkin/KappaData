@@ -83,7 +83,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
 
     def test_imagenet_autocopy_zip_classwise(self):
         global_path, local_path = self._setup_imagenet_zip_classwise()
-        msg0 = "extracting 2 zips from '/zip/imagenet/train' to '/local/data/imagenet/train'"
+        msg0 = "extracting 2 zips from '/zip/imagenet/train' to '/local/data/imagenet/train' using 0 workers"
         self._test_imagenet_autocopy(global_path, local_path, was_zip_classwise=True, msg0=msg0)
 
     def _test_imagenet_already_exists_auto(self, global_path, local_path):
