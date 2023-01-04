@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from kappadata.copying.zipped_imagefolder import create_zipped_imagefolder_classwise
+from kappadata.copying.image_folder import create_zipped_imagefolder_classwise
 
 def parse_args():
     parser = ArgumentParser()
