@@ -91,9 +91,12 @@ class KDRandAugment(KDStochasticTransform):
         # convert to python float to be consistent with other sampling value dtypes (np.clip converts to np.float64)
         return float(np.clip(sampled, self.magnitude_min, self.magnitude_max))
 
+    def _sample_transforms(self):
+        return self.rng.choice(self.ops, size=self.num_ops)
+
     def __call__(self, x, ctx=None):
         assert not torch.is_tensor(x), "some KDRandAugment transforms require input to be pillow image"
-        transforms = self.rng.choice(self.ops, size=self.num_ops)
+        transforms = self._sample_transforms()
         for transform in transforms:
             if self.rng.random() < 0.5:
                 x = transform(x, self.sample_magnitude())
