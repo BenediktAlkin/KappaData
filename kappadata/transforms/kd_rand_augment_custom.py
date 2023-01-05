@@ -12,6 +12,6 @@ class KDRandAugmentCustom(KDRandAugment):
 
     @staticmethod
     def posterize(x, magnitude):
-        # if magnitude >= 10 --> black image
-        magnitude = min(9.99, magnitude)
+        # if magnitude >= 1.0 --> black image
+        magnitude = min(0.99, magnitude)
         return super().posterize(x, magnitude)
