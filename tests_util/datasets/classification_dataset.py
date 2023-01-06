@@ -16,7 +16,7 @@ class ClassificationDataset(KDDataset):
 
     @property
     def n_classes(self):
-        return max(self.classes) + 1
+        return max(self.classes).item() + 1
 
     def __len__(self):
         return len(self.classes)

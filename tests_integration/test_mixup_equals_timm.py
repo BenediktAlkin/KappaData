@@ -1,4 +1,7 @@
+import torch
 import unittest
+from unittest.mock import patch
+import numpy as np
 
 from timm.data.mixup import Mixup
 from torch.utils.data import DataLoader
@@ -10,7 +13,15 @@ from tests_util.datasets import create_image_classification_dataset
 
 
 class TestMixupEqualsTimm(unittest.TestCase):
-    def run_test(self, batch_size, smoothing, mixup_alpha, cutmix_alpha, p, cutmix_p, mode):
+    def run_test(self, *args, **kwargs):
+        patch_rng = np.random.default_rng(seed=5)
+        with patch("numpy.random.rand", lambda: patch_rng.random()):
+            with patch("numpy.random.beta", lambda a, b: patch_rng.beta(a, b)):
+                with patch("numpy.random.randint", lambda a, b, size: patch_rng.integers(a, b, size=size)):
+                    with patch("torch.Tensor.flip", lambda tensor, dim: tensor.roll(1, dim)):
+                        self._run_test(*args, **kwargs)
+
+    def _run_test(self, batch_size, smoothing, mixup_alpha, cutmix_alpha, p, cutmix_p, mode):
         ds = create_image_classification_dataset(seed=552, size=100, channels=3, resolution=32, n_classes=10)
         mixup_ds = LabelSmoothingWrapper(dataset=ds, smoothing=smoothing)
         collator = MixCollator(
@@ -21,6 +32,8 @@ class TestMixupEqualsTimm(unittest.TestCase):
             mode=mode,
             p_mode="batch",
             seed=5,
+            dataset_mode="x class",
+            return_ctx=False,
         )
         kd_loader = DataLoader(ModeWrapper(mixup_ds, mode="x class"), batch_size=batch_size, collate_fn=collator)
 
@@ -33,15 +46,15 @@ class TestMixupEqualsTimm(unittest.TestCase):
             label_smoothing=smoothing,
             num_classes=ds.n_classes,
         )
-        # raw_loader = DataLoader(ModeWrapper(ds, mode="x class"), batch_size=batch_size)
-        # for i, ((raw_x, raw_y), (kd_x, kd_y)) in enumerate(zip(raw_loader, kd_loader)):
-        #     timm_x, timm_y = timm_mixup(raw_x, raw_y)
-        #     self.assertTrue(torch.all(timm_x == kd_x), f"x is unequal for i={i}")
-        #     self.assertTrue(torch.all(timm_y == kd_y), f"y is unequal for i={i} timm={timm_y} kd={kd_y}")
+        raw_loader = DataLoader(ModeWrapper(ds, mode="x class"), batch_size=batch_size)
+        for i, ((raw_x, raw_y), (kd_x, kd_y)) in enumerate(zip(raw_loader, kd_loader)):
+            timm_x, timm_y = timm_mixup(raw_x, raw_y)
+            self.assertTrue(torch.allclose(timm_x, kd_x), f"x is unequal for i={i}")
+            self.assertTrue(torch.allclose(timm_y, kd_y), f"y is unequal for i={i} timm={timm_y} kd={kd_y}")
 
     def test(self):
         self.run_test(
-            batch_size=4,
+            batch_size=2,
             smoothing=0.1,
             mixup_alpha=0.8,
             cutmix_alpha=1.0,

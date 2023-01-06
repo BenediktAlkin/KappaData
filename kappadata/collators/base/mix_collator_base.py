@@ -13,12 +13,9 @@ class MixCollatorBase(KDSingleCollator):
         assert p_mode in ["batch", "sample"], f"invalid p_mode {p_mode}"
         assert n_classes is None or n_classes > 1, f"invalid n_classes {n_classes}"
         self.p = p
-        self._is_batch_p_mode = p_mode == "batch"
+        self.p_mode = p_mode
         self.n_classes = n_classes
         self.np_rng = np.random.default_rng(seed=seed)
-        self.th_rng = torch.Generator()
-        if seed is not None:
-            self.th_rng.manual_seed(seed + 1)
 
     @property
     def default_collate_mode(self):
@@ -34,13 +31,15 @@ class MixCollatorBase(KDSingleCollator):
             y = ModeWrapper.get_item(mode=dataset_mode, item="class", batch=batch)
             y = to_onehot_matrix(y, n_classes=self.n_classes).type(torch.float32)
         batch_size = len(x)
-        if self._is_batch_p_mode:
-            apply = torch.rand(size=(), generator=self.th_rng) < self.p
+        if self.p_mode == "batch":
+            apply = self.np_rng.random() < self.p
             if apply:
                 x, y = self._collate_batchwise(x, y, batch_size, ctx)
-        else:
-            apply = torch.rand(size=(batch_size,), generator=self.th_rng) < self.p
+        elif self.p_mode == "sample":
+            apply = torch.from_numpy(self.np_rng.random(batch_size)) < self.p
             x, y = self._collate_samplewise(apply=apply, x=x, y=y, batch_size=batch_size, ctx=ctx)
+        else:
+            raise NotImplementedError
 
         if idx is not None:
             batch = ModeWrapper.set_item(mode=dataset_mode, item="index", batch=batch, value=idx)

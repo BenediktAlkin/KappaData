@@ -9,7 +9,7 @@ class KDSingleCollator(KDCollatorBase):
     def __call__(self, batch):
         assert self.dataset_mode is not None and self.return_ctx is not None, \
             "use KDCollator as part of KDComposeCollator or specify dataset_mode and return_ctx"
-        return self._call_fn(
+        return self._call_impl(
             batch=batch,
             collators=[self],
             dataset_mode=self.dataset_mode,

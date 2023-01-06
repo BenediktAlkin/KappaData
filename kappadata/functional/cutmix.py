@@ -3,8 +3,8 @@ import torch
 
 def get_random_bbox(h, w, lamb, rng):
     batch_size = len(lamb)
-    bbox_hcenter = torch.randint(h, size=(batch_size,), generator=rng)
-    bbox_wcenter = torch.randint(w, size=(batch_size,), generator=rng)
+    bbox_hcenter = torch.from_numpy(rng.integers(h, size=(batch_size,)))
+    bbox_wcenter = torch.from_numpy(rng.integers(w, size=(batch_size,)))
 
     area_half = 0.5 * (1.0 - lamb).sqrt()
     bbox_h_half = (area_half * h).floor()
@@ -25,7 +25,8 @@ def cutmix_batch(x1, x2, bbox, inplace):
     if not inplace:
         x1 = x1.clone()
     for i in range(len(x1)):
-        cutmix_sample_inplace(x1[i], x2[i], bbox[i])
+        cur_bbox = bbox[i] if len(bbox) > 1 else bbox[0]
+        cutmix_sample_inplace(x1[i], x2[i], cur_bbox)
     return x1
 
 

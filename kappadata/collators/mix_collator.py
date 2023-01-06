@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 from kappadata.functional.cutmix import cutmix_batch, get_random_bbox
 from kappadata.functional.mix import sample_lambda, sample_permutation, mix_y_inplace, mix_y_idx2
@@ -16,28 +17,31 @@ class MixCollator(MixCollatorBase):
         self.cutmix_alpha = cutmix_alpha
         self.mixup_alpha = mixup_alpha
         self.cutmix_p = cutmix_p
-        self._is_batch_mode = mode == "batch"
+        self.mode = mode
+
+    @property
+    def is_batch_mode(self):
+        return self.mode == "batch"
 
     def _collate_batchwise(self, x, y, batch_size, ctx):
-        use_cutmix_size = 1 if self._is_batch_mode else batch_size
-        use_cutmix = torch.rand(size=(use_cutmix_size,), generator=self.th_rng) < self.cutmix_p
-
+        use_cutmix_size = 1 if self.is_batch_mode else batch_size
+        use_cutmix = torch.from_numpy(self.np_rng.random(use_cutmix_size)) < self.cutmix_p
         if ctx is not None:
             ctx["use_cutmix"] = use_cutmix
 
-        if self._is_batch_mode:
-            if use_cutmix:
+        if self.is_batch_mode:
+            if use_cutmix.item():
                 # apply cutmix to whole batch
-                lamb = sample_lambda(alpha=self.cutmix_alpha, size=batch_size, rng=self.np_rng)
+                lamb = sample_lambda(alpha=self.cutmix_alpha, size=1, rng=self.np_rng)
                 h, w = x.shape[2:]
-                bbox, lamb = get_random_bbox(h=h, w=w, lamb=lamb, rng=self.th_rng)
+                bbox, lamb = get_random_bbox(h=h, w=w, lamb=lamb, rng=self.np_rng)
                 if ctx is not None:
                     ctx["mix_lambda"] = lamb
                     ctx["mix_bbox"] = bbox
                 mixed_x = cutmix_batch(x1=x, x2=x.roll(1, 0), bbox=bbox, inplace=True)
             else:
                 # apply mixup to whole batch
-                lamb = sample_lambda(alpha=self.mixup_alpha, size=batch_size, rng=self.np_rng)
+                lamb = sample_lambda(alpha=self.mixup_alpha, size=1, rng=self.np_rng)
                 if ctx is not None:
                     ctx["mix_lambda"] = lamb
                     ctx["mix_bbox"] = None
@@ -72,7 +76,7 @@ class MixCollator(MixCollatorBase):
         return mixed_x, mixed_y
 
     def _collate_samplewise(self, apply, x, y, batch_size, ctx):
-        use_cutmix_size = 1 if self._is_batch_mode else batch_size
+        use_cutmix_size = 1 if self.is_batch_mode else batch_size
         idx2 = sample_permutation(size=batch_size, rng=self.np_rng)
         use_cutmix = torch.rand(size=(use_cutmix_size,), generator=self.th_rng) < self.cutmix_p
 
@@ -80,7 +84,7 @@ class MixCollator(MixCollatorBase):
             ctx["mix_idx2"] = idx2
             ctx["use_cutmix"] = use_cutmix
 
-        if self._is_batch_mode:
+        if self.is_batch_mode:
             if use_cutmix:
                 # apply cutmix to whole batch
                 lamb = sample_lambda(alpha=self.cutmix_alpha, size=batch_size, rng=self.np_rng)
