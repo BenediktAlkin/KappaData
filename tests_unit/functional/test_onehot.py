@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from kappadata.functional.onehot import to_onehot_vector, to_onehot_matrix
+from kappadata.utils.onehot import to_onehot_vector, to_onehot_matrix
 
 
 class TestOnehot(unittest.TestCase):

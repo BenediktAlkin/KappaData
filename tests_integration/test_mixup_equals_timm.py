@@ -21,16 +21,17 @@ class TestMixupEqualsTimm(unittest.TestCase):
                     with patch("torch.Tensor.flip", lambda tensor, dim: tensor.roll(1, dim)):
                         self._run_test(*args, **kwargs)
 
-    def _run_test(self, batch_size, smoothing, mixup_alpha, cutmix_alpha, p, cutmix_p, mode):
+    def _run_test(self, batch_size, smoothing, mixup_alpha, cutmix_alpha, mixup_p, cutmix_p, mode):
         ds = create_image_classification_dataset(seed=552, size=100, channels=3, resolution=32, n_classes=10)
         mixup_ds = LabelSmoothingWrapper(dataset=ds, smoothing=smoothing)
         collator = MixCollator(
             mixup_alpha=mixup_alpha,
             cutmix_alpha=cutmix_alpha,
-            p=p,
+            mixup_p=mixup_p,
             cutmix_p=cutmix_p,
-            mode=mode,
-            p_mode="batch",
+            apply_mode=mode,
+            lamb_mode=mode,
+            shuffle_mode="flip",
             seed=5,
             dataset_mode="x class",
             return_ctx=False,
@@ -40,7 +41,7 @@ class TestMixupEqualsTimm(unittest.TestCase):
         timm_mixup = Mixup(
             mixup_alpha=mixup_alpha,
             cutmix_alpha=cutmix_alpha,
-            prob=p,
+            prob=mixup_p + cutmix_p,
             switch_prob=cutmix_p,
             mode=mode,
             label_smoothing=smoothing,
@@ -54,11 +55,11 @@ class TestMixupEqualsTimm(unittest.TestCase):
 
     def test(self):
         self.run_test(
-            batch_size=2,
+            batch_size=4,
             smoothing=0.1,
             mixup_alpha=0.8,
             cutmix_alpha=1.0,
-            p=1.0,
+            mixup_p=0.5,
             cutmix_p=0.5,
             mode="batch",
         )
