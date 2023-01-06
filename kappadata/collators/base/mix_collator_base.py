@@ -9,12 +9,12 @@ from .kd_collator import KDCollator
 class MixCollatorBase(KDCollator):
     def __init__(self, p=1., p_mode="batch", n_classes=None, seed=None, **kwargs):
         super().__init__(**kwargs)
-        assert isinstance(p, (int, float)) and 0. < p <= 1.
-        assert p_mode in ["batch", "sample"]
-        assert n_classes is None or (isinstance(n_classes, int) and n_classes > 1)
+        assert isinstance(p, (int, float)) and 0. < p <= 1., f"invalid p {p}"
+        assert p_mode in ["batch", "sample"], f"invalid p_mode {p_mode}"
+        assert n_classes is None or n_classes > 1, f"invalid n_classes {n_classes}"
         self.p = p
         self._is_batch_p_mode = p_mode == "batch"
-        self.n_classes = n_classes
+        self.n_classes = int(n_classes)
         self.np_rng = np.random.default_rng(seed=seed)
         self.th_rng = torch.Generator()
         if seed is not None:
