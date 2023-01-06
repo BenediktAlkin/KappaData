@@ -4,7 +4,7 @@ from kappadata.wrappers.dataset_wrappers.percent_filter_wrapper import PercentFi
 from kappadata.wrappers.dataset_wrappers.repeat_wrapper import RepeatWrapper
 from kappadata.wrappers.dataset_wrappers.shuffle_wrapper import ShuffleWrapper
 from kappadata.wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
-from tests_util.index_dataset import IndexDataset
+from tests_util.datasets.index_dataset import IndexDataset
 
 
 class TestAllWrappers(unittest.TestCase):

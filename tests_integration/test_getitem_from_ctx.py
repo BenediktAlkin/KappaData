@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 
 from kappadata.transforms.save_state_to_context_transform import SaveStateToContextTransform
 from kappadata.wrappers.mode_wrapper import ModeWrapper
-from tests_util.x_dataset import XDataset
+from tests_util.datasets.x_dataset import XDataset
 
 
 class TestGetitemFromCtx(unittest.TestCase):

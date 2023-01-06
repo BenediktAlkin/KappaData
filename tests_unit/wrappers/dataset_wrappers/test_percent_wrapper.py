@@ -2,7 +2,7 @@ import unittest
 
 from kappadata.wrappers.dataset_wrappers.percent_filter_wrapper import PercentFilterWrapper
 from kappadata.wrappers.mode_wrapper import ModeWrapper
-from tests_util.index_dataset import IndexDataset
+from tests_util.datasets.index_dataset import IndexDataset
 
 
 class TestPercentWrapper(unittest.TestCase):

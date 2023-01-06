@@ -3,7 +3,7 @@ import unittest
 import torch
 
 from kappadata.wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
-from tests_util.class_dataset import ClassDataset
+from tests_util.datasets.class_dataset import ClassDataset
 
 
 class TestLabelSmoothingWrapper(unittest.TestCase):
