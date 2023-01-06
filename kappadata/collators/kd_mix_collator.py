@@ -130,7 +130,7 @@ class KDMixCollator(KDSingleCollator):
             for i in range(batch_size):
                 top, left, bot, right = bbox[i]
                 cutmix_x[..., top:bot, left:right] = x2[..., top:bot, left:right]
-            mixed_x = torch.where(use_cutmix.view(-1, *[1] * cutmix_x.ndim), cutmix_x, mixup_x)
+            mixed_x = torch.where(use_cutmix.view(*bool_shape), cutmix_x, mixup_x)
             x = torch.where(apply.view(*bool_shape), mixed_x, x)
         if y is not None:
             y2, permutation = self.shuffle(item=y, permutation=permutation)

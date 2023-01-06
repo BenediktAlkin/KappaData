@@ -50,6 +50,8 @@ class TestMixupEqualsTimm(unittest.TestCase):
         raw_loader = DataLoader(ModeWrapper(ds, mode="x class"), batch_size=batch_size)
         for i, ((raw_x, raw_y), (kd_x, kd_y)) in enumerate(zip(raw_loader, kd_loader)):
             timm_x, timm_y = timm_mixup(raw_x, raw_y)
+            self.assertEqual(timm_x.shape, kd_x.shape)
+            self.assertEqual(timm_y.shape, kd_y.shape)
             self.assertTrue(torch.allclose(timm_x, kd_x), f"x is unequal for i={i}")
             self.assertTrue(torch.allclose(timm_y, kd_y), f"y is unequal for i={i} timm={timm_y} kd={kd_y}")
 
