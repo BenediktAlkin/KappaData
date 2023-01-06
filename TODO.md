@@ -1,8 +1,6 @@
 ##
 
-- assert different seeds in compose transform
-- new multiviewwrapper reset_seed
-- randaug no posterize
+- new multiviewwrapper reset_seed; assert unequal seeds of all sub transforms
 
 
 - context of random transform cant be stacked by torch collator as they only write values when they are applied
@@ -12,10 +10,7 @@
 
 ## features
 
-- look at differences to timm mixes
-- collate mixup/cutmix tests
 - mixup/cutmix with binary label
-- deterministic mix collators
 
 ## other
 
@@ -23,9 +18,6 @@
 
 ## tests
 
-- test mixup collators
-- mixup with p
-- all mix wrappers: automatic tests with and without context information
 
 ## code
 
