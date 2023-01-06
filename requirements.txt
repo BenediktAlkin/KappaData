@@ -7,4 +7,3 @@ einops
 joblib
 pyfakefs
 timm
-redis
