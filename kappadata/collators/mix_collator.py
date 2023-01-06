@@ -7,6 +7,19 @@ from kappadata.wrappers.mode_wrapper import ModeWrapper
 
 
 class MixCollator(KDSingleCollator):
+    """
+    apply_mode:
+    - "batch": apply either all samples in the batch or don't apply
+    - "sample": decide for each sample whether or not to apply mixup/cutmix
+    lamb_mode:
+    - "batch": use the same lambda/bbox for all samples in the batch
+    - "sample": sample a lambda/bbox for each sample
+    shuffle_mode:
+    - "roll": mix sample 0 with sample 1; sample 1 with sample 2; ...
+    - "flip": mix sample[0] with sample[-1]; sample[1] with sample[-2]; ... requires even batch_size
+    - "random": mix each sample with a randomly drawn other sample
+    """
+
     def __init__(
             self,
             mixup_alpha: float = None,
