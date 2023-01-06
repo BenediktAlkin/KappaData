@@ -78,7 +78,7 @@ class KDRandAugment(KDStochasticTransform):
             self.sample_magnitude = self._sample_magnitude_uniform
         else:
             self.sample_magnitude = self._sample_magnitude_normal
-        self.fill_color = fill_color
+        self.fill_color = tuple(fill_color)
 
     def _sample_magnitude_const(self):
         return self.magnitude

@@ -1,9 +1,7 @@
-# noinspection PyPackageRequirements
 import os
 import shutil
 from pathlib import Path
 
-# noinspection PyPackageRequirements
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from kappadata.copying.image_folder import copy_imagefolder_from_global_to_local, create_zipped_imagefolder_classwise

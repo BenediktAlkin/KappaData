@@ -3,9 +3,7 @@ from unittest.mock import patch
 
 import numpy as np
 import torch
-# noinspection PyPackageRequirements
 from timm.data.auto_augment import rand_augment_transform
-# noinspection PyPackageRequirements
 from timm.data.constants import IMAGENET_DEFAULT_MEAN
 from torchvision.transforms.functional import to_pil_image
 from torchvision.transforms.functional import to_tensor

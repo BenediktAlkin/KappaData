@@ -178,10 +178,6 @@ with `num_workers > 0`. Small and medium sized datasets can be cached in-memory 
 from a disk. For example even the full [ImageNet](https://www.image-net.org/) can be cached on many servers as it has ~
 130GB and its not too uncommon for GPU servers to have more RAM than that.
 
-## RedisDataset [EXPERIMENTAL]
-
-`kappadata.RedisDataset` provides an in-memory cache via the [redis](https://redis.io/) in-memory database. This enables
-sharing data between multiple GPU-proceses (not only worker processes) for multi-GPU training.
 
 ## Caching image datasets
 
