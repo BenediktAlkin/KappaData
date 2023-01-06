@@ -6,7 +6,7 @@ import numpy as np
 from timm.data.mixup import Mixup
 from torch.utils.data import DataLoader
 
-from kappadata.collators.mix_collator import MixCollator
+from kappadata.collators.kd_mix_collator import MixCollator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
 from tests_util.datasets import create_image_classification_dataset

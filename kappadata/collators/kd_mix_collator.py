@@ -6,7 +6,7 @@ from kappadata.utils.onehot import to_onehot_matrix
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 
 
-class MixCollator(KDSingleCollator):
+class KDMixCollator(KDSingleCollator):
     """
     apply_mode:
     - "batch": apply either all samples in the batch or don't apply

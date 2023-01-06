@@ -10,6 +10,7 @@ from .batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
 from .caching.shared_dict_dataset import SharedDictDataset
 from .collators.base.kd_single_collator import KDSingleCollator
 from .collators.base.kd_compose_collator import KDComposeCollator
+from .collators.kd_mix_collator import KDMixCollator
 from .collators.pad_sequences_collator import PadSequencesCollator
 from .copying import copy_imagefolder_from_global_to_local
 from .datasets.kd_concat_dataset import KDConcatDataset
