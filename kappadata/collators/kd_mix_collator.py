@@ -2,7 +2,6 @@ import numpy as np
 import torch
 
 from kappadata.collators.base.kd_single_collator import KDSingleCollator
-from kappadata.utils.onehot import to_onehot_matrix
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 
 
@@ -29,7 +28,6 @@ class KDMixCollator(KDSingleCollator):
             apply_mode: str = "batch",
             lamb_mode: str = "batch",
             shuffle_mode: str = "flip",
-            n_classes: int = None,
             seed: int = None,
             **kwargs,
     ):
@@ -54,10 +52,6 @@ class KDMixCollator(KDSingleCollator):
         assert lamb_mode in ["batch", "sample"], f"invalid lamb_mode {lamb_mode}"
         assert shuffle_mode in ["roll", "flip", "random"], f"invalid shuffle_mode {shuffle_mode}"
 
-        # check classes (required for to_onehot)
-        # if applied to dataset without classes n_classes is not required
-        assert n_classes is None or n_classes > 1, f"invalid n_classes {n_classes}"
-
         # initialize
         self.mixup_alpha = mixup_alpha
         self.cutmix_alpha = cutmix_alpha
@@ -66,7 +60,6 @@ class KDMixCollator(KDSingleCollator):
         self.apply_mode = apply_mode
         self.lamb_mode = lamb_mode
         self.shuffle_mode = shuffle_mode
-        self.n_classes = n_classes
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
@@ -89,8 +82,8 @@ class KDMixCollator(KDSingleCollator):
         if ModeWrapper.has_item(mode=dataset_mode, item="x"):
             x = ModeWrapper.get_item(mode=dataset_mode, item="x", batch=batch)
         if ModeWrapper.has_item(mode=dataset_mode, item="class"):
-            y = ModeWrapper.get_item(mode=dataset_mode, item="class", batch=batch)
-            y = to_onehot_matrix(y, n_classes=self.n_classes).type(torch.float32)
+            y = ModeWrapper.get_item(mode=dataset_mode, item="class", batch=batch).type(torch.float32)
+            assert y.ndim == 2, "KDMixCollator expects classes to be in one-hot format"
         batch_size = len(x)
 
         # sample apply
@@ -100,7 +93,7 @@ class KDMixCollator(KDSingleCollator):
             apply = torch.from_numpy(self.rng.random(batch_size)) < self.total_p
         else:
             raise NotImplementedError
-        
+
         # sample parameters (use_cutmix, lamb, bbox)
         if self.lamb_mode == "batch":
             use_cutmix = self.rng.random() * self.total_p < self.cutmix_p

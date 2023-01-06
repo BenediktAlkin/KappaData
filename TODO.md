@@ -26,7 +26,6 @@
 - test mixup collators
 - mixup with p
 - all mix wrappers: automatic tests with and without context information
-- xtransformwrapper tests
 
 ## code
 

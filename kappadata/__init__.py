@@ -8,8 +8,8 @@ import kappadata.wrappers.dataset_wrappers
 import kappadata.wrappers.sample_wrappers
 from .batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
 from .caching.shared_dict_dataset import SharedDictDataset
-from .collators.base.kd_single_collator import KDSingleCollator
 from .collators.base.kd_compose_collator import KDComposeCollator
+from .collators.base.kd_single_collator import KDSingleCollator
 from .collators.kd_mix_collator import KDMixCollator
 from .collators.pad_sequences_collator import PadSequencesCollator
 from .copying import copy_imagefolder_from_global_to_local
@@ -37,4 +37,6 @@ from .wrappers.dataset_wrappers.percent_filter_wrapper import PercentFilterWrapp
 from .wrappers.dataset_wrappers.repeat_wrapper import RepeatWrapper
 from .wrappers.dataset_wrappers.shuffle_wrapper import ShuffleWrapper
 from .wrappers.dataset_wrappers.subset_wrapper import SubsetWrapper
+from .wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
+from .wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
 from .wrappers.mode_wrapper import ModeWrapper
