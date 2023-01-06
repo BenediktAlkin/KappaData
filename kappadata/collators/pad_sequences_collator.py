@@ -2,10 +2,10 @@ import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import default_collate
 
-from .base.kd_collator import KDCollator
+from .base.kd_single_collator import KDSingleCollator
 
 
-class PadSequencesCollator(KDCollator):
+class PadSequencesCollator(KDSingleCollator):
     @property
     def default_collate_mode(self):
         return None

@@ -1,6 +1,5 @@
 import unittest
 
-import torch
 from torch.utils.data import DataLoader
 
 from kappadata.collators.base.kd_compose_collator import KDComposeCollator

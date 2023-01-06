@@ -1,12 +1,12 @@
 import numpy as np
 import torch
 
+from kappadata.collators.base.kd_single_collator import KDSingleCollator
 from kappadata.functional.onehot import to_onehot_matrix
 from kappadata.wrappers.mode_wrapper import ModeWrapper
-from .kd_collator import KDCollator
 
 
-class MixCollatorBase(KDCollator):
+class MixCollatorBase(KDSingleCollator):
     def __init__(self, p=1., p_mode="batch", n_classes=None, seed=None, **kwargs):
         super().__init__(**kwargs)
         assert isinstance(p, (int, float)) and 0. < p <= 1., f"invalid p {p}"
@@ -14,7 +14,7 @@ class MixCollatorBase(KDCollator):
         assert n_classes is None or n_classes > 1, f"invalid n_classes {n_classes}"
         self.p = p
         self._is_batch_p_mode = p_mode == "batch"
-        self.n_classes = int(n_classes)
+        self.n_classes = n_classes
         self.np_rng = np.random.default_rng(seed=seed)
         self.th_rng = torch.Generator()
         if seed is not None:
