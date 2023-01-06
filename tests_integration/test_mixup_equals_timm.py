@@ -6,7 +6,7 @@ import numpy as np
 from timm.data.mixup import Mixup
 from torch.utils.data import DataLoader
 
-from kappadata.collators.kd_mix_collator import MixCollator
+from kappadata.collators.kd_mix_collator import KDMixCollator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
 from tests_util.datasets import create_image_classification_dataset
@@ -24,7 +24,7 @@ class TestMixupEqualsTimm(unittest.TestCase):
     def _run_test(self, batch_size, smoothing, mixup_alpha, cutmix_alpha, mixup_p, cutmix_p, mode):
         ds = create_image_classification_dataset(seed=552, size=100, channels=3, resolution=32, n_classes=10)
         mixup_ds = LabelSmoothingWrapper(dataset=ds, smoothing=smoothing)
-        collator = MixCollator(
+        collator = KDMixCollator(
             mixup_alpha=mixup_alpha,
             cutmix_alpha=cutmix_alpha,
             mixup_p=mixup_p,

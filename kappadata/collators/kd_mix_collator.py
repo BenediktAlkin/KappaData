@@ -28,7 +28,7 @@ class KDMixCollator(KDSingleCollator):
             cutmix_p: float = 0.5,
             apply_mode: str = "batch",
             lamb_mode: str = "batch",
-            shuffle_mode: str = "roll",
+            shuffle_mode: str = "flip",
             n_classes: int = None,
             seed: int = None,
             **kwargs,

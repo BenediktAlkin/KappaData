@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from kappadata.collators.base.kd_compose_collator import KDComposeCollator
-from kappadata.collators.kd_mix_collator import MixCollator
+from kappadata.collators.kd_mix_collator import KDMixCollator
 from kappadata.utils.onehot import to_onehot_matrix
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from tests_util.datasets import create_image_classification_dataset
@@ -17,7 +17,7 @@ class TestKDMixCollator(unittest.TestCase):
         ds = ModeWrapper(dataset=ds, mode=ds_mode, return_ctx=True)
 
         # mixup
-        mix_collator = MixCollator(
+        mix_collator = KDMixCollator(
             mixup_alpha=1.,
             mixup_p=1.,
             cutmix_p=0.,
