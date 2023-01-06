@@ -178,7 +178,6 @@ with `num_workers > 0`. Small and medium sized datasets can be cached in-memory 
 from a disk. For example even the full [ImageNet](https://www.image-net.org/) can be cached on many servers as it has ~
 130GB and its not too uncommon for GPU servers to have more RAM than that.
 
-
 ## Caching image datasets
 
 Naively caching image datasets can lead to high memory consumption because image data is usually stored in a compressed

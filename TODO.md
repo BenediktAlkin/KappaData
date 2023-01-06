@@ -5,7 +5,6 @@
 - randaug no posterize
 
 
-
 - context of random transform cant be stacked by torch collator as they only write values when they are applied
 - label smoothing for multiclass
 - seed for augmentations per epochs (generate a testset with augmentations)

@@ -1,6 +1,8 @@
 from argparse import ArgumentParser
-from kappadata.copying.image_folder import unzip_imagefolder_classwise
 from time import time
+
+from kappadata.copying.image_folder import unzip_imagefolder_classwise
+
 
 def parse_args():
     parser = ArgumentParser()
@@ -8,6 +10,7 @@ def parse_args():
     parser.add_argument("--dst", type=str, required=True)
     parser.add_argument("--num_workers", type=int, default=0)
     return vars(parser.parse_args())
+
 
 def main(src, dst, num_workers):
     start_time = time()

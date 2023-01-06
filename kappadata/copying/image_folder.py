@@ -3,8 +3,10 @@ import shutil
 import zipfile
 from collections import namedtuple
 from pathlib import Path
-from kappadata.utils.logging import log
+
 import joblib
+
+from kappadata.utils.logging import log
 
 CopyImageFolderResult = namedtuple("CopyFolderResult", "was_copied was_deleted was_zip was_zip_classwise")
 
@@ -15,6 +17,7 @@ def _check_src_path(src_path):
     if src_path.with_suffix(".zip").exists():
         return True
     return False
+
 
 def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path=None, num_workers=0, log_fn=None):
     if not isinstance(global_path, Path):
@@ -42,7 +45,12 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
             if end_copy_file.exists():
                 # already automatically copied -> do nothing
                 log(log_fn, f"dataset was already automatically copied '{dst_path}'")
-                return CopyImageFolderResult(was_copied=False, was_deleted=False, was_zip=False, was_zip_classwise=False)
+                return CopyImageFolderResult(
+                    was_copied=False,
+                    was_deleted=False,
+                    was_zip=False,
+                    was_zip_classwise=False,
+                )
             else:
                 # incomplete copy -> delete and copy again
                 log(log_fn, f"found incomplete automatic copy in '{dst_path}' -> deleting folder")
@@ -97,6 +105,7 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
         was_zip_classwise=was_zip_classwise,
     )
 
+
 def create_zipped_imagefolder_classwise(src, dst):
     src_path = Path(src).expanduser()
     assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
@@ -113,9 +122,11 @@ def create_zipped_imagefolder_classwise(src, dst):
             root_dir=src_uri,
         )
 
+
 def _unzip(src, dst):
     with zipfile.ZipFile(src) as f:
         f.extractall(dst)
+
 
 def unzip_imagefolder_classwise(src, dst, num_workers=0):
     src_path = Path(src).expanduser()
