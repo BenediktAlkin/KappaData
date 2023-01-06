@@ -101,32 +101,43 @@ class MixCollator(KDSingleCollator):
                 bbox = torch.full(size=(batch_size, 4), fill_value=-1)
             use_cutmix = torch.tensor([use_cutmix]).repeat(batch_size)
         elif self.lamb_mode == "sample":
-            use_cutmix = torch.from_numpy(self.rng.random(lamb_batch_size) * self.total_p) < self.cutmix_p
-            mixup_lamb = torch.from_numpy(self.rng.beta(self.mixup_alpha, self.mixup_alpha, size=lamb_batch_size))
-            cutmix_lamb = torch.from_numpy(self.rng.beta(self.cutmix_alpha, self.cutmix_alpha, size=lamb_batch_size))
-            lamb = torch.where(use_cutmix, cutmix_lamb.float(), mixup_lamb.float())
+            use_cutmix = torch.from_numpy(self.rng.random(batch_size) * self.total_p) < self.cutmix_p
+            mixup_lamb, cutmix_lamb = 0., 0.
+            if self.mixup_p > 0.:
+                mixup_lamb = torch.from_numpy(self.rng.beta(self.mixup_alpha, self.mixup_alpha, size=batch_size))
+            if self.cutmix_p > 0.:
+                cutmix_lamb = torch.from_numpy(self.rng.beta(self.cutmix_alpha, self.cutmix_alpha, size=batch_size))
+            lamb = torch.where(use_cutmix, cutmix_lamb, mixup_lamb).float()
             h, w = x.shape[2:]
-            bbox = self.get_random_bbox(h=h, w=w, lamb=lamb)
+            bbox, lamb = self.get_random_bbox(h=h, w=w, lamb=lamb)
         else:
             raise NotImplementedError
 
         # apply
         permutation = None
         if x is not None:
+            bool_shape = (-1, *[1] * (x.ndim - 1))
+            x_lamb = lamb.view(*bool_shape)
             x2, permutation = self.shuffle(item=x, permutation=permutation)
-            mixup_x = x * lamb + x2 * (1. - lamb)
+            mixup_x = x * x_lamb + x2 * (1. - x_lamb)
             cutmix_x = x.clone()
             for i in range(batch_size):
                 top, left, bot, right = bbox[i]
                 cutmix_x[..., top:bot, left:right] = x2[..., top:bot, left:right]
             mixed_x = torch.where(use_cutmix.view(-1, *[1] * cutmix_x.ndim), cutmix_x, mixup_x)
-            x = torch.where(apply.view(-1, *[1] * cutmix_x.ndim), mixed_x, x)
+            x = torch.where(apply.view(*bool_shape), mixed_x, x)
         if y is not None:
             y2, permutation = self.shuffle(item=y, permutation=permutation)
-            mixed_y = y * lamb + y2 * (1. - lamb)
+            y_lamb = lamb.view(-1, 1)
+            mixed_y = y * y_lamb + y2 * (1. - y_lamb)
             y = torch.where(apply.view(-1, 1), mixed_y, y)
 
-
+        # book keeping
+        if ctx is not None:
+            ctx["apply"] = apply
+            ctx["use_cutmix"] = use_cutmix
+            ctx["lambda"] = lamb
+            ctx["bbox"] = bbox
 
         # update properties in batch
         if idx is not None:
@@ -158,7 +169,7 @@ class MixCollator(KDSingleCollator):
 
     def shuffle(self, item, permutation):
         if self.shuffle_mode == "roll":
-            return item.roll(1, 0), None
+            return item.roll(shifts=1, dims=0), None
         if self.shuffle_mode == "flip":
             assert len(item) % 2 == 0
             return item.flip(0), None
