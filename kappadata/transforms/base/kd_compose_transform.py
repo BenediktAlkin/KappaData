@@ -14,8 +14,6 @@ class KDComposeTransform(KDTransform):
             assert len(seeds) == len(set(seeds)), \
                 f"transforms of type KDStochasticTransform should use different seeds (found seeds {seeds})"
 
-
-
     def reset_seed(self):
         for t in self.transforms:
             if isinstance(t, KDStochasticTransform):

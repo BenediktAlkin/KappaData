@@ -1,5 +1,6 @@
-from .kd_image_norm import KDImageNorm
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
+
+from .kd_image_norm import KDImageNorm
 
 
 class KDImageNetNorm(KDImageNorm):

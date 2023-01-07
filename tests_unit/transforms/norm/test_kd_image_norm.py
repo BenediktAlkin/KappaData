@@ -19,4 +19,3 @@ class TestKDImageNorm(unittest.TestCase):
         self.assertTrue(torch.all(x == range_denormed))
         self.assertTrue(torch.all(x == denormed))
         self.assertTrue(torch.all(range_denormed == denormed))
-
