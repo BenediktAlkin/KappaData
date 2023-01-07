@@ -4,7 +4,6 @@ from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
 from kappadata.transforms.kd_random_grayscale import KDRandomGrayscale
 
 
-
 class TestKDComposeTransform(unittest.TestCase):
     def test_disallow_same_seed(self):
         with self.assertRaises(AssertionError) as ex:

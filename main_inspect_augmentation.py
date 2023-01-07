@@ -1,15 +1,16 @@
-from collections import defaultdict
+import random
 from argparse import ArgumentParser
+from collections import defaultdict
 from pathlib import Path
+
+import numpy as np
+import torch
+from PIL import Image
+from torchvision.datasets import ImageFolder
 from torchvision.transforms import Resize, ToPILImage
 from torchvision.transforms.functional import to_tensor, to_pil_image
-from torchvision.datasets import ImageFolder
 
 import kappadata as kd
-import torch
-import random
-import numpy as np
-from PIL import Image
 
 
 def parse_args():
@@ -21,12 +22,14 @@ def parse_args():
     parser.add_argument("--n_augs_per_image", type=int, default=16)
     return vars(parser.parse_args())
 
+
 def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
 
 def concat_images_square(images, padding):
     columns = int(np.ceil(np.sqrt(len(images))))

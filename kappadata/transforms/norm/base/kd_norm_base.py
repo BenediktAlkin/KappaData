@@ -1,6 +1,3 @@
-import torch
-from torchvision.transforms.functional import to_tensor, normalize
-
 from kappadata.transforms.base.kd_transform import KDTransform
 
 
