@@ -1,5 +1,7 @@
 ##
 
+- MLP used image_range_norm -> rename to kd_image_range_norm and adjust factory namespaces
+
 - new multiviewwrapper reset_seed; assert unequal seeds of all sub transforms
 
 
