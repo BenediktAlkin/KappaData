@@ -115,6 +115,46 @@ TRANSFORMS = {
         kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.KDRandomHorizontalFlip(),
     ]),
+    "BYOL-view0": kd.KDComposeTransform([
+        kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.KDRandomHorizontalFlip(),
+        kd.KDRandomColorJitter(
+            p=0.8,
+            brightness=0.4,
+            contrast=0.4,
+            saturation=0.2,
+            hue=0.1,
+        ),
+        kd.KDGaussianBlurPIL(sigma=(0.1, 2.0)),
+        kd.KDRandomGrayscale(p=0.2),
+    ]),
+    "BYOL-view1": kd.KDComposeTransform([
+        kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.KDRandomHorizontalFlip(),
+        kd.KDRandomColorJitter(
+            p=0.8,
+            brightness=0.4,
+            contrast=0.4,
+            saturation=0.2,
+            hue=0.1,
+        ),
+        kd.KDRandomGaussianBlurPIL(p=0.1, sigma=(0.1, 2.0)),
+        kd.KDRandomGrayscale(p=0.2),
+        kd.KDRandomSolarize(p=0.2, threshold=128),
+    ]),
+    "SIMCLR": kd.KDComposeTransform([
+        kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.KDRandomHorizontalFlip(),
+        kd.KDRandomColorJitter(
+            p=0.8,
+            brightness=0.8,
+            contrast=0.8,
+            saturation=0.8,
+            hue=0.2,
+        ),
+        kd.KDRandomGaussianBlurPIL(p=0.5, sigma=(0.1, 2.0)),
+        kd.KDRandomGrayscale(p=0.2),
+    ]),
     **get_randaug_transforms(),
 }
 COLLATORS = {
@@ -143,7 +183,7 @@ def main_single(folder, transform, collator, n_images, n_augs_per_image):
 
     # collect images
     ds = ImageFolder(root=folder)
-    indices = torch.randperm(n_images).tolist()
+    indices = torch.randperm(len(ds))[:n_images].tolist()
     all_images = defaultdict(list)
     for idx in indices:
         x, _ = ds[idx]
