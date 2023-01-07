@@ -16,8 +16,8 @@ import kappadata as kd
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--folder", type=str, required=True)
-    parser.add_argument("--transform", type=str, required=True, choices=TRANSFORMS.keys())
-    parser.add_argument("--collator", type=str, choices=COLLATORS.keys())
+    parser.add_argument("--transform", type=str, required=True, choices=list(TRANSFORMS.keys()) + ["all"])
+    parser.add_argument("--collator", type=str, choices=list(COLLATORS.keys()) + ["all"])
     parser.add_argument("--n_images", type=int, default=25)
     parser.add_argument("--n_augs_per_image", type=int, default=16)
     return vars(parser.parse_args())
@@ -42,6 +42,49 @@ def concat_images_square(images, padding):
         row = i // columns
         concated.paste(images[i], (w * col + padding * (col - 1), h * row + padding * (row - 1)))
     return concated
+
+
+class KDRandAugmentSingle(kd.KDRandAugment):
+    def __init__(self, aug_idx, **kwargs):
+        self.aug_idx = aug_idx
+        super().__init__(num_ops=1, apply_op_p=1., **kwargs)
+
+    def _get_ops(self):
+        return [super()._get_ops()[self.aug_idx]]
+
+    def _sample_transforms(self):
+        return [self.ops[0]]
+
+def get_randaug_transforms():
+    return {
+        f"RandAug-{key}": kd.KDComposeTransform([
+            Resize(size=(224, 224)),
+            KDRandAugmentSingle(
+                aug_idx=i,
+                magnitude=9,
+                magnitude_std=0.5,
+                interpolation="bicubic",
+                fill_color=(124, 116, 104),
+            ),
+        ])
+        for i, key in enumerate([
+            "auto_contrast",
+            "equalize",
+            "invert",
+            "rotate",
+            "posterize",
+            "solarize",
+            "solarize_add",
+            "color",
+            "contrast",
+            "brightness",
+            "sharpness",
+            "shear_x",
+            "shear_y",
+            "translate_horizontal",
+            "translate_vertical",
+        ])
+    }
 
 
 TRANSFORMS = {
@@ -72,6 +115,7 @@ TRANSFORMS = {
         kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.KDRandomHorizontalFlip(),
     ]),
+    **get_randaug_transforms(),
 }
 COLLATORS = {
     "MAE-finetune": kd.KDMixCollator(
@@ -86,7 +130,7 @@ COLLATORS = {
 }
 
 
-def main(folder, transform, collator, n_images, n_augs_per_image):
+def main_single(folder, transform, collator, n_images, n_augs_per_image):
     # setup
     set_seed(5)
     folder = Path(folder).expanduser()
@@ -94,6 +138,7 @@ def main(folder, transform, collator, n_images, n_augs_per_image):
 
     # initialize transforms
     noaug_transform = Resize(size=(224, 224))
+    transform_name = transform
     transform = TRANSFORMS[transform]
 
     # collect images
@@ -107,6 +152,7 @@ def main(folder, transform, collator, n_images, n_augs_per_image):
             all_images[idx].append(transform(x))
 
     # collate
+    collator_name = None if collator is None else collator
     if collator is not None:
         collator = COLLATORS[collator]
         keys = list(all_images.keys())
@@ -117,12 +163,32 @@ def main(folder, transform, collator, n_images, n_augs_per_image):
                 all_images[key][i] = to_pil_image(batch[0][j])
 
     # save images
-    out_dir = Path("temp")
-    out_dir.mkdir(exist_ok=True)
+    name = transform_name
+    if collator_name is not None:
+        name += f"--{collator_name}"
+    out_dir = Path("temp") / name
+    out_dir.mkdir(exist_ok=True, parents=True)
     for idx, images in all_images.items():
         img = concat_images_square(images=images, padding=2)
         img.save(out_dir / f"{idx}.png")
 
 
+def main():
+    args = parse_args()
+    if args["transform"] == "all":
+        transforms = list(TRANSFORMS.keys())
+    else:
+        transforms = [args["transform"]]
+    if args["collator"] == "all":
+        collators = [None] + list(COLLATORS.keys())
+    else:
+        collators = [args["collator"]]
+    for transform in transforms:
+        for collator in collators:
+            args["transform"] = transform
+            args["collator"] = collator
+            main_single(**args)
+
+
 if __name__ == "__main__":
-    main(**parse_args())
+    main()
