@@ -1,6 +1,5 @@
-import torchvision.transforms.functional as F
-
 from .kd_rand_augment import KDRandAugment
+
 
 class KDRandAugmentCustom(KDRandAugment):
     """

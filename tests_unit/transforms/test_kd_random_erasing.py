@@ -3,7 +3,6 @@ from unittest.mock import patch
 
 import numpy as np
 import torch
-# noinspection PyPackageRequirements
 from timm.data.random_erasing import RandomErasing
 
 from kappadata.transforms.kd_random_erasing import KDRandomErasing

@@ -1,7 +1,9 @@
+# dev requirements
 torch
 torchvision
-redis
 Pillow
 numpy
 einops
 joblib
+pyfakefs
+timm

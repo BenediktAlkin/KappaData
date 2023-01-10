@@ -1,5 +1,3 @@
-import math
-
 import numpy as np
 import torch
 import torchvision.transforms.functional as F
@@ -38,6 +36,7 @@ class KDRandAugment(KDStochasticTransform):
             magnitude_std: float = 0.,
             magnitude_min: float = 0.,
             magnitude_max: float = 10.,
+            apply_op_p: float = 0.5,
             **kwargs,
     ):
         super().__init__(**kwargs)
@@ -50,7 +49,22 @@ class KDRandAugment(KDStochasticTransform):
         if isinstance(interpolation, str):
             interpolation = InterpolationMode(interpolation)
         self.interpolation = interpolation
-        self.ops = [
+        self.ops = self._get_ops()
+        self.apply_op_p = apply_op_p
+        self.magnitude = magnitude / 10
+        self.magnitude_std = magnitude_std
+        self.magnitude_min = magnitude_min / 10
+        self.magnitude_max = magnitude_max / 10
+        if magnitude_std == 0.:
+            self.sample_magnitude = self._sample_magnitude_const
+        elif magnitude_std == float("inf"):
+            self.sample_magnitude = self._sample_magnitude_uniform
+        else:
+            self.sample_magnitude = self._sample_magnitude_normal
+        self.fill_color = tuple(fill_color)
+
+    def _get_ops(self):
+        return [
             # self.identity, # timm applies each transform with 50% probability
             self.auto_contrast,
             self.equalize,
@@ -68,17 +82,6 @@ class KDRandAugment(KDStochasticTransform):
             self.translate_horizontal,
             self.translate_vertical,
         ]
-        self.magnitude = magnitude / 10
-        self.magnitude_std = magnitude_std
-        self.magnitude_min = magnitude_min / 10
-        self.magnitude_max = magnitude_max / 10
-        if magnitude_std == 0.:
-            self.sample_magnitude = self._sample_magnitude_const
-        elif magnitude_std == float("inf"):
-            self.sample_magnitude = self._sample_magnitude_uniform
-        else:
-            self.sample_magnitude = self._sample_magnitude_normal
-        self.fill_color = fill_color
 
     def _sample_magnitude_const(self):
         return self.magnitude
@@ -98,7 +101,7 @@ class KDRandAugment(KDStochasticTransform):
         assert not torch.is_tensor(x), "some KDRandAugment transforms require input to be pillow image"
         transforms = self._sample_transforms()
         for transform in transforms:
-            if self.rng.random() < 0.5:
+            if self.rng.random() < self.apply_op_p:
                 x = transform(x, self.sample_magnitude())
         return x
 

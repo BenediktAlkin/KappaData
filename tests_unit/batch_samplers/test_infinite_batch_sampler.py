@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, RandomSampler, DistributedSampler, Sequ
 from kappadata.batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
 from kappadata.batch_samplers.infinite_batch_sampler_iterator import InfiniteBatchSamplerIterator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
-from tests_util.index_dataset import IndexDataset
+from tests_util.datasets.index_dataset import IndexDataset
 
 
 class TestInfiniteBatchSampler(unittest.TestCase):

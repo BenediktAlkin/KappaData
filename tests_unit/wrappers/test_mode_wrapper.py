@@ -3,7 +3,7 @@ import unittest
 from kappadata.datasets.kd_dataset import KDDataset
 from kappadata.datasets.kd_subset import KDSubset
 from kappadata.wrappers.mode_wrapper import ModeWrapper
-from tests_util.index_dataset import IndexDataset
+from tests_util.datasets.index_dataset import IndexDataset
 
 
 class TestModeWrapper(unittest.TestCase):
