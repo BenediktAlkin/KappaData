@@ -67,4 +67,9 @@ from .wrappers.mode_wrapper import ModeWrapper
 from .wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
 from .wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
 # utils
-from .utils.is_deterministic_transform import is_deterministic_transform, IsDeterministicTransformResult
+from .utils.is_deterministic_transform import (
+    is_deterministic_transform,
+    IsDeterministicTransformResult,
+    has_stochastic_transform_with_seed,
+    is_randomly_seeded_transform,
+)
