@@ -12,14 +12,14 @@ class KDColorJitter(KDStochasticTransform):
 
     def __call__(self, x, ctx=None):
         fn_idx, brightness_factor, contrast_factor, saturation_factor, hue_factor = self.get_params()
-        # if ctx is not None:
-        #     ctx["color_jitter"] = dict(
-        #         fn_idx=fn_idx,
-        #         brightness_factor=brightness_factor,
-        #         contrast_factor=contrast_factor,
-        #         saturation_factor=saturation_factor,
-        #         hue_factor=hue_factor,
-        #     )
+        if ctx is not None:
+            ctx["color_jitter"] = dict(
+                fn_idx=fn_idx.tolist(),
+                brightness_factor=brightness_factor,
+                contrast_factor=contrast_factor,
+                saturation_factor=saturation_factor,
+                hue_factor=hue_factor,
+            )
         for fn_id in fn_idx:
             if fn_id == 0 and brightness_factor is not None:
                 x = F.adjust_brightness(x, brightness_factor)
