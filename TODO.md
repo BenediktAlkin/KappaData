@@ -1,6 +1,5 @@
 ##
 
-- fix mix collator speed
 - use rng per sample (seed is set for each worker independently..per sample avoids this)
 - ComposeTransform.set_seed -> set different seed of all child transforms 
 - collator rng

@@ -95,55 +95,70 @@ class KDMixCollator(KDSingleCollator):
             raise NotImplementedError
 
         # sample parameters (use_cutmix, lamb, bbox)
+        permutation = None
         if self.lamb_mode == "batch":
             use_cutmix = self.rng.random() * self.total_p < self.cutmix_p
             alpha = self.cutmix_alpha if use_cutmix else self.mixup_alpha
             lamb = torch.tensor([self.rng.beta(alpha, alpha)])
-            if use_cutmix:
-                h, w = x.shape[2:]
-                bbox, lamb = self.get_random_bbox(h=h, w=w, lamb=lamb)
-                bbox = bbox.repeat(batch_size, 1)
-            else:
-                bbox = torch.full(size=(batch_size, 4), fill_value=-1)
-            use_cutmix = torch.tensor([use_cutmix]).repeat(batch_size)
+            # apply x
+            if x is not None:
+                x2, permutation = self.shuffle(item=x, permutation=permutation)
+                if use_cutmix:
+                    h, w = x.shape[2:]
+                    bbox, lamb = self.get_random_bbox(h=h, w=w, lamb=lamb)
+                    top, left, bot, right = bbox[0]
+                    x[..., top:bot, left:right] = x2[..., top:bot, left:right]
+                else:
+                    # bbox = torch.full(size=(4,), fill_value=-1)
+                    x_lamb = lamb.view(-1, *[1] * (x.ndim - 1))
+                    x.mul_(x_lamb).add_(x2.mul_((1. - x_lamb)))
+            # apply y
+            if y is not None:
+                y2, permutation = self.shuffle(item=y, permutation=permutation)
+                y_lamb = lamb.view(-1, 1)
+                y.mul_(y_lamb).add_(y2.mul_(1. - y_lamb))
         elif self.lamb_mode == "sample":
+            # sample
             use_cutmix = torch.from_numpy(self.rng.random(batch_size) * self.total_p) < self.cutmix_p
-            mixup_lamb, cutmix_lamb = 0., 0.
+            mixup_lamb, cutmix_lamb, bbox = None, None, None
             if self.mixup_p > 0.:
                 mixup_lamb = torch.from_numpy(self.rng.beta(self.mixup_alpha, self.mixup_alpha, size=batch_size))
+            else:
+                mixup_lamb = torch.empty(batch_size)
             if self.cutmix_p > 0.:
                 cutmix_lamb = torch.from_numpy(self.rng.beta(self.cutmix_alpha, self.cutmix_alpha, size=batch_size))
+                h, w = x.shape[2:]
+                bbox, cutmix_lamb = self.get_random_bbox(h=h, w=w, lamb=cutmix_lamb)
+            else:
+                cutmix_lamb = torch.empty(batch_size)
             lamb = torch.where(use_cutmix, cutmix_lamb, mixup_lamb).float()
-            h, w = x.shape[2:]
-            bbox, lamb = self.get_random_bbox(h=h, w=w, lamb=lamb)
+            # apply
+            if x is not None:
+                x2_indices, permutation = self.shuffle(item=torch.arange(batch_size), permutation=permutation)
+                x_clone = x.clone()
+                bbox_idx = 0
+                for i in range(batch_size):
+                    j = x2_indices[i]
+                    if use_cutmix[j]:
+                        top, left, bot, right = bbox[bbox_idx]
+                        x[i, ..., top:bot, left:right] = x_clone[j, ..., top:bot, left:right]
+                        bbox_idx += 1
+                    else:
+                        x_lamb = lamb[i].view(*[1] * (x.ndim - 1))
+                        x[i] = x[i].mul_(x_lamb).add_(x_clone[j].mul_(1 - x_lamb))
+            if y is not None:
+                y2, permutation = self.shuffle(item=y, permutation=permutation)
+                y_lamb = lamb.view(-1, 1)
+                y.mul_(y_lamb).add_(y2.mul_(1. - y_lamb))
         else:
             raise NotImplementedError
-
-        # apply
-        permutation = None
-        if x is not None:
-            bool_shape = (-1, *[1] * (x.ndim - 1))
-            x_lamb = lamb.view(*bool_shape)
-            x2, permutation = self.shuffle(item=x, permutation=permutation)
-            mixup_x = x * x_lamb + x2 * (1. - x_lamb)
-            cutmix_x = x.clone()
-            for i in range(batch_size):
-                top, left, bot, right = bbox[i]
-                cutmix_x[..., top:bot, left:right] = x2[..., top:bot, left:right]
-            mixed_x = torch.where(use_cutmix.view(*bool_shape), cutmix_x, mixup_x)
-            x = torch.where(apply.view(*bool_shape), mixed_x, x)
-        if y is not None:
-            y2, permutation = self.shuffle(item=y, permutation=permutation)
-            y_lamb = lamb.view(-1, 1)
-            mixed_y = y * y_lamb + y2 * (1. - y_lamb)
-            y = torch.where(apply.view(-1, 1), mixed_y, y)
 
         # book keeping
         if ctx is not None:
             ctx["apply"] = apply
             ctx["use_cutmix"] = use_cutmix
             ctx["lambda"] = lamb
-            ctx["bbox"] = bbox
+        #     ctx["bbox"] = bbox
 
         # update properties in batch
         if idx is not None:
@@ -182,5 +197,5 @@ class KDMixCollator(KDSingleCollator):
         if self.shuffle_mode == "random":
             if permutation is None:
                 permutation = self.rng.permutation(len(item))
-            return item.clone()[permutation], permutation
+            return item[permutation], permutation
         raise NotImplementedError
