@@ -1,6 +1,9 @@
 ##
 
-- MLP used image_range_norm -> rename to kd_image_range_norm and adjust factory namespaces
+- fix mix collator speed
+- use rng per sample (seed is set for each worker independently..per sample avoids this)
+- ComposeTransform.set_seed -> set different seed of all child transforms 
+- collator rng
 
 - new multiviewwrapper reset_seed; assert unequal seeds of all sub transforms
 

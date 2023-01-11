@@ -19,7 +19,7 @@ class KDColorJitter(KDStochasticTransform):
         #         contrast_factor=contrast_factor,
         #         saturation_factor=saturation_factor,
         #         hue_factor=hue_factor,
-        #     ) 
+        #     )
         for fn_id in fn_idx:
             if fn_id == 0 and brightness_factor is not None:
                 x = F.adjust_brightness(x, brightness_factor)
