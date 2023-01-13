@@ -32,6 +32,11 @@ class KDComposeTransform(KDTransform):
                 x = t(x)
         return x
 
+    def set_seed(self, seed):
+        for i, t in enumerate(self.transforms):
+            if isinstance(t, KDStochasticTransform):
+                t.set_seed(seed + i)
+
     def reset_seed(self):
         for t in self.transforms:
             if isinstance(t, KDStochasticTransform):

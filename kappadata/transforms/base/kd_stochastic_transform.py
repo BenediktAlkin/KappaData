@@ -9,6 +9,10 @@ class KDStochasticTransform(KDTransform):
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
+    def set_seed(self, seed):
+        self.seed = seed
+        self.rng = np.random.default_rng(seed=seed)
+
     def reset_seed(self):
         assert self.seed is not None
         self.rng = np.random.default_rng(seed=self.seed)
