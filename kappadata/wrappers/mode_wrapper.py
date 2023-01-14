@@ -30,8 +30,12 @@ class ModeWrapper(KDDataset):
         return item in mode.split(" ")
 
     @staticmethod
+    def get_item_index(mode, item):
+        return mode.split(" ").index(item)
+
+    @staticmethod
     def get_item(mode, item, batch):
-        idx = mode.split(" ").index(item)
+        idx = ModeWrapper.get_item_index(mode=mode, item=item)
         return batch[idx]
 
     @staticmethod

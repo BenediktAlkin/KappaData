@@ -37,7 +37,7 @@ class MultiViewWrapper(KDWrapper):
             for _ in range(config.n_views):
                 view_ctx = {}
                 if isinstance(config.transform, KDTransform):
-                    view = config.transform(sample, view_ctx)
+                    view = config.transform(sample, ctx=view_ctx)
                 else:
                     view = config.transform(sample)
                 x.append(view)

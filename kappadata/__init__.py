@@ -64,6 +64,7 @@ from .wrappers.dataset_wrappers.repeat_wrapper import RepeatWrapper
 from .wrappers.dataset_wrappers.shuffle_wrapper import ShuffleWrapper
 from .wrappers.dataset_wrappers.subset_wrapper import SubsetWrapper
 from .wrappers.mode_wrapper import ModeWrapper
+from .wrappers.torch_wrapper import TorchWrapper
 # wrappers.sample_wrappers
 from .wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
 from .wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
