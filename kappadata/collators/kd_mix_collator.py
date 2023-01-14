@@ -123,15 +123,17 @@ class KDMixCollator(KDSingleCollator):
             mixup_lamb, cutmix_lamb, bbox = None, None, None
             if self.mixup_p > 0.:
                 mixup_lamb = torch.from_numpy(self.rng.beta(self.mixup_alpha, self.mixup_alpha, size=batch_size))
+                mixup_lamb = mixup_lamb.float()
             else:
                 mixup_lamb = torch.empty(batch_size)
             if self.cutmix_p > 0.:
                 cutmix_lamb = torch.from_numpy(self.rng.beta(self.cutmix_alpha, self.cutmix_alpha, size=batch_size))
                 h, w = x.shape[2:]
                 bbox, cutmix_lamb = self.get_random_bbox(h=h, w=w, lamb=cutmix_lamb)
+                cutmix_lamb = cutmix_lamb.float()
             else:
                 cutmix_lamb = torch.empty(batch_size)
-            lamb = torch.where(use_cutmix, cutmix_lamb, mixup_lamb).float()
+            lamb = torch.where(use_cutmix, cutmix_lamb, mixup_lamb)
             # apply
             if x is not None:
                 x2_indices, permutation = self.shuffle(item=torch.arange(batch_size), permutation=permutation)

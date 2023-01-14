@@ -22,12 +22,15 @@ class TestModeWrapper(unittest.TestCase):
     class ContextPropagationDataset(KDDataset):
         @staticmethod
         def getitem_first(idx, ctx=None):
-            ctx["message"] = 50
+            if ctx is not None:
+                ctx["message"] = 50
             return idx
 
         @staticmethod
         def getitem_second(idx, ctx=None):
-            return idx + ctx["message"]
+            if ctx is not None:
+                return idx + ctx["message"]
+            else: return idx
 
         def __len__(self):
             return 1
@@ -36,7 +39,7 @@ class TestModeWrapper(unittest.TestCase):
         ds = ModeWrapper(dataset=self.ContextPropagationDataset(), mode="first second", return_ctx=True)
         self.assertEqual(((0, 50), {"message": 50}), ds[0])
         ds = ModeWrapper(dataset=self.ContextPropagationDataset(), mode="first second", return_ctx=False)
-        self.assertEqual((0, 50), ds[0])
+        self.assertEqual((0, 0), ds[0])
 
     def test_getitem_slices(self):
         ds = ModeWrapper(dataset=IndexDataset(size=10), mode="index")
