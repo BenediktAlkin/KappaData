@@ -92,6 +92,16 @@ TRANSFORMS = {
         kd.KDRandomResizedCrop(size=224, scale=(0.2, 1.0), interpolation="bicubic"),
         kd.KDRandomHorizontalFlip(),
     ]),
+    "MAE-pretrain-normalizepixels": kd.KDComposeTransform([
+        kd.KDRandomResizedCrop(size=224, scale=(0.2, 1.0), interpolation="bicubic"),
+        kd.KDRandomHorizontalFlip(),
+        kd.transforms.KDImageNetNorm(),
+        kd.transforms.PatchifyImage(patch_size=16),
+        kd.transforms.PatchwiseNorm(),
+        kd.transforms.UnpatchifyImage(),
+        kd.transforms.KDImageNetNorm(inverse=True),
+        ToPILImage(),
+    ]),
     "MAE-finetune": kd.KDComposeTransform([
         kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.KDRandomHorizontalFlip(),

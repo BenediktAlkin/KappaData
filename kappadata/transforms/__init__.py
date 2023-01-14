@@ -27,6 +27,7 @@ from .kd_random_resized_crop import KDRandomResizedCrop
 from .kd_random_solarize import KDRandomSolarize
 #
 from .patchify_image import PatchifyImage
+from .patchwise_norm import PatchwiseNorm
 from .patchwise_random_rotation import PatchwiseRandomRotation
 from .patchwise_shuffle import PatchwiseShuffle
 from .save_state_to_context_transform import SaveStateToContextTransform
