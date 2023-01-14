@@ -19,10 +19,17 @@ class TestTorchWrapper(unittest.TestCase):
         def __len__(self):
             return len(self.x)
 
-    def test(self):
+    def test_getitem(self):
         rng = torch.Generator().manual_seed(5)
         x = torch.randn(10, 5, generator=rng)
         y = torch.randint(15, size=(10,))
         ds = TorchWrapper(dataset=self.TorchDataset(x=x, y=y), mode="x class")
         ds = ModeWrapper(dataset=ds, mode="x", return_ctx=False)
         self.assertEqual(x.tolist(), torch.stack(ds[:]).tolist())
+
+    def test_getattr(self):
+        rng = torch.Generator().manual_seed(5)
+        x = torch.randn(10, 5, generator=rng)
+        y = torch.randint(15, size=(10,))
+        ds = TorchWrapper(dataset=self.TorchDataset(x=x, y=y), mode="x class")
+        self.assertEqual(y.tolist(), ds.y.tolist())
