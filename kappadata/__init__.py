@@ -67,7 +67,9 @@ from .wrappers.mode_wrapper import ModeWrapper
 from .wrappers.torch_wrapper import TorchWrapper
 # wrappers.sample_wrappers
 from .wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
+from .wrappers.sample_wrappers.multi_view_wrapper import MultiViewWrapper
 from .wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
+from .wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
 # utils
 from .utils.is_deterministic_transform import (
     is_deterministic_transform,
