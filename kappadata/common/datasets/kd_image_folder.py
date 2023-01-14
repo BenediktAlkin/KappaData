@@ -30,5 +30,9 @@ class KDImageFolder(KDDataset):
     def getitem_class(self, idx, ctx=None):
         return self.dataset.targets[idx]
 
+    @property
+    def n_classes(self):
+        return len(self.dataset.classes)
+
     def __len__(self):
         return len(self.dataset)
