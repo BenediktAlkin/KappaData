@@ -54,7 +54,7 @@ class ModeWrapper(KDDataset):
             idx = len(self) + idx
 
         items = []
-        ctx = {}
+        ctx = {} if self.return_ctx else None
         for getitem_fn in self._getitem_fns:
             item = getitem_fn(idx, ctx)
             items.append(item)
