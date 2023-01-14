@@ -89,12 +89,12 @@ def get_randaug_transforms():
 
 TRANSFORMS = {
     "MAE-pretrain": kd.KDComposeTransform([
-        kd.KDRandomResizedCrop(size=224, scale=(0.2, 1.0), interpolation="bicubic"),
-        kd.KDRandomHorizontalFlip(),
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.2, 1.0), interpolation="bicubic"),
+        kd.transforms.KDRandomHorizontalFlip(),
     ]),
     "MAE-pretrain-normalizepixels": kd.KDComposeTransform([
-        kd.KDRandomResizedCrop(size=224, scale=(0.2, 1.0), interpolation="bicubic"),
-        kd.KDRandomHorizontalFlip(),
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.2, 1.0), interpolation="bicubic"),
+        kd.transforms.KDRandomHorizontalFlip(),
         kd.transforms.KDImageNetNorm(),
         kd.transforms.PatchifyImage(patch_size=16),
         kd.transforms.PatchwiseNorm(),
@@ -103,67 +103,80 @@ TRANSFORMS = {
         ToPILImage(),
     ]),
     "MAE-finetune": kd.KDComposeTransform([
-        kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
-        kd.KDRandomHorizontalFlip(),
-        kd.KDRandAugment(
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDRandomHorizontalFlip(),
+        kd.transforms.KDRandAugment(
             num_ops=2,
             magnitude=9,
             magnitude_std=0.5,
             interpolation="bicubic",
             fill_color=(124, 116, 104),
         ),
-        kd.KDImageNetNorm(),
-        kd.KDRandomErasing(
+        kd.transforms.KDImageNetNorm(),
+        kd.transforms.KDRandomErasing(
             p=0.25,
             mode="pixelwise",
             max_count=1,
         ),
-        kd.KDImageNetNorm(inverse=True),
+        kd.transforms.KDImageNetNorm(inverse=True),
         ToPILImage(),
     ]),
     "SSL-probe": kd.KDComposeTransform([
-        kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
-        kd.KDRandomHorizontalFlip(),
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDRandomHorizontalFlip(),
     ]),
     "BYOL-view0": kd.KDComposeTransform([
-        kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
-        kd.KDRandomHorizontalFlip(),
-        kd.KDRandomColorJitter(
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDRandomHorizontalFlip(),
+        kd.transforms.KDRandomColorJitter(
             p=0.8,
             brightness=0.4,
             contrast=0.4,
             saturation=0.2,
             hue=0.1,
         ),
-        kd.KDGaussianBlurPIL(sigma=(0.1, 2.0)),
-        kd.KDRandomGrayscale(p=0.2),
+        kd.transforms.KDGaussianBlurPIL(sigma=(0.1, 2.0)),
+        kd.transforms.KDRandomGrayscale(p=0.2),
+    ]),
+    "BYOL-view0-torchvisionblur": kd.KDComposeTransform([
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDRandomHorizontalFlip(),
+        kd.transforms.KDRandomColorJitter(
+            p=0.8,
+            brightness=0.4,
+            contrast=0.4,
+            saturation=0.2,
+            hue=0.1,
+        ),
+        kd.transforms.KDGaussianBlurTV(kernel_size=23, sigma=(0.1, 2.0)),
+        kd.transforms.KDRandomGrayscale(p=0.2),
     ]),
     "BYOL-view1": kd.KDComposeTransform([
-        kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
-        kd.KDRandomHorizontalFlip(),
-        kd.KDRandomColorJitter(
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDRandomHorizontalFlip(),
+        kd.transforms.KDRandomColorJitter(
             p=0.8,
             brightness=0.4,
             contrast=0.4,
             saturation=0.2,
             hue=0.1,
         ),
-        kd.KDRandomGaussianBlurPIL(p=0.1, sigma=(0.1, 2.0)),
-        kd.KDRandomGrayscale(p=0.2),
-        kd.KDRandomSolarize(p=0.2, threshold=128),
+        kd.transforms.KDRandomGaussianBlurPIL(p=0.1, sigma=(0.1, 2.0)),
+        kd.transforms.KDRandomGrayscale(p=0.2),
+        kd.transforms.KDRandomSolarize(p=0.2, threshold=128),
     ]),
     "SIMCLR": kd.KDComposeTransform([
-        kd.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
-        kd.KDRandomHorizontalFlip(),
-        kd.KDRandomColorJitter(
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDRandomHorizontalFlip(),
+        kd.transforms.KDRandomColorJitter(
             p=0.8,
             brightness=0.8,
             contrast=0.8,
             saturation=0.8,
             hue=0.2,
         ),
-        kd.KDRandomGaussianBlurPIL(p=0.5, sigma=(0.1, 2.0)),
-        kd.KDRandomGrayscale(p=0.2),
+        kd.transforms.KDRandomGaussianBlurPIL(p=0.5, sigma=(0.1, 2.0)),
+        kd.transforms.KDRandomGrayscale(p=0.2),
     ]),
     **get_randaug_transforms(),
 }
