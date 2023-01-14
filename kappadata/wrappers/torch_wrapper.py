@@ -11,11 +11,12 @@ class TorchWrapper(KDDataset):
         self.mode = mode
 
     def __getattr__(self, item):
-        assert item.startswith("getitem_")
-        item = item[len("getitem_"):]
-        assert ModeWrapper.has_item(mode=self.mode, item=item)
-        item_idx = ModeWrapper.get_item_index(mode=self.mode, item=item)
-        return partial(self._getitem, item_idx=item_idx)
+        if item.startswith("getitem_"):
+            item = item[len("getitem_"):]
+            assert ModeWrapper.has_item(mode=self.mode, item=item)
+            item_idx = ModeWrapper.get_item_index(mode=self.mode, item=item)
+            return partial(self._getitem, item_idx=item_idx)
+        return getattr(self.dataset, item)
 
     # noinspection PyUnusedLocal
     def _getitem(self, idx, ctx=None, item_idx=None):
