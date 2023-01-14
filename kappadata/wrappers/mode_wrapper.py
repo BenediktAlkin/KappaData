@@ -9,6 +9,7 @@ class ModeWrapper(KDDataset):
         self.dataset = dataset
         self.mode = mode
         self.return_ctx = return_ctx
+        self.propagate_ctx = return_ctx
 
         self._getitem_fns = []
         self.items = mode.split(" ")
@@ -16,6 +17,7 @@ class ModeWrapper(KDDataset):
             if item == "index":
                 self._getitem_fns.append(self._getitem_index)
             elif item.startswith("ctx."):
+                self.propagate_ctx = True
                 ctx_key = item[len("ctx."):]
                 self._getitem_fns.append(partial(self._getitem_from_ctx, ctx_key=ctx_key))
             else:
@@ -54,7 +56,7 @@ class ModeWrapper(KDDataset):
             idx = len(self) + idx
 
         items = []
-        ctx = {} if self.return_ctx else None
+        ctx = {} if self.propagate_ctx else None
         for getitem_fn in self._getitem_fns:
             item = getitem_fn(idx, ctx)
             items.append(item)
