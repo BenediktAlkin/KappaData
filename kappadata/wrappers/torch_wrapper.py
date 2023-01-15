@@ -5,8 +5,8 @@ from .mode_wrapper import ModeWrapper
 from functools import partial
 
 class TorchWrapper(KDDataset):
-    def __init__(self, dataset, mode, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, dataset, mode):
+        super().__init__()
         self.dataset = dataset
         self.mode = mode
 

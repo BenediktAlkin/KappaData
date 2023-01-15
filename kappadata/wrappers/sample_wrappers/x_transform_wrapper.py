@@ -3,8 +3,8 @@ from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.transforms import KDComposeTransform, KDStochasticTransform
 
 class XTransformWrapper(KDWrapper):
-    def __init__(self, *args, transform, seed=None, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, dataset, transform, seed=None):
+        super().__init__(dataset=dataset)
         self.transform = transform
         self.seed = seed
 

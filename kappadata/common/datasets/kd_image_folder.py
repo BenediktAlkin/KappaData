@@ -10,9 +10,8 @@ class KDImageFolder(KDDataset):
             target_transform=None,
             loader=default_loader,
             is_valid_file=None,
-            **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__()
         self.dataset = ImageFolder(
             root=root,
             transform=transform,

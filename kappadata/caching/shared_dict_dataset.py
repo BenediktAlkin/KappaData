@@ -5,8 +5,8 @@ from .cached_dataset import CachedDataset
 
 
 class SharedDictDataset(CachedDataset):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, dataset, **kwargs):
+        super().__init__(dataset=dataset, **kwargs)
         manager = Manager()
         self.shared_dict = manager.dict()
 

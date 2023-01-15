@@ -3,8 +3,8 @@ from .kd_dataset import KDDataset
 
 
 class KDWrapper(KDDataset):
-    def __init__(self, dataset: KDDataset, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, dataset: KDDataset):
+        super().__init__()
         self.dataset = dataset
 
     def __len__(self):

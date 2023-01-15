@@ -4,8 +4,8 @@ from kappadata.datasets.kd_wrapper import KDWrapper
 
 
 class LabelSmoothingWrapper(KDWrapper):
-    def __init__(self, *args, smoothing, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, dataset, smoothing):
+        super().__init__(dataset=dataset)
         assert isinstance(smoothing, (int, float)) and 0. < smoothing < 1.
         self.smoothing = smoothing
 

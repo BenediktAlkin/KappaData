@@ -6,8 +6,8 @@ from kappadata.errors import UseModeWrapperException
 
 
 class KDDataset(Dataset):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self):
+        super().__init__()
         self.logger = logging.getLogger(type(self).__name__)
 
     def __len__(self):

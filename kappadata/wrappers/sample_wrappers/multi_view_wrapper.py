@@ -10,8 +10,8 @@ class MultiViewConfig:
 
 
 class MultiViewWrapper(KDWrapper):
-    def __init__(self, *args, configs, seed=None, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, dataset, configs, seed=None):
+        super().__init__(dataset=dataset)
         assert isinstance(configs, list)
         # copy to not alter the original list
         configs = [*configs]

@@ -74,7 +74,7 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
         # check if subfolders are zips (allow files such as a README inside the folder)
         items = os.listdir(src_path)
         zips = [item for item in items if item.endswith(".zip")]
-        if len(zip) > 0 and len(zips) >= len(items) // 2:
+        if len(zips) > 0 and len(zips) >= len(items) // 2:
             # extract all zip folders into dst (e.g. imagenet1k/train/n01558993.zip
             was_zip_classwise = True
             log(log_fn, f"extracting {len(zips)} zips from '{src_path}' to '{dst_path}' using {num_workers} workers")
