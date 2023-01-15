@@ -30,7 +30,8 @@ class TestModeWrapper(unittest.TestCase):
         def getitem_second(idx, ctx=None):
             if ctx is not None:
                 return idx + ctx["message"]
-            else: return idx
+            else:
+                return idx
 
         def __len__(self):
             return 1

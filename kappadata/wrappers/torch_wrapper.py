@@ -2,7 +2,7 @@ from functools import partial
 
 from kappadata.datasets.kd_dataset import KDDataset
 from .mode_wrapper import ModeWrapper
-from functools import partial
+
 
 class TorchWrapper(KDDataset):
     def __init__(self, dataset, mode):

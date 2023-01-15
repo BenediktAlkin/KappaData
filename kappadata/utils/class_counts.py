@@ -16,6 +16,7 @@ def get_class_counts_from_dataset(dataset):
     classes = [dataset.getitem_class(i) for i in range(len(dataset))]
     return get_class_counts(classes=classes, n_classes=dataset.n_classes)
 
+
 def get_class_counts_and_indices(dataset):
     # TODO inefficient implementation (e.g. https://stackoverflow.com/questions/30003068/how-to-get-a-list-of-all-indices-of-repeated-elements-in-a-numpy-array)
     classes = np.array([dataset.getitem_class(i) for i in range(len(dataset))])

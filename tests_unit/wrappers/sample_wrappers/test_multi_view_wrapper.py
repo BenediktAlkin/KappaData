@@ -1,9 +1,11 @@
-import torch
 import unittest
 
-from kappadata.wrappers.sample_wrappers.multi_view_wrapper import MultiViewConfig, MultiViewWrapper
+import torch
+
 from kappadata.transforms import AddGaussianNoiseTransform
+from kappadata.wrappers.sample_wrappers.multi_view_wrapper import MultiViewWrapper
 from tests_util.datasets.x_dataset import XDataset
+
 
 class TestMultiViewWrapper(unittest.TestCase):
     def test_2views(self):

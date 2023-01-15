@@ -8,7 +8,6 @@ from kappadata.batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
 from kappadata.batch_samplers.infinite_batch_sampler_iterator import InfiniteBatchSamplerIterator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from tests_util.datasets.index_dataset import IndexDataset
-from time import sleep
 
 
 class TestInfiniteBatchSampler(unittest.TestCase):
@@ -35,7 +34,6 @@ class TestInfiniteBatchSampler(unittest.TestCase):
     #     _, _, batch1 = next(iterator)
     #     self.assertEqual(list(range(8)), batch0.tolist())
     #     self.assertEqual(batch0.tolist(), batch1.tolist())
-
 
     def test(self):
         n_epochs = 20

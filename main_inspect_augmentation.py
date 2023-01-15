@@ -55,6 +55,7 @@ class KDRandAugmentSingle(kd.KDRandAugment):
     def _sample_transforms(self):
         return [self.ops[0]]
 
+
 def get_randaug_transforms():
     return {
         f"RandAug-{key}": kd.KDComposeTransform([

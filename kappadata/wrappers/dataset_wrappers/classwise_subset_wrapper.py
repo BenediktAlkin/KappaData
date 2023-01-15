@@ -1,8 +1,7 @@
-import numpy as np
-
 from kappadata.datasets.kd_subset import KDSubset
-from kappadata.utils.class_counts import get_class_counts_and_indices
 from kappadata.error_messages import too_little_samples_for_class
+from kappadata.utils.class_counts import get_class_counts_and_indices
+
 
 class ClasswiseSubsetWrapper(KDSubset):
     def __init__(
@@ -48,6 +47,5 @@ class ClasswiseSubsetWrapper(KDSubset):
                 sub_indices += all_indices[i][start_index:end_index].tolist()
         else:
             raise NotImplementedError
-
 
         super().__init__(dataset=dataset, indices=sub_indices)

@@ -1,6 +1,8 @@
 import torch
-from .base.kd_stochastic_transform import KDStochasticTransform
+
 from kappadata.utils.magnitude_sampler import MagnitudeSampler
+from .base.kd_stochastic_transform import KDStochasticTransform
+
 
 class AddGaussianNoiseTransform(KDStochasticTransform):
     def __init__(

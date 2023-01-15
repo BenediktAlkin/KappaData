@@ -1,6 +1,8 @@
-from kappadata.datasets.kd_dataset import KDDataset
 from torchvision.datasets import ImageFolder
 from torchvision.datasets.folder import default_loader
+
+from kappadata.datasets.kd_dataset import KDDataset
+
 
 class KDImageFolder(KDDataset):
     def __init__(

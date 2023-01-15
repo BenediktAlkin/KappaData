@@ -1,8 +1,10 @@
+import unittest
+
 import torch
 from torchvision.transforms.functional import to_pil_image, to_tensor
-import unittest
-from kappadata.transforms.kd_color_jitter import KDColorJitter
+
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
+from kappadata.transforms.kd_color_jitter import KDColorJitter
 from kappadata.transforms.kd_gaussian_blur_pil import KDGaussianBlurPIL
 from kappadata.transforms.kd_gaussian_blur_tv import KDGaussianBlurTV
 from kappadata.transforms.kd_rand_augment import KDRandAugment
@@ -16,6 +18,7 @@ from kappadata.transforms.kd_random_grayscale import KDRandomGrayscale
 from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
 from kappadata.transforms.kd_random_solarize import KDRandomSolarize
+
 
 class TestIsDeterministic(unittest.TestCase):
     @staticmethod
@@ -106,4 +109,3 @@ class TestIsDeterministic(unittest.TestCase):
     def test_random_solarize(self):
         self._run(KDRandomSolarize(p=0.25, threshold=128, seed=5), as_tensor=False)
         self._run(KDRandomSolarize(p=0.25, threshold=0.5, seed=5), as_tensor=True)
-

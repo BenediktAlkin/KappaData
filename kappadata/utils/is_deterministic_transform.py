@@ -1,6 +1,8 @@
 from dataclasses import dataclass
-from kappadata.transforms.base.kd_transform import KDTransform
+
 from kappadata.transforms.base.kd_stochastic_transform import KDStochasticTransform
+from kappadata.transforms.base.kd_transform import KDTransform
+
 
 @dataclass
 class IsDeterministicTransformResult:
@@ -24,6 +26,7 @@ class IsDeterministicTransformResult:
     def is_randomly_seeded(self):
         return is_randomly_seeded_transform(self.deterministic_transforms)
 
+
 def _transform_to_transforms(transform):
     # import is here due to circular dependency
     from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
@@ -33,14 +36,17 @@ def _transform_to_transforms(transform):
         return transform.transforms
     return [transform]
 
+
 def is_randomly_seeded_transform(transform):
     transforms = _transform_to_transforms(transform)
     seeds = [t.seed for t in transforms if isinstance(t, KDStochasticTransform) and t.seed is not None]
     return len(seeds) == len(set(seeds))
 
+
 def has_stochastic_transform_with_seed(transform):
     transforms = _transform_to_transforms(transform)
     return any(t.seed is not None for t in transforms if isinstance(t, KDStochasticTransform))
+
 
 def is_deterministic_transform(transform) -> IsDeterministicTransformResult:
     transforms = _transform_to_transforms(transform)

@@ -2,6 +2,7 @@ import einops
 
 from .base.kd_transform import KDTransform
 
+
 class PatchwiseNorm(KDTransform):
     def __call__(self, x, ctx=None):
         assert x.ndim == 4, "PatchwiseNorm expects (channels, sequence_length, patch_height, patch_width) input"

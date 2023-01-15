@@ -1,11 +1,10 @@
-import numpy as np
 import torch
 import torchvision.transforms.functional as F
 from PIL import Image
 from torchvision.transforms import InterpolationMode
 
-from .base.kd_stochastic_transform import KDStochasticTransform
 from kappadata.utils.magnitude_sampler import MagnitudeSampler
+from .base.kd_stochastic_transform import KDStochasticTransform
 
 
 class KDRandAugment(KDStochasticTransform):

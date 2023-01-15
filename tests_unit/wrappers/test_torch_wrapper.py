@@ -2,6 +2,7 @@ import unittest
 
 import torch
 from torch.utils.data import Dataset
+
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.wrappers.torch_wrapper import TorchWrapper
 

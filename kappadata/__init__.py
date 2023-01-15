@@ -56,6 +56,13 @@ from .transforms.patchwise_random_rotation import PatchwiseRandomRotation
 from .transforms.patchwise_shuffle import PatchwiseShuffle
 from .transforms.save_state_to_context_transform import SaveStateToContextTransform
 from .transforms.unpatchify_image import UnpatchifyImage
+# utils
+from .utils.is_deterministic_transform import (
+    is_deterministic_transform,
+    IsDeterministicTransformResult,
+    has_stochastic_transform_with_seed,
+    is_randomly_seeded_transform,
+)
 # wrappers.dataset_wrappers
 from .wrappers.dataset_wrappers.class_filter_wrapper import ClassFilterWrapper
 from .wrappers.dataset_wrappers.oversampling_wrapper import OversamplingWrapper
@@ -64,16 +71,9 @@ from .wrappers.dataset_wrappers.repeat_wrapper import RepeatWrapper
 from .wrappers.dataset_wrappers.shuffle_wrapper import ShuffleWrapper
 from .wrappers.dataset_wrappers.subset_wrapper import SubsetWrapper
 from .wrappers.mode_wrapper import ModeWrapper
-from .wrappers.torch_wrapper import TorchWrapper
 # wrappers.sample_wrappers
 from .wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
 from .wrappers.sample_wrappers.multi_view_wrapper import MultiViewWrapper
 from .wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
 from .wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
-# utils
-from .utils.is_deterministic_transform import (
-    is_deterministic_transform,
-    IsDeterministicTransformResult,
-    has_stochastic_transform_with_seed,
-    is_randomly_seeded_transform,
-)
+from .wrappers.torch_wrapper import TorchWrapper

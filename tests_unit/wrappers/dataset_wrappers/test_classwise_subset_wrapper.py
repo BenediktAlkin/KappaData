@@ -1,12 +1,12 @@
 import unittest
+from itertools import chain
 
+from kappadata.error_messages import too_little_samples_for_class
+from kappadata.utils.class_counts import get_class_counts_from_dataset
 from kappadata.wrappers.dataset_wrappers.classwise_subset_wrapper import ClasswiseSubsetWrapper
 from kappadata.wrappers.dataset_wrappers.shuffle_wrapper import ShuffleWrapper
 from tests_util.datasets.class_dataset import ClassDataset
 from tests_util.datasets.classification_dataset import ClassificationDataset
-from itertools import chain
-from kappadata.utils.class_counts import get_class_counts_from_dataset
-from kappadata.error_messages import too_little_samples_for_class
 
 
 class TestClasswiseSubsetWrapper(unittest.TestCase):

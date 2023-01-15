@@ -1,7 +1,10 @@
+from dataclasses import dataclass
+
 import numpy as np
+
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.transforms import KDTransform, KDComposeTransform, KDStochasticTransform
-from dataclasses import dataclass
+
 
 @dataclass
 class MultiViewConfig:

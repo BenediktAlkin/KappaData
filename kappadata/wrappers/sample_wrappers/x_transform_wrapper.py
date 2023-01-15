@@ -1,6 +1,8 @@
 import numpy as np
+
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.transforms import KDComposeTransform, KDStochasticTransform
+
 
 class XTransformWrapper(KDWrapper):
     def __init__(self, dataset, transform, seed=None):

@@ -4,7 +4,7 @@
 - ImageNet/CIFAR norms should be in common
 
 - use rng per sample (seed is set for each worker independently..per sample avoids this)
-- ComposeTransform.set_seed -> set different seed of all child transforms 
+- ComposeTransform.set_seed -> set different seed of all child transforms
 - collator rng
 
 - new multiviewwrapper reset_seed; assert unequal seeds of all sub transforms

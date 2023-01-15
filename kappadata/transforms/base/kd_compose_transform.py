@@ -1,18 +1,18 @@
+from kappadata.utils.is_deterministic_transform import has_stochastic_transform_with_seed, is_deterministic_transform
 from .kd_random_apply_base import KDRandomApplyBase
 from .kd_stochastic_transform import KDStochasticTransform
 from .kd_transform import KDTransform
-from kappadata.utils.is_deterministic_transform import has_stochastic_transform_with_seed, is_deterministic_transform
+
 
 class KDComposeTransform(KDTransform):
     def __init__(self, transforms, check_consistent_seeds=True):
         self.transforms = transforms
         if check_consistent_seeds:
             if has_stochastic_transform_with_seed(transforms):
-                assert is_deterministic_transform(transforms).all_kd_transforms_are_deterministic,\
+                assert is_deterministic_transform(transforms).all_kd_transforms_are_deterministic, \
                     f"transforms of type KDStochasticTransform within a KDComposeTransform should have: " \
                     f"1. seed is set for all KDStochasticTransforms or for none + " \
                     f"2. the seeds should be different to avoid patterns"
-
 
         # retrieve original_probs for rescaling apply probabilities
         self.original_probs = {

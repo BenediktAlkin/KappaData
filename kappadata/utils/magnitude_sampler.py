@@ -1,5 +1,5 @@
 import numpy as np
-from functools import partial
+
 
 class MagnitudeSampler:
     def __init__(

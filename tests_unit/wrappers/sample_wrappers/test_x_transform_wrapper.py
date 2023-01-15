@@ -2,9 +2,9 @@ import unittest
 
 import torch
 
+from kappadata.transforms import AddGaussianNoiseTransform
 from kappadata.wrappers.sample_wrappers import XTransformWrapper
 from tests_util.datasets.x_dataset import XDataset
-from kappadata.transforms import AddGaussianNoiseTransform
 
 
 class TestXTransformWrapper(unittest.TestCase):

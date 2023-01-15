@@ -1,5 +1,6 @@
 import kappadata.collators as kdc
 
+
 class MAEFinetuneMixCollator(kdc.KDComposeCollator):
     def __init__(self):
         mix_collator = kdc.KDMixCollator(
