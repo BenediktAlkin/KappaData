@@ -13,5 +13,9 @@ class KDStochasticTransform(KDTransform):
         assert self.seed is not None
         self.rng = np.random.default_rng(seed=self.seed)
 
+    def set_rng(self, rng):
+        assert self.seed is None, "can't use set_rng on transforms with seed"
+        self.rng = rng
+
     def __call__(self, x, ctx=None):
         raise NotImplementedError

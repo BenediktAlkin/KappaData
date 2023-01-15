@@ -1,6 +1,6 @@
+import numpy as np
 from kappadata.datasets.kd_wrapper import KDWrapper
-from kappadata.transforms.base.kd_transform import KDTransform
-
+from kappadata.transforms import KDTransform, KDComposeTransform, KDStochasticTransform
 from dataclasses import dataclass
 
 @dataclass
@@ -10,8 +10,8 @@ class MultiViewConfig:
 
 
 class MultiViewWrapper(KDWrapper):
-    def __init__(self, configs, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, configs, seed=None, **kwargs):
+        super().__init__(*args, **kwargs)
         assert isinstance(configs, list)
         # copy to not alter the original list
         configs = [*configs]
@@ -27,13 +27,19 @@ class MultiViewWrapper(KDWrapper):
 
         self.transform_configs = configs
         self.n_views = sum(config.n_views for config in configs)
+        self.seed = seed
 
     def getitem_x(self, idx, ctx=None):
         sample = self.dataset.getitem_x(idx)
-
         x = []
-        counter = 0
+        i = 0
         for config in self.transform_configs:
+            # set rng of transforms
+            if self.seed is not None:
+                rng = np.random.default_rng(seed=self.seed + idx)
+                if isinstance(config.transform, (KDComposeTransform, KDStochasticTransform)):
+                    config.transform.set_rng(rng)
+            # sample views
             for _ in range(config.n_views):
                 view_ctx = {}
                 if isinstance(config.transform, KDTransform):
@@ -42,6 +48,6 @@ class MultiViewWrapper(KDWrapper):
                     view = config.transform(sample)
                 x.append(view)
                 if ctx is not None:
-                    ctx[f"view{counter}"] = view_ctx
-                    counter += 1
+                    ctx[f"view{i}"] = view_ctx
+                    i += 1
         return x

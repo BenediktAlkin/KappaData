@@ -5,6 +5,7 @@ from PIL import Image
 from torchvision.transforms import InterpolationMode
 
 from .base.kd_stochastic_transform import KDStochasticTransform
+from kappadata.utils.magnitude_sampler import MagnitudeSampler
 
 
 class KDRandAugment(KDStochasticTransform):
@@ -41,26 +42,19 @@ class KDRandAugment(KDStochasticTransform):
     ):
         super().__init__(**kwargs)
         assert isinstance(num_ops, int) and 0 <= num_ops
-        assert isinstance(magnitude, int) and 0 <= magnitude <= 10
-        assert isinstance(magnitude_std, float) and 0. <= magnitude_std
-        assert isinstance(magnitude_min, float) and 0. <= magnitude_min <= magnitude
-        assert isinstance(magnitude_max, float) and magnitude <= magnitude <= 10.
+        assert isinstance(magnitude, (int, float)) and 0 <= magnitude <= 10
         self.num_ops = num_ops
         if isinstance(interpolation, str):
             interpolation = InterpolationMode(interpolation)
         self.interpolation = interpolation
         self.ops = self._get_ops()
         self.apply_op_p = apply_op_p
-        self.magnitude = magnitude / 10
-        self.magnitude_std = magnitude_std
-        self.magnitude_min = magnitude_min / 10
-        self.magnitude_max = magnitude_max / 10
-        if magnitude_std == 0.:
-            self.sample_magnitude = self._sample_magnitude_const
-        elif magnitude_std == float("inf"):
-            self.sample_magnitude = self._sample_magnitude_uniform
-        else:
-            self.sample_magnitude = self._sample_magnitude_normal
+        self.magnitude_sampler = MagnitudeSampler(
+            magnitude=magnitude / 10,
+            magnitude_std=magnitude_std,
+            magnitude_min=magnitude_min / 10,
+            magnitude_max=magnitude_max / 10,
+        )
         self.fill_color = tuple(fill_color)
 
     def _get_ops(self):
@@ -83,17 +77,6 @@ class KDRandAugment(KDStochasticTransform):
             self.translate_vertical,
         ]
 
-    def _sample_magnitude_const(self):
-        return self.magnitude
-
-    def _sample_magnitude_uniform(self):
-        return self.rng.uniform(self.magnitude_min, self.magnitude)
-
-    def _sample_magnitude_normal(self):
-        sampled = self.magnitude + self.rng.normal(0, self.magnitude_std / 10)
-        # convert to python float to be consistent with other sampling value dtypes (np.clip converts to np.float64)
-        return float(np.clip(sampled, self.magnitude_min, self.magnitude_max))
-
     def _sample_transforms(self):
         return self.rng.choice(self.ops, size=self.num_ops)
 
@@ -102,7 +85,7 @@ class KDRandAugment(KDStochasticTransform):
         transforms = self._sample_transforms()
         for transform in transforms:
             if self.rng.random() < self.apply_op_p:
-                x = transform(x, self.sample_magnitude())
+                x = transform(x, self.magnitude_sampler.sample(self.rng))
         return x
 
     @staticmethod

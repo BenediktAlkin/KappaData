@@ -36,6 +36,11 @@ class KDComposeTransform(KDTransform):
             if isinstance(t, KDStochasticTransform):
                 t.reset_seed()
 
+    def set_rng(self, rng):
+        for t in self.transforms:
+            if isinstance(t, KDStochasticTransform):
+                t.set_rng(rng)
+
     def scale_probs(self, scale):
         for i, original_prob in self.original_probs.items():
             self.transforms[i].p = original_prob * scale

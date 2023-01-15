@@ -8,6 +8,7 @@ from kappadata.batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
 from kappadata.batch_samplers.infinite_batch_sampler_iterator import InfiniteBatchSamplerIterator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from tests_util.datasets.index_dataset import IndexDataset
+from time import sleep
 
 
 class TestInfiniteBatchSampler(unittest.TestCase):
@@ -18,6 +19,23 @@ class TestInfiniteBatchSampler(unittest.TestCase):
     @staticmethod
     def random_sampler_ctor(dataset, seed):
         return RandomSampler(dataset, generator=torch.Generator().manual_seed(seed))
+
+    # very slow unittest and it is basically already tested below
+    # def test_prefetch_next_epoch(self):
+    #     ds = ModeWrapper(dataset=IndexDataset(size=8), mode="x")
+    #     batch_sampler = InfiniteBatchSampler(
+    #         sampler=self.sequential_sampler_ctor(dataset=ds),
+    #         batch_size=8,
+    #         drop_last=False,
+    #     )
+    #     infinite_loader = InfiniteBatchSamplerIterator(DataLoader(ds, batch_sampler=batch_sampler, num_workers=1))
+    #     iterator = iter(infinite_loader)
+    #     sleep(0.1)
+    #     _, _, batch0 = next(iterator)
+    #     _, _, batch1 = next(iterator)
+    #     self.assertEqual(list(range(8)), batch0.tolist())
+    #     self.assertEqual(batch0.tolist(), batch1.tolist())
+
 
     def test(self):
         n_epochs = 20

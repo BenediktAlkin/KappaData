@@ -1,12 +1,14 @@
 # base
 from .base.kd_compose_transform import KDComposeTransform
 from .base.kd_transform import KDTransform
+from .base.kd_stochastic_transform import KDStochasticTransform
 # norm
 from .norm.kd_cifar10_norm import KDCifar10Norm
 from .norm.kd_image_net_norm import KDImageNetNorm
 from .norm.kd_image_norm import KDImageNorm
 from .norm.kd_image_range_norm import KDImageRangeNorm
 # augs
+from .add_gaussian_noise_transform import AddGaussianNoiseTransform
 from .image_pos_embed_grid import ImagePosEmbedGrid
 from .image_pos_embed_sincos import ImagePosEmbedSincos
 #
