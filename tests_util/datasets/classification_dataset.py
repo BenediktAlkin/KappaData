@@ -10,13 +10,15 @@ class ClassificationDataset(KDDataset):
         self.x = x
         self.classes = classes
 
-    def getitem_x(self, idx, _=None):
+    # noinspection PyUnusedLocal
+    def getitem_x(self, idx, ctx=None):
         x = self.x[idx]
         if torch.is_tensor(x):
             x = x.clone()
         return x
 
-    def getitem_class(self, idx, _=None):
+    # noinspection PyUnusedLocal
+    def getitem_class(self, idx, ctx=None):
         return self.classes[idx]
 
     @property

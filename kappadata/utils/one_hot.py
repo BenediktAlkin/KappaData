@@ -8,11 +8,13 @@ def to_one_hot_vector(y, n_classes):
     if y.ndim == 0:
         y = one_hot(y, num_classes=n_classes)
     assert y.ndim == 1
-    return y
+    # one_hot returns int
+    return y.float()
 
 
 def to_one_hot_matrix(y, n_classes):
     if y.ndim == 1:
         y = one_hot(y, num_classes=n_classes)
     assert y.ndim == 2
-    return y
+    # one_hot returns int
+    return y.float()

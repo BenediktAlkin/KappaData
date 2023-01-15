@@ -36,6 +36,8 @@ class KDMixCollator(KDSingleCollator):
         assert isinstance(mixup_p, (int, float)) and 0. <= mixup_p <= 1., f"invalid mixup_p {mixup_p}"
         assert isinstance(cutmix_p, (int, float)) and 0. <= cutmix_p <= 1., f"invalid mixup_p {mixup_p}"
         assert 0. < mixup_p + cutmix_p <= 1., f"0 < mixup_p + cutmix_p <= 1 (got {mixup_p + cutmix_p})"
+        if mixup_p + cutmix_p != 1.:
+            raise NotImplementedError
 
         # check alphas
         if mixup_p == 0.:
