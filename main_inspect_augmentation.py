@@ -179,6 +179,18 @@ TRANSFORMS = {
         kd.transforms.KDRandomGaussianBlurPIL(p=0.5, sigma=(0.1, 2.0)),
         kd.transforms.KDRandomGrayscale(p=0.2),
     ]),
+    "GaussianBlur-sigma=0.1": kd.KDComposeTransform([
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDGaussianBlurPIL(sigma=0.1),
+    ]),
+    "GaussianBlur-sigma=1.0": kd.KDComposeTransform([
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDGaussianBlurPIL(sigma=1.0),
+    ]),
+    "GaussianBlur-sigma=2.0": kd.KDComposeTransform([
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDGaussianBlurPIL(sigma=2.0),
+    ]),
     **get_randaug_transforms(),
 }
 COLLATORS = {
