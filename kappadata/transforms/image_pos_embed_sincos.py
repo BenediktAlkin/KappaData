@@ -7,6 +7,7 @@ from .base.kd_transform import KDTransform
 
 class ImagePosEmbedSincos(KDTransform):
     def __init__(self, dim=4):
+        super().__init__()
         assert dim % 4 == 0
         self.dim = dim
 

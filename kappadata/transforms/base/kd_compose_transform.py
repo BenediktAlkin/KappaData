@@ -6,6 +6,7 @@ from .kd_transform import KDTransform
 
 class KDComposeTransform(KDTransform):
     def __init__(self, transforms, check_consistent_seeds=True):
+        super().__init__()
         self.transforms = transforms
         if check_consistent_seeds:
             if has_stochastic_transform_with_seed(transforms):
@@ -15,6 +16,7 @@ class KDComposeTransform(KDTransform):
                     f"2. the seeds should be different to avoid patterns"
 
         # retrieve original_probs for rescaling apply probabilities
+        # TODO this should be handled from KDRandomApplyBase
         self.original_probs = {
             i: transform.p
             for i, transform in enumerate(self.transforms)
@@ -31,6 +33,7 @@ class KDComposeTransform(KDTransform):
                 x = t(x)
         return x
 
+    # TODO reset_seed is deprecated
     def reset_seed(self):
         for t in self.transforms:
             if isinstance(t, KDStochasticTransform):

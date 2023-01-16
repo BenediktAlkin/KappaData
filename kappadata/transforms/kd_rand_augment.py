@@ -50,7 +50,7 @@ class KDRandAugment(KDStochasticTransform):
         self.apply_op_p = apply_op_p
         self.magnitude_sampler = MagnitudeSampler(
             magnitude=magnitude / 10,
-            magnitude_std=magnitude_std,
+            magnitude_std=magnitude_std / 10,
             magnitude_min=magnitude_min / 10,
             magnitude_max=magnitude_max / 10,
         )

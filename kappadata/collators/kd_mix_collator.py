@@ -65,6 +65,7 @@ class KDMixCollator(KDSingleCollator):
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
+    # TODO reset_seed is deprecated
     def reset_seed(self):
         self.rng = np.random.default_rng(seed=seed)
 

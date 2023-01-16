@@ -8,6 +8,7 @@ from .base.kd_transform import KDTransform
 
 class PatchifyImage(KDTransform):
     def __init__(self, patch_size):
+        super().__init__()
         patch_size = to_2tuple(patch_size)
         self.patch_h, self.patch_w = patch_size
         assert isinstance(self.patch_h, int) and self.patch_h > 0

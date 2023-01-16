@@ -6,6 +6,7 @@ from .base.kd_transform import KDTransform
 
 class SaveStateToContextTransform(KDTransform):
     def __init__(self, state_name):
+        super().__init__()
         self.state_name = state_name
 
     def __call__(self, x, ctx=None):

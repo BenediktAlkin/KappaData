@@ -6,9 +6,11 @@ from .kd_transform import KDTransform
 class KDStochasticTransform(KDTransform):
     def __init__(self, seed=None):
         super().__init__()
+        # TODO seed
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
+    # TODO reset_seed is deprecated
     def reset_seed(self):
         assert self.seed is not None
         self.rng = np.random.default_rng(seed=self.seed)

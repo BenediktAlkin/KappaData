@@ -31,6 +31,6 @@ class MagnitudeSampler:
         return rng.uniform(self.magnitude_min, self.magnitude)
 
     def _sample_normal(self, rng):
-        sampled = self.magnitude + rng.normal(0, self.magnitude_std / 10)
+        sampled = self.magnitude + rng.normal(0, self.magnitude_std)
         # convert to python float to be consistent with other sampling value dtypes (np.clip converts to np.float64)
         return float(np.clip(sampled, self.magnitude_min, self.magnitude_max))
