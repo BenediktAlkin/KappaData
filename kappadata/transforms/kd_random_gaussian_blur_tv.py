@@ -8,6 +8,7 @@ class KDRandomGaussianBlurTV(KDRandomApplyBase):
         seed = self.seed + 1 if self.seed is not None else None
         self.gaussian_blur = KDGaussianBlurTV(kernel_size=kernel_size, sigma=sigma, seed=seed)
 
+    # TODO reset_seed is deprecated
     def reset_seed(self):
         super().reset_seed()
         self.gaussian_blur.reset_seed()

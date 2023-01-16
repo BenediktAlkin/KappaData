@@ -14,6 +14,7 @@ class KDRandomColorJitter(KDRandomApplyBase):
             seed=seed
         )
 
+    # TODO reset_seed is deprecated
     def reset_seed(self):
         super().reset_seed()
         self.color_jitter.reset_seed()
