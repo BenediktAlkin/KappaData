@@ -8,20 +8,13 @@ class KDComposeTransform(KDTransform):
     def __init__(self, transforms, check_consistent_seeds=True):
         super().__init__()
         self.transforms = transforms
+        # TODO seeds are deprecated
         if check_consistent_seeds:
             if has_stochastic_transform_with_seed(transforms):
                 assert is_deterministic_transform(transforms).all_kd_transforms_are_deterministic, \
                     f"transforms of type KDStochasticTransform within a KDComposeTransform should have: " \
                     f"1. seed is set for all KDStochasticTransforms or for none + " \
                     f"2. the seeds should be different to avoid patterns"
-
-        # retrieve original_probs for rescaling apply probabilities
-        # TODO this should be handled from KDRandomApplyBase
-        self.original_probs = {
-            i: transform.p
-            for i, transform in enumerate(self.transforms)
-            if isinstance(transform, KDRandomApplyBase)
-        }
 
     def __call__(self, x, ctx=None):
         if ctx is None:
@@ -44,9 +37,10 @@ class KDComposeTransform(KDTransform):
             if isinstance(t, KDStochasticTransform):
                 t.set_rng(rng)
 
-    def scale_probs(self, scale):
-        for i, original_prob in self.original_probs.items():
-            self.transforms[i].p = original_prob * scale
+    def _scale_strength(self, factor):
+        for t in self.transforms:
+            if isinstance(t, KDTransform):
+                t.scale_strength(factor)
 
     def reset_probs(self):
         for i, original_prob in self.original_probs.items():

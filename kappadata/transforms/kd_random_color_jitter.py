@@ -19,5 +19,8 @@ class KDRandomColorJitter(KDRandomApplyBase):
         super().reset_seed()
         self.color_jitter.reset_seed()
 
+    def _scale_strength(self, factor):
+        self.color_jitter.scale_strength(factor)
+
     def forward(self, x, ctx):
         return self.color_jitter(x, ctx)

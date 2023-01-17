@@ -20,6 +20,10 @@ class AddGaussianNoiseTransform(KDStochasticTransform):
             magnitude_min=magnitude_min,
             magnitude_max=magnitude_max,
         )
+        self.strength = self.og_strength = 1.
+
+    def _scale_strength(self, factor):
+        self.strength = factor
 
     def __call__(self, x, ctx=None):
         magnitude = self.magnitude_sampler.sample(self.rng)

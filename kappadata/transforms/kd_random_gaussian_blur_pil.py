@@ -13,5 +13,8 @@ class KDRandomGaussianBlurPIL(KDRandomApplyBase):
         super().reset_seed()
         self.gaussian_blur.reset_seed()
 
+    def _scale_strength(self, factor):
+        self.gaussian_blur.scale_strength(factor)
+
     def forward(self, x, ctx):
         return self.gaussian_blur(x, ctx)

@@ -1,9 +1,11 @@
-# base
 # augs
 from .add_gaussian_noise_transform import AddGaussianNoiseTransform
+# base
 from .base.kd_compose_transform import KDComposeTransform
+from .base.kd_scheduled_transform import KDScheduledTransform
 from .base.kd_stochastic_transform import KDStochasticTransform
 from .base.kd_transform import KDTransform
+# augs
 from .image_pos_embed_grid import ImagePosEmbedGrid
 from .image_pos_embed_sincos import ImagePosEmbedSincos
 #

@@ -7,9 +7,14 @@ from .base.kd_stochastic_transform import KDStochasticTransform
 class KDGaussianBlurPIL(KDStochasticTransform):
     def __init__(self, sigma, **kwargs):
         super().__init__(**kwargs)
-        # GaussianBlur preprocesses the parameters -> just use original implementation to store parameters
+        # GaussianBlur preprocesses the parameters
         # kernel size is not used here as PIL doesn't use a kernel_size
-        self.tv_gaussianblur = GaussianBlur(kernel_size=1, sigma=sigma)
+        tv_gaussianblur = GaussianBlur(kernel_size=1, sigma=sigma)
+        self.sigma_lb = tv_gaussianblur.sigma[0]
+        self.sigma_ub = self.og_sigma_ub = tv_gaussianblur.sigma[0]
+
+    def _scale_strength(self, factor):
+        self.sigma_ub = self.sigma_lb + (self.og_sigma_ub - self.sigma_lb) * factor
 
     def __call__(self, x, ctx=None):
         sigma = self.get_params()
@@ -18,4 +23,4 @@ class KDGaussianBlurPIL(KDStochasticTransform):
         return x.filter(ImageFilter.GaussianBlur(radius=sigma))
 
     def get_params(self):
-        return self.rng.uniform(self.tv_gaussianblur.sigma[0], self.tv_gaussianblur.sigma[1])
+        return self.rng.uniform(self.sigma_lb, self.sigma_ub)

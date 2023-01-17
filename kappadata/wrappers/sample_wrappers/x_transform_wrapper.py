@@ -1,7 +1,7 @@
 import numpy as np
 
 from kappadata.datasets.kd_wrapper import KDWrapper
-from kappadata.transforms import KDComposeTransform, KDStochasticTransform
+from kappadata.transforms import KDComposeTransform, KDStochasticTransform, KDTransform
 
 
 class XTransformWrapper(KDWrapper):
@@ -17,3 +17,7 @@ class XTransformWrapper(KDWrapper):
             if isinstance(self.transform, (KDComposeTransform, KDStochasticTransform)):
                 self.transform.set_rng(rng)
         return self.transform(x)
+
+    def worker_init_fn(self, rank, **kwargs):
+        if isinstance(self.transform, KDTransform):
+            self.transform.worker_init_fn(rank, **kwargs)

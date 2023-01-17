@@ -7,8 +7,45 @@ from .base.kd_stochastic_transform import KDStochasticTransform
 class KDColorJitter(KDStochasticTransform):
     def __init__(self, brightness, contrast, saturation, hue, **kwargs):
         super().__init__(**kwargs)
-        # ColorJitter preprocesses the parameters -> just use original implementation to store parameters
-        self.tv_colorjitter = ColorJitter(brightness=brightness, contrast=contrast, saturation=saturation, hue=hue)
+        # ColorJitter preprocesses the parameters
+        tv_colorjitter = ColorJitter(brightness=brightness, contrast=contrast, saturation=saturation, hue=hue)
+        # store for scaling strength
+        if tv_colorjitter.brightness is not None:
+            self.brightness_lb = self.og_brightness_lb = tv_colorjitter.brightness[0]
+            self.brightness_ub = self.og_brightness_ub = tv_colorjitter.brightness[1]
+        else:
+            self.brightness_lb = None
+        if tv_colorjitter.contrast is not None:
+            self.contrast_lb = self.og_contrast_lb = tv_colorjitter.contrast[0]
+            self.contrast_ub = self.og_contrast_ub = tv_colorjitter.contrast[1]
+        else:
+            self.contrast_lb = None
+        if tv_colorjitter.saturation is not None:
+            self.saturation_lb = self.og_saturation_lb = tv_colorjitter.saturation[0]
+            self.saturation_ub = self.og_saturation_ub = tv_colorjitter.saturation[1]
+        else:
+            self.saturation_lb = None
+        if tv_colorjitter.hue is not None:
+            self.hue_lb = self.og_hue_lb = tv_colorjitter.hue[0]
+            self.hue_ub = self.og_hue_ub = tv_colorjitter.hue[1]
+        else:
+            self.hue_lb = None
+
+    def _scale_strength(self, factor):
+        # brightness/contrast/saturation are centered at 1. and should be >= 0
+        if self.brightness_lb is not None:
+            self.brightness_lb = max(0, 1 - (1 - self.og_brightness_lb) * factor)
+            self.brightness_ub = 1. + (1. - self.og_brightness_ub) * factor
+        if self.contrast_lb is not None:
+            self.contrast_lb = max(0, 1 - (1 - self.og_contrast_lb) * factor)
+            self.contrast_ub = 1. + (1. - self.og_contrast_ub) * factor
+        if self.saturation_lb is not None:
+            self.saturation_lb = max(0, 1 - (1 - self.og_saturation_lb) * factor)
+            self.saturation_ub = 1. + (1. - self.og_saturation_ub) * factor
+        # hue is centered at 0. and -0.5 <= hue <= 0.5
+        if self.hue_lb is not None:
+            self.hue_lb = max(-0.5, self.og_hue_lb * factor)
+            self.hue_ub = max(0.5, self.og_hue_ub * factor)
 
     def __call__(self, x, ctx=None):
         fn_idx, brightness_factor, contrast_factor, saturation_factor, hue_factor = self.get_params()
@@ -32,16 +69,11 @@ class KDColorJitter(KDStochasticTransform):
         return x
 
     def get_params(self):
-        brightness = self.tv_colorjitter.brightness
-        contrast = self.tv_colorjitter.contrast
-        saturation = self.tv_colorjitter.saturation
-        hue = self.tv_colorjitter.hue
-
         fn_idx = self.rng.permutation(4)
 
-        b = None if brightness is None else self.rng.uniform(brightness[0], brightness[1])
-        c = None if contrast is None else self.rng.uniform(contrast[0], contrast[1])
-        s = None if saturation is None else self.rng.uniform(saturation[0], saturation[1])
-        h = None if hue is None else self.rng.uniform(hue[0], hue[1])
+        b = None if self.brightness_lb is None else self.rng.uniform(self.brightness_lb, self.brightness_ub)
+        c = None if self.contrast_lb is None else self.rng.uniform(self.contrast_lb, self.contrast_ub)
+        s = None if self.saturation_lb is None else self.rng.uniform(self.saturation_lb, self.saturation_ub)
+        h = None if self.hue_lb is None else self.rng.uniform(self.hue_lb, self.hue_ub)
 
         return fn_idx, b, c, s, h
