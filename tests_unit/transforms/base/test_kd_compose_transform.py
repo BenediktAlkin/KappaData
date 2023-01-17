@@ -26,7 +26,7 @@ class TestKDComposeTransform(unittest.TestCase):
             KDRandomGrayscale(p=0.2, seed=5),
         ], check_consistent_seeds=False)
 
-    def test_scale_probs(self):
+    def test_scale_strength(self):
         grayscale = KDRandomGrayscale(p=0.2)
         blur = KDRandomGaussianBlurPIL(p=1.0, sigma=(0.1, 2.0))
         transform = KDComposeTransform([
@@ -34,7 +34,8 @@ class TestKDComposeTransform(unittest.TestCase):
             blur,
             KDImageNetNorm(),
         ])
-        for scale in torch.linspace(0, 1, 11).tolist():
-            transform.scale_probs(scale)
-            self.assertEqual(0.2 * scale, grayscale.p)
-            self.assertEqual(scale, blur.p)
+        for factor in torch.linspace(0, 1, 11).tolist():
+            transform.scale_strength(factor)
+            self.assertEqual(0.2 * factor, grayscale.p)
+            self.assertEqual(0.1, blur.gaussian_blur.sigma_lb)
+            self.assertEqual(0.1 + (2.0 - 0.1) * factor, blur.gaussian_blur.sigma_ub)

@@ -11,7 +11,7 @@ class KDGaussianBlurPIL(KDStochasticTransform):
         # kernel size is not used here as PIL doesn't use a kernel_size
         tv_gaussianblur = GaussianBlur(kernel_size=1, sigma=sigma)
         self.sigma_lb = tv_gaussianblur.sigma[0]
-        self.sigma_ub = self.og_sigma_ub = tv_gaussianblur.sigma[0]
+        self.sigma_ub = self.og_sigma_ub = tv_gaussianblur.sigma[1]
 
     def _scale_strength(self, factor):
         self.sigma_ub = self.sigma_lb + (self.og_sigma_ub - self.sigma_lb) * factor

@@ -41,7 +41,3 @@ class KDComposeTransform(KDTransform):
         for t in self.transforms:
             if isinstance(t, KDTransform):
                 t.scale_strength(factor)
-
-    def reset_probs(self):
-        for i, original_prob in self.original_probs.items():
-            self.transforms.p = original_prob
