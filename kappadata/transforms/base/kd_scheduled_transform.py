@@ -1,15 +1,18 @@
 from .kd_transform import KDTransform
 from torch.utils.data import get_worker_info
+from kappaschedules import ScheduleBase, LinearIncreasing
 
 class KDScheduledTransform(KDTransform):
-    def __init__(self, transform: KDTransform):
+    def __init__(self, transform: KDTransform, schedule: ScheduleBase = None):
         super().__init__()
         self.transform = transform
         self.rank = None
         self.num_workers = None
         self.batch_size = None
         self.n_batches = None
-        self.counter = 0
+        self.sample_counter = 0
+        # default to linear from 0 to 1
+        self.schedule = schedule or LinearIncreasing()
 
     def worker_init_fn(
             self,
@@ -54,12 +57,11 @@ class KDScheduledTransform(KDTransform):
     def __call__(self, x, ctx=None):
         # caulculate progress
         assert self.n_batches is not None, "call KDScheduledTransform.worker_init_fn before applying the transform"
-        batch_idx = self.counter // self.batch_size * self.num_workers + self.rank
-        # TODO schedules
-        progress = batch_idx / (self.n_batches - 1)
-        self.counter += 1
+        batch_idx = self.sample_counter // self.batch_size * self.num_workers + self.rank
+        strength = self.schedule.get_value(batch_idx, self.n_batches)
+        self.sample_counter += 1
 
         # scale
-        self.transform.scale_strength(progress)
+        self.transform.scale_strength(strength)
 
         return self.transform(x, ctx=ctx)

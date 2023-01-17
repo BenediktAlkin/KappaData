@@ -7,3 +7,4 @@ einops
 joblib
 pyfakefs
 timm
+kappaschedules
