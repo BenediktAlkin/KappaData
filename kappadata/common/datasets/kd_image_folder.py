@@ -16,15 +16,16 @@ class KDImageFolder(KDDataset):
         super().__init__()
         self.dataset = ImageFolder(
             root=root,
-            transform=transform,
             target_transform=target_transform,
             loader=loader,
             is_valid_file=is_valid_file,
         )
+        self.transform = transform
 
     # noinspection PyUnusedLocal
     def getitem_x(self, idx, ctx=None):
         x, _ = self.dataset[idx]
+        x = self.transform(x, ctx=ctx)
         return x
 
     # noinspection PyUnusedLocal

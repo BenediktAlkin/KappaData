@@ -1,26 +1,18 @@
 import torchvision.transforms.functional as F
 
 from .base.kd_random_apply_base import KDRandomApplyBase
-
+from .kd_solarize import KDSolarize
 
 class KDRandomSolarize(KDRandomApplyBase):
     def __init__(self, threshold, **kwargs):
         super().__init__(**kwargs)
-        self.threshold = self.og_threshold = threshold
+        self.solarize = KDSolarize(threshold=threshold, ctx_prefix=self.ctx_prefix)
 
     def _scale_strength(self, factor):
-        # PIL -> threshold >= 256 -> no augmentation
-        # tensor -> threshold >= 1. -> no augmentation
-        if isinstance(self.og_threshold, int):
-            # PIL
-            self.threshold = int(256 - (256 - self.og_threshold) * factor)
-        elif isinstance(self.og_threshold, float):
-            # tensor
-            self.threshold = 1. - (1. - self.og_threshold) * factor
-        else:
-            raise NotImplementedError
+        self.solarize.scale_strength(factor)
+
+    def _populate_ctx_on_skip(self, ctx):
+        ctx[self.solarize.ctx_key] = -1
 
     def forward(self, x, ctx):
-        # if ctx is not None:
-        #     ctx["random_solarize"] = True
-        return F.solarize(x, self.threshold)
+        return self.solarize(x, ctx=ctx)

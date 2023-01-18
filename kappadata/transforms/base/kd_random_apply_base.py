@@ -10,7 +10,13 @@ class KDRandomApplyBase(KDStochasticTransform):
         apply = self.rng.uniform() < self.p
         if apply:
             return self.forward(x, ctx)
+        if ctx is not None:
+            self._populate_ctx_on_skip(ctx)
         return x
+
+    def _populate_ctx_on_skip(self, ctx):
+        # TODO this should be mandatory
+        pass
 
     def forward(self, x, ctx):
         raise NotImplementedError
