@@ -16,15 +16,11 @@ class ClassFilterWrapper(KDSubset):
         if valid_class_names is not None:
             assert valid_classes is None and invalid_classes is None and invalid_class_names is None
             class_names = np.array(dataset.class_names)
-            valid_classes = np.argwhere(np.isin(class_names, valid_class_names))
-            # TODO
-            raise NotImplementedError("not tested")
+            valid_classes = np.squeeze(np.argwhere(np.isin(class_names, valid_class_names)), axis=1).tolist()
         if invalid_class_names is not None:
             assert valid_classes is None and invalid_classes is None and valid_class_names is None
             class_names = np.array(dataset.class_names)
-            invalid_classes = np.argwhere(~np.isin(class_names, invalid_class_names))
-            # TODO
-            raise NotImplementedError("not tested")
+            invalid_classes = np.squeeze(np.argwhere(np.isin(class_names, invalid_class_names)), axis=1).tolist()
 
         # check params and make unique
         self._check_params(valid_classes=valid_classes, invalid_classes=invalid_classes)

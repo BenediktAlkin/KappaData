@@ -21,3 +21,21 @@ class TestClassFilterWrapper(unittest.TestCase):
         ds = ClassFilterWrapper(ClassDataset(classes=[0, 1, 1, 1, 5, 3, 1, 0, 3, 2, 1]), invalid_classes=[1])
         self.assertEqual(6, len(ds))
         self.assertEqual([0, 5, 3, 0, 3, 2], [ds.getitem_class(i) for i in range(len(ds))])
+
+    def test_valid_class_names(self):
+        ds = ClassDataset(
+            classes=[0, 1, 1, 1, 5, 3, 1, 0, 3, 2, 1],
+            class_names=["zero", "one", "two", "three", "four", "five"],
+        )
+        ds = ClassFilterWrapper(ds, valid_class_names=["one", "five"])
+        self.assertEqual(6, len(ds))
+        self.assertEqual([1, 1, 1, 5, 1, 1], [ds.getitem_class(i) for i in range(len(ds))])
+
+    def test_invalid_class_names(self):
+        ds = ClassDataset(
+            classes=[0, 1, 1, 1, 5, 3, 1, 0, 3, 2, 1],
+            class_names=["zero", "one", "two", "three", "four", "five"],
+        )
+        ds = ClassFilterWrapper(ds, invalid_class_names=["one", "five"])
+        self.assertEqual(5, len(ds))
+        self.assertEqual([0, 3, 0, 3, 2], [ds.getitem_class(i) for i in range(len(ds))])
