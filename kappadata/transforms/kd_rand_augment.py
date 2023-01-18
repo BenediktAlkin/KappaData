@@ -160,8 +160,6 @@ class KDRandAugment(KDStochasticTransform):
         # timm has multiple versions but the RandAug uses [0, 4]
         # timm notes that AutoAugment uses [4, 8] while TF EfficientNet uses [0, 4]
         bits = 4 - int(4 * magnitude)
-        # TODO
-        # assert bits > 0
         return F.posterize(x, bits)
 
     def contrast(self, x, magnitude):

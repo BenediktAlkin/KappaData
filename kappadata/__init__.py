@@ -47,7 +47,6 @@ from .transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from .transforms.kd_random_resized_crop import KDRandomResizedCrop
 from .transforms.kd_random_solarize import KDRandomSolarize
 # transforms norm
-from .transforms.norm.kd_cifar10_norm import KDCifar10Norm
 from .transforms.norm.kd_image_net_norm import KDImageNetNorm
 from .transforms.norm.kd_image_norm import KDImageNorm
 from .transforms.norm.kd_image_range_norm import KDImageRangeNorm
