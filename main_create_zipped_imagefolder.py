@@ -17,6 +17,7 @@ def parse_args():
 
 def main(src, dst, classwise):
     if classwise:
+        assert not str(dst).endswith(".zip"), "pass --dst without the .zip ending (appended automatically)"
         create_zipped_imagefolder_classwise(src=src, dst=dst)
     else:
         shutil.make_archive(src, "zip", dst)
