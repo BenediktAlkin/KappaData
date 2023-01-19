@@ -3,7 +3,7 @@ from .kd_color_jitter import KDColorJitter
 
 
 class KDRandomColorJitter(KDRandomApplyBase):
-    def __init__(self, brightness, contrast, saturation, hue, **kwargs):
+    def __init__(self, brightness=0, contrast=0, saturation=0, hue=0, **kwargs):
         super().__init__(**kwargs)
         seed = self.seed + 1 if self.seed is not None else None
         self.color_jitter = KDColorJitter(

@@ -5,7 +5,7 @@ from .base.kd_stochastic_transform import KDStochasticTransform
 
 
 class KDColorJitter(KDStochasticTransform):
-    def __init__(self, brightness, contrast, saturation, hue, **kwargs):
+    def __init__(self, brightness=0, contrast=0, saturation=0, hue=0, **kwargs):
         super().__init__(**kwargs)
         # ColorJitter preprocesses the parameters
         tv_colorjitter = ColorJitter(brightness=brightness, contrast=contrast, saturation=saturation, hue=hue)
@@ -56,10 +56,10 @@ class KDColorJitter(KDStochasticTransform):
         fn_idx, brightness_factor, contrast_factor, saturation_factor, hue_factor = self.get_params()
         if ctx is not None:
             ctx[self.ctx_key_fn_idx] = fn_idx.tolist()
-            ctx[self.ctx_key_brightness] = brightness_factor
-            ctx[self.ctx_key_contrast] = contrast_factor
-            ctx[self.ctx_key_saturation] = saturation_factor
-            ctx[self.ctx_key_hue] = hue_factor
+            ctx[self.ctx_key_brightness] = brightness_factor or -1
+            ctx[self.ctx_key_contrast] = contrast_factor or -1
+            ctx[self.ctx_key_saturation] = saturation_factor or -1
+            ctx[self.ctx_key_hue] = hue_factor or -1
         for fn_id in fn_idx:
             if fn_id == 0 and brightness_factor is not None:
                 x = F.adjust_brightness(x, brightness_factor)
