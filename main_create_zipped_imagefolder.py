@@ -17,9 +17,9 @@ def parse_args():
 
 def main(src, dst, classwise):
     if classwise:
-        shutil.make_archive(src, "zip", dst)
-    else:
         create_zipped_imagefolder_classwise(src=src, dst=dst)
+    else:
+        shutil.make_archive(src, "zip", dst)
 
 
 if __name__ == "__main__":
