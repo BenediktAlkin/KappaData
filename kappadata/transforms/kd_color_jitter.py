@@ -30,6 +30,11 @@ class KDColorJitter(KDStochasticTransform):
             self.hue_ub = self.og_hue_ub = tv_colorjitter.hue[1]
         else:
             self.hue_lb = None
+        self.ctx_key_fn_idx = f"{self.ctx_prefix}.fn_idx"
+        self.ctx_key_brightness = f"{self.ctx_prefix}.brightness"
+        self.ctx_key_contrast = f"{self.ctx_prefix}.contrast"
+        self.ctx_key_saturation = f"{self.ctx_prefix}.saturation"
+        self.ctx_key_hue = f"{self.ctx_prefix}.hue"
 
     def _scale_strength(self, factor):
         # brightness/contrast/saturation are centered at 1. and should be >= 0
@@ -49,14 +54,12 @@ class KDColorJitter(KDStochasticTransform):
 
     def __call__(self, x, ctx=None):
         fn_idx, brightness_factor, contrast_factor, saturation_factor, hue_factor = self.get_params()
-        # if ctx is not None:
-        #     ctx["color_jitter"] = dict(
-        #         fn_idx=fn_idx.tolist(),
-        #         brightness_factor=brightness_factor,
-        #         contrast_factor=contrast_factor,
-        #         saturation_factor=saturation_factor,
-        #         hue_factor=hue_factor,
-        #     )
+        if ctx is not None:
+            ctx[self.ctx_key_fn_idx] = fn_idx.tolist()
+            ctx[self.ctx_key_brightness] = brightness_factor
+            ctx[self.ctx_key_contrast] = contrast_factor
+            ctx[self.ctx_key_saturation] = saturation_factor
+            ctx[self.ctx_key_hue] = hue_factor
         for fn_id in fn_idx:
             if fn_id == 0 and brightness_factor is not None:
                 x = F.adjust_brightness(x, brightness_factor)
