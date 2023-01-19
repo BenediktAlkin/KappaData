@@ -25,4 +25,3 @@ class KDSolarize(KDTransform):
         if ctx is not None:
             ctx[self.ctx_key] = self.threshold
         return F.solarize(x, self.threshold)
-

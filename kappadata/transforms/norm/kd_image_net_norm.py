@@ -2,6 +2,7 @@ from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 
 from .kd_image_norm import KDImageNorm
 
+
 # TODO remove this
 class KDImageNetNorm(KDImageNorm):
     def __init__(self, **kwargs):

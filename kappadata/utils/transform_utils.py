@@ -1,8 +1,10 @@
 from functools import partial
-from torchvision.transforms import Normalize
-from kappadata.transforms.norm.base.kd_norm_base import KDNormBase
+
 from torchvision.transforms import Compose
+from torchvision.transforms import Normalize
+
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
+from kappadata.transforms.norm.base.kd_norm_base import KDNormBase
 
 
 def flatten_transform(transform):
@@ -15,6 +17,7 @@ def flatten_transform(transform):
         return result
     return [transform]
 
+
 def get_norm_transform(transform):
     transforms = flatten_transform(transform)
     norm_transforms = [transform for transform in transforms if isinstance(transform, (Normalize, KDNormBase))]
@@ -22,6 +25,7 @@ def get_norm_transform(transform):
         return None
     assert len(norm_transforms) == 1
     return norm_transforms[0]
+
 
 def get_denorm_transform(transform, inplace=False):
     norm_transform = get_norm_transform(transform)

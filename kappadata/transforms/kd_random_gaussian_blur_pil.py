@@ -16,7 +16,6 @@ class KDRandomGaussianBlurPIL(KDRandomApplyBase):
     def _populate_ctx_on_skip(self, ctx):
         ctx[self.gaussian_blur.ctx_key] = -1
 
-
     def _scale_strength(self, factor):
         self.gaussian_blur.scale_strength(factor)
 

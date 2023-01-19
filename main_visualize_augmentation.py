@@ -5,7 +5,6 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from PIL import Image
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import Resize, ToPILImage
 from torchvision.transforms.functional import to_tensor, to_pil_image
@@ -78,7 +77,6 @@ def get_randaug_transforms():
             ("(10,inf)", 10, float("inf")),
         ]
     }
-
 
 
 TRANSFORMS = {

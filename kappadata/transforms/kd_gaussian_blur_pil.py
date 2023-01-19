@@ -14,7 +14,6 @@ class KDGaussianBlurPIL(KDStochasticTransform):
         self.sigma_ub = self.og_sigma_ub = tv_gaussianblur.sigma[1]
         self.ctx_key = f"{self.ctx_prefix}.sigma"
 
-
     def _scale_strength(self, factor):
         self.sigma_ub = self.sigma_lb + (self.og_sigma_ub - self.sigma_lb) * factor
 

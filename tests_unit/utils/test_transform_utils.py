@@ -1,10 +1,13 @@
-import torch
 import unittest
+
+import torch
 from torchvision.transforms import Compose, Normalize
-from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
+
 from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
+from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
 from kappadata.transforms.norm.kd_image_range_norm import KDImageRangeNorm
 from kappadata.utils.transform_utils import flatten_transform, get_denorm_transform, get_norm_transform
+
 
 class TestTransformUtils(unittest.TestCase):
     def _test_flatten_transforms(self, compose_ctor):

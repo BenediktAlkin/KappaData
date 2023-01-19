@@ -1,6 +1,8 @@
-from .kd_transform import KDTransform
-from torch.utils.data import get_worker_info
 from kappaschedules import ScheduleBase, LinearIncreasing
+from torch.utils.data import get_worker_info
+
+from .kd_transform import KDTransform
+
 
 class KDScheduledTransform(KDTransform):
     def __init__(self, transform: KDTransform, schedule: ScheduleBase = None):

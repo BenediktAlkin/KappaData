@@ -1,5 +1,3 @@
-
-
 class IdCounter:
     __counter = 0
 

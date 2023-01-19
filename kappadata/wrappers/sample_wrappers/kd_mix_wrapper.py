@@ -1,10 +1,11 @@
-import torch
 import numpy as np
+import torch
 
-from kappadata.error_messages import KD_MIX_WRAPPER_REQUIRES_SEED_OR_CONTEXT
 from kappadata.datasets.kd_wrapper import KDWrapper
+from kappadata.error_messages import KD_MIX_WRAPPER_REQUIRES_SEED_OR_CONTEXT
 from kappadata.utils.id_counter import IdCounter
 from kappadata.utils.one_hot import to_one_hot_vector
+
 
 class KDMixWrapper(KDWrapper):
     def __init__(

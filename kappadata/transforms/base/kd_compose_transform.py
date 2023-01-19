@@ -1,5 +1,4 @@
 from kappadata.utils.is_deterministic_transform import has_stochastic_transform_with_seed, is_deterministic_transform
-from .kd_random_apply_base import KDRandomApplyBase
 from .kd_stochastic_transform import KDStochasticTransform
 from .kd_transform import KDTransform
 

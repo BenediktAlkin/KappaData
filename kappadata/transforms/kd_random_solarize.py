@@ -1,7 +1,6 @@
-import torchvision.transforms.functional as F
-
 from .base.kd_random_apply_base import KDRandomApplyBase
 from .kd_solarize import KDSolarize
+
 
 class KDRandomSolarize(KDRandomApplyBase):
     def __init__(self, threshold, **kwargs):

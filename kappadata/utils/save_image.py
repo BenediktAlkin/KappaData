@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 
+
 def concat_images_square(images, padding):
     columns = int(np.ceil(np.sqrt(len(images))))
     rows = int(np.ceil(len(images) / columns))
