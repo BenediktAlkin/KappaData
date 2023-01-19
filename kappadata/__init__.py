@@ -17,6 +17,9 @@ from .collators.base.kd_compose_collator import KDComposeCollator
 from .collators.base.kd_single_collator import KDSingleCollator
 from .collators.kd_mix_collator import KDMixCollator
 from .collators.pad_sequences_collator import PadSequencesCollator
+# common
+from .common.transforms.norm.kd_cifar10_norm import KDCifar10Norm
+from .common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 # copying
 from .copying import (
     copy_imagefolder_from_global_to_local,
@@ -47,7 +50,6 @@ from .transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from .transforms.kd_random_resized_crop import KDRandomResizedCrop
 from .transforms.kd_random_solarize import KDRandomSolarize
 # transforms norm
-from .transforms.norm.kd_image_net_norm import KDImageNetNorm
 from .transforms.norm.kd_image_norm import KDImageNorm
 from .transforms.norm.kd_image_range_norm import KDImageRangeNorm
 from .transforms.patchify_image import PatchifyImage
