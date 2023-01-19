@@ -4,8 +4,8 @@ from .kd_transform import KDTransform
 
 
 class KDStochasticTransform(KDTransform):
-    def __init__(self, seed=None):
-        super().__init__()
+    def __init__(self, seed=None, **kwargs):
+        super().__init__(**kwargs)
         # TODO seed
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)

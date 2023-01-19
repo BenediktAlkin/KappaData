@@ -46,12 +46,12 @@ class KDRandAugmentSingle(kd.KDRandAugment):
 
 def get_randaug_transforms():
     return {
-        f"RandAug-{key}": kd.KDComposeTransform([
+        f"RandAug{mag_name}-{key}": kd.KDComposeTransform([
             Resize(size=(224, 224)),
             KDRandAugmentSingle(
                 aug_idx=i,
-                magnitude=9,
-                magnitude_std=0.5,
+                magnitude=mag,
+                magnitude_std=mag_std,
                 interpolation="bicubic",
                 fill_color=(124, 116, 104),
             ),
@@ -73,7 +73,12 @@ def get_randaug_transforms():
             "translate_horizontal",
             "translate_vertical",
         ])
+        for mag_name, mag, mag_std in [
+            ("(9,0.5)", 9, 0.5),
+            ("(10,inf)", 10, float("inf")),
+        ]
     }
+
 
 
 TRANSFORMS = {
