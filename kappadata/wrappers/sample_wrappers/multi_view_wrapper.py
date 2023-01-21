@@ -55,7 +55,7 @@ class MultiViewWrapper(KDWrapper):
                     i += 1
         return x
 
-    def worker_init_fn(self, rank, **kwargs):
+    def _worker_init_fn(self, rank, **kwargs):
         for config in self.transform_configs:
             if isinstance(config.transform, KDTransform):
                 config.transform.worker_init_fn(rank, **kwargs)

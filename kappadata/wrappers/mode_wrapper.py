@@ -100,6 +100,9 @@ class ModeWrapper(KDDataset):
     def all_wrapper_types(self):
         return [type(self)] + self.dataset.all_wrapper_types
 
+    def worker_init_fn(self, rank, **kwargs):
+        self.dataset.worker_init_fn(rank, **kwargs)
+
     def __getattr__(self, item):
         if item == "dataset":
             return getattr(super(), item)

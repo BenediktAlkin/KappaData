@@ -43,8 +43,8 @@ class KDDataset(Dataset):
     def all_wrapper_types(self):
         return []
 
-    def __getitem__(self, idx):
-        raise UseModeWrapperException
-
     def worker_init_fn(self, rank, **kwargs):
         pass
+
+    def __getitem__(self, idx):
+        raise UseModeWrapperException

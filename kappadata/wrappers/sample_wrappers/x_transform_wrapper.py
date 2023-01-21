@@ -18,6 +18,6 @@ class XTransformWrapper(KDWrapper):
                 self.transform.set_rng(rng)
         return self.transform(x)
 
-    def worker_init_fn(self, rank, **kwargs):
+    def _worker_init_fn(self, rank, **kwargs):
         if isinstance(self.transform, KDTransform):
             self.transform.worker_init_fn(rank, **kwargs)

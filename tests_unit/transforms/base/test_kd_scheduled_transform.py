@@ -3,27 +3,15 @@ from dataclasses import dataclass
 from unittest.mock import patch
 
 from kappadata.transforms.base.kd_scheduled_transform import KDScheduledTransform, KDTransform
-
+from tests_util.transforms.strength_transform import StrengthTransform
 
 @dataclass
 class WorkerInfoMock:
     num_workers: int
 
 
-class StrengthTransform(KDTransform):
-    def __init__(self, strength):
-        super().__init__()
-        self.strength = self.og_strength = strength
-
-    def _scale_strength(self, factor):
-        self.strength = self.og_strength * factor
-
-    def __call__(self, x, ctx=None):
-        return self.strength
-
-
 class TestKDScheduledTransform(unittest.TestCase):
-    def test(self):
+    def test_mocked(self):
         batch_size = 2
         updates = 5
         worker0 = KDScheduledTransform(transform=StrengthTransform(strength=10.))

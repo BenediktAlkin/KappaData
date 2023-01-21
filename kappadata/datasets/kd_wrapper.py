@@ -6,6 +6,8 @@ class KDWrapper(KDDataset):
     def __init__(self, dataset: KDDataset):
         super().__init__()
         self.dataset = dataset
+        # children should overwrite _worker_init_fn
+        assert type(self).worker_init_fn == KDWrapper.worker_init_fn
 
     def __len__(self):
         return len(self.dataset)
@@ -43,3 +45,10 @@ class KDWrapper(KDDataset):
     @property
     def all_wrapper_types(self):
         return [type(self)] + self.dataset.all_wrapper_types
+
+    def worker_init_fn(self, rank, **kwargs):
+        self._worker_init_fn(rank, **kwargs)
+        self.dataset.worker_init_fn(rank, **kwargs)
+
+    def _worker_init_fn(self, rank, **kwargs):
+        pass

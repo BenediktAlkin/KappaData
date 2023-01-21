@@ -13,6 +13,7 @@ class KDScheduledTransform(KDTransform):
         self.batch_size = None
         self.n_batches = None
         self.sample_counter = 0
+        self.ctx_key = f"{self.ctx_prefix}.strength"
         # default to linear from 0 to 1
         self.schedule = schedule or LinearIncreasing()
 
@@ -66,4 +67,6 @@ class KDScheduledTransform(KDTransform):
         # scale
         self.transform.scale_strength(strength)
 
+        if ctx is not None:
+            ctx[self.ctx_key] = strength
         return self.transform(x, ctx=ctx)
