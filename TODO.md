@@ -1,5 +1,8 @@
 ##
 
+- cleanup seeds
+- wrappers should also have set_rng instead of seed
+
 - cleanup imports to always use the module instead of the concrete file
 - ImageNet/CIFAR norms should be in common
 

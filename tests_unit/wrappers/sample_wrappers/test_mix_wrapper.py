@@ -5,6 +5,8 @@ import torch
 from kappadata.error_messages import KD_MIX_WRAPPER_REQUIRES_SEED_OR_CONTEXT
 from kappadata.wrappers.sample_wrappers.kd_mix_wrapper import KDMixWrapper
 from tests_util.datasets import create_image_classification_dataset
+from torch.utils.data import DataLoader
+from kappadata.wrappers.mode_wrapper import ModeWrapper
 
 
 class TestOneHotWrapper(unittest.TestCase):
@@ -31,6 +33,19 @@ class TestOneHotWrapper(unittest.TestCase):
             y1.append(ds.getitem_class(i, ctx=ctx))
         self.assertTrue(torch.all(torch.stack(x0) == torch.stack(x1)))
         self.assertTrue(torch.all(torch.stack(y0) == torch.stack(y1)))
+
+    def test_mix_wrapper_collate(self):
+        ds = KDMixWrapper(
+            dataset=create_image_classification_dataset(size=5, seed=3),
+            mixup_alpha=0.8,
+            cutmix_alpha=1.0,
+            mixup_p=0.5,
+            cutmix_p=0.5,
+            seed=5,
+        )
+        ds = ModeWrapper(ds, mode="x", return_ctx=True)
+        next(iter(DataLoader(ds, batch_size=5)))
+
 
     def test_seed_noctx(self):
         ds = KDMixWrapper(
