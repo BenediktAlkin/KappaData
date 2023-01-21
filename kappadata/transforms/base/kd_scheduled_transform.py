@@ -59,15 +59,19 @@ class KDScheduledTransform(KDTransform):
             raise NotImplementedError
 
     def __call__(self, x, ctx=None):
-        # caulculate progress
-        assert self.n_batches is not None, "call KDScheduledTransform.worker_init_fn before applying the transform"
-        batch_idx = self.sample_counter // self.batch_size * self.num_workers + self.rank
-        strength = self.schedule.get_value(batch_idx, self.n_batches)
-        self.sample_counter += 1
+        # ideally this would be checked here, but this prohibits and call to the dataset outside the DataLoader loop
+        # right now it is up to the user to make sure that worker_init_fn is called
+        # assert self.n_batches is not None, "call KDScheduledTransform.worker_init_fn before applying the transform"
 
-        # scale
-        self.transform.scale_strength(strength)
+        if self.n_batches is not None:
+            # caulculate progress
+            batch_idx = self.sample_counter // self.batch_size * self.num_workers + self.rank
+            strength = self.schedule.get_value(batch_idx, self.n_batches)
+            self.sample_counter += 1
 
-        if ctx is not None:
-            ctx[self.ctx_key] = strength
+            # scale
+            self.transform.scale_strength(strength)
+
+            if ctx is not None:
+                ctx[self.ctx_key] = strength
         return self.transform(x, ctx=ctx)

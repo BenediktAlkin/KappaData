@@ -42,7 +42,7 @@ def object_to_transform(obj):
     if kind[0].islower():
         kind = kind.replace("_", "")
         snake_to_pascal = {name.lower(): name for name in pascal_to_ctor.keys()}
-        assert kind in snake_to_pascal.keys()
+        assert kind in snake_to_pascal.keys(), f"invalid kind '{kind}' (possibilities: {snake_to_pascal.keys()})"
         kind = snake_to_pascal[kind]
     ctor = pascal_to_ctor[kind]
     return ctor(**obj)
