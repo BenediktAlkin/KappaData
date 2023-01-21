@@ -41,7 +41,8 @@ class KDMixWrapper(KDWrapper):
         self.mixup_p = mixup_p
         self.cutmix_p = cutmix_p
         self.seed = seed
-        self.rng = np.random.default_rng(seed=seed)
+        # rng with seed is set in _shared
+        self.rng = np.random.default_rng()
 
         # ctx key
         self.ctx_key = f"{IdCounter.next()}-mix"
@@ -79,20 +80,20 @@ class KDMixWrapper(KDWrapper):
         # check if apply
         p = self.rng.random()
         if p > self.total_p:
-            values = (False, -1, -1, x, (-1, -1, -1, -1))
+            values = (False, -1, torch.tensor(-1.), x, torch.tensor((-1, -1, -1, -1)))
             ctx[self.ctx_key] = values
             return values
 
         # sample parameters
         use_cutmix = p < self.cutmix_p
-        idx2 = self.rng.integers(len(self.dataset))
+        idx2 = int(self.rng.integers(len(self.dataset)))
         alpha = self.cutmix_alpha if use_cutmix else self.mixup_alpha
         lamb = torch.tensor(self.rng.beta(alpha, alpha))
         if use_cutmix:
             h, w = x.shape[1:]
             bbox, lamb = self.get_random_bbox(h=h, w=w, lamb=lamb)
         else:
-            bbox = (-1, -1, -1, -1)
+            bbox = torch.tensor((-1, -1, -1, -1))
 
         # save to ctx
         values = (use_cutmix, idx2, lamb, x, bbox)
