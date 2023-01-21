@@ -78,7 +78,7 @@ class KDMixWrapper(KDWrapper):
         # check if apply
         p = self.rng.random()
         if p > self.total_p:
-            nones = (False, -1, -1, -1, -1)
+            nones = (False, -1, -1, -1, (-1, -1, -1, -1))
             ctx[self.ctx_key] = nones
             return nones
 
@@ -92,7 +92,7 @@ class KDMixWrapper(KDWrapper):
             h, w = x.shape[1:]
             bbox, lamb = self.get_random_bbox(h=h, w=w, lamb=lamb)
         else:
-            bbox = None
+            bbox = (-1, -1, -1, -1)
 
         # save to ctx
         result = (use_cutmix, idx2, lamb, x, bbox)
