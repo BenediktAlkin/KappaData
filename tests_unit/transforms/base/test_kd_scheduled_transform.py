@@ -17,7 +17,7 @@ class TestKDScheduledTransform(unittest.TestCase):
         worker0 = KDScheduledTransform(transform=StrengthTransform(strength=10.))
         worker1 = KDScheduledTransform(transform=StrengthTransform(strength=10.))
         with patch(
-                target="kappadata.transforms.base.kd_scheduled_transform.get_worker_info",
+                target="kappadata.transforms.base.kd_transform.get_worker_info",
                 new=lambda: WorkerInfoMock(num_workers=2),
         ):
             worker0.worker_init_fn(rank=0, batch_size=batch_size, updates=updates)
