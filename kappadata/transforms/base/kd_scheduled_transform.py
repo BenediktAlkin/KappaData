@@ -1,5 +1,4 @@
 from kappaschedules import LinearIncreasingSchedule, object_to_schedule
-from torch.utils.data import get_worker_info
 
 from kappadata.factory import object_to_transform
 from .kd_transform import KDTransform
@@ -18,9 +17,10 @@ class KDScheduledTransform(KDTransform):
         # default to linear from [0, 1]
         self.schedule = object_to_schedule(schedule) or LinearIncreasingSchedule()
 
-    def worker_init_fn(
+    def _worker_init_fn(
             self,
             rank,
+            num_workers,
             batch_size=None,
             dataset_length=None,
             drop_last=None,
@@ -30,7 +30,7 @@ class KDScheduledTransform(KDTransform):
             **__,
     ):
         self.rank = rank
-        self.num_workers = get_worker_info().num_workers
+        self.num_workers = num_workers
         assert batch_size is not None
         self.batch_size = batch_size
 
