@@ -6,11 +6,14 @@ from torchvision.transforms import Normalize
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
 from kappadata.transforms.norm.base.kd_norm_base import KDNormBase
 from kappadata.wrappers.sample_wrappers import XTransformWrapper
+from kappadata import KDScheduledTransform
 
 
 def flatten_transform(transform):
     if transform is None:
         return []
+    if isinstance(transform, KDScheduledTransform):
+        return flatten_transform(transform.transform)
     if isinstance(transform, (Compose, KDComposeTransform)):
         result = []
         for t in transform.transforms:
