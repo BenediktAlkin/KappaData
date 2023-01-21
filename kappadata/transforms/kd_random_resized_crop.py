@@ -17,13 +17,11 @@ class KDRandomResizedCrop(KDStochasticTransform):
             **kwargs,
     ):
         super().__init__(**kwargs)
-        # RandomResizedCrop doesn't support interpolation argument as string
-        if isinstance(interpolation, str):
-            interpolation = InterpolationMode(interpolation)
         self.size = to_2tuple(size)
         self.scale = scale
         self.ratio = ratio
-        self.interpolation = interpolation
+        # RandomResizedCrop doesn't support interpolation argument as string
+        self.interpolation = InterpolationMode(interpolation)
 
     def __call__(self, x, ctx=None):
         i, j, h, w = self.get_params(x)

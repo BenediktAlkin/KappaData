@@ -25,6 +25,7 @@ from .kd_random_horizontal_flip import KDRandomHorizontalFlip
 from .kd_random_resized_crop import KDRandomResizedCrop
 from .kd_random_solarize import KDRandomSolarize
 from .kd_solarize import KDSolarize
+from .kd_resize import KDResize
 # norm
 from .norm.kd_image_net_norm import KDImageNetNorm
 from .norm.kd_image_norm import KDImageNorm

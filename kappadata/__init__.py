@@ -51,6 +51,7 @@ from .transforms.kd_random_grayscale import KDRandomGrayscale
 from .transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from .transforms.kd_random_resized_crop import KDRandomResizedCrop
 from .transforms.kd_random_solarize import KDRandomSolarize
+from .transforms.kd_resize import KDResize
 # transforms norm
 from .transforms.norm.kd_image_norm import KDImageNorm
 from .transforms.norm.kd_image_range_norm import KDImageRangeNorm
@@ -83,3 +84,5 @@ from .wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
 from .wrappers.torch_wrapper import TorchWrapper
 # utils
 from .utils.transform_utils import get_denorm_transform, get_norm_transform, flatten_transform
+# factory
+from .factory import object_to_transform

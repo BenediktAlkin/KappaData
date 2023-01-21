@@ -2,12 +2,12 @@ import numpy as np
 
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.transforms import KDComposeTransform, KDStochasticTransform, KDTransform
-
+from kappadata.factory import object_to_transform
 
 class XTransformWrapper(KDWrapper):
     def __init__(self, dataset, transform, seed=None):
         super().__init__(dataset=dataset)
-        self.transform = transform
+        self.transform = object_to_transform(transform)
         self.seed = seed
 
     def getitem_x(self, idx, ctx=None):

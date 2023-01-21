@@ -2,6 +2,10 @@ import torch
 
 from .class_dataset import ClassDataset
 from .classification_dataset import ClassificationDataset
+from .index_dataset import IndexDataset
+from .sequence_classification_dataset import SequenceClassificationDataset
+from .sequence_index_dataset import SequenceIndexDataset
+from .x_dataset import XDataset
 
 
 def create_image_classification_dataset(size, seed, channels=3, resolution=32, n_classes=10) -> ClassificationDataset:
