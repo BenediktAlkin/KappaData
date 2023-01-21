@@ -16,6 +16,8 @@ class XTransformWrapper(KDWrapper):
             rng = np.random.default_rng(seed=self.seed + idx)
             if isinstance(self.transform, (KDComposeTransform, KDStochasticTransform)):
                 self.transform.set_rng(rng)
+        if isinstance(self.transform, KDTransform):
+            return self.transform(x, ctx=ctx)
         return self.transform(x)
 
     def _worker_init_fn(self, rank, **kwargs):
