@@ -78,7 +78,7 @@ class KDMixWrapper(KDWrapper):
         # check if apply
         p = self.rng.random()
         if p > self.total_p:
-            nones = (None, None, None, None, None)
+            nones = (False, -1, -1, -1, -1)
             ctx[self.ctx_key] = nones
             return nones
 
@@ -102,6 +102,8 @@ class KDMixWrapper(KDWrapper):
 
     def getitem_x(self, idx, ctx=None):
         use_cutmix, idx2, lamb, x, bbox = self._shared(idx, ctx=ctx)
+        if idx2 == -1:
+            return x
         x2 = self.dataset.getitem_x(idx2, ctx={})
         if use_cutmix:
             top, left, bot, right = bbox
@@ -114,6 +116,8 @@ class KDMixWrapper(KDWrapper):
     def getitem_class(self, idx, ctx=None):
         _, idx2, lamb, _, _ = self._shared(idx, ctx=ctx)
         y = self.dataset.getitem_class(idx, ctx=ctx)
+        if idx2 == -1:
+            return y
         y2 = self.dataset.getitem_class(idx2, ctx={})
         y = to_one_hot_vector(y, n_classes=self.dataset.n_classes)
         y2 = to_one_hot_vector(y2, n_classes=self.dataset.n_classes)
