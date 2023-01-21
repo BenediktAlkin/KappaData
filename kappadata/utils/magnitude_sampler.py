@@ -13,16 +13,23 @@ class MagnitudeSampler:
         assert isinstance(magnitude_std, (int, float)) and 0. <= magnitude_std
         assert isinstance(magnitude_min, (int, float)) and 0. <= magnitude_min <= magnitude
         assert isinstance(magnitude_max, (int, float)) and magnitude <= magnitude_max
-        self.magnitude = magnitude
-        self.magnitude_std = magnitude_std
-        self.magnitude_min = magnitude_min
-        self.magnitude_max = magnitude_max
+        self.og_magnitude = self.magnitude = magnitude
+        self.og_magnitude_std = self.magnitude_std = magnitude_std
+        self.og_magnitude_min = self.magnitude_min = magnitude_min
+        self.og_magnitude_max = self.magnitude_max = magnitude_max
         if magnitude_std == 0.:
             self.sample = self._sample_const
         elif magnitude_std == float("inf"):
             self.sample = self._sample_uniform
         else:
             self.sample = self._sample_normal
+
+    def scale_strength(self, factor):
+        assert 0. <= factor <= 1.
+        self.magnitude = self.og_magnitude * factor
+        self.magnitude_std = self.og_magnitude_std * factor
+        self.magnitude_min = self.og_magnitude_min * factor
+        self.magnitude_max = self.og_magnitude_max * factor
 
     def _sample_const(self, _):
         return self.magnitude

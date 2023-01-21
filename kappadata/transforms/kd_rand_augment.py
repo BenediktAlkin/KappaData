@@ -56,6 +56,9 @@ class KDRandAugment(KDStochasticTransform):
         )
         self.fill_color = tuple(fill_color)
 
+    def _scale_strength(self, factor):
+        self.magnitude_sampler.scale_strength(factor)
+
     def _get_ops(self):
         return [
             # self.identity, # timm applies each transform with 50% probability

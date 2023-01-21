@@ -75,19 +75,19 @@ class KDMixWrapper(KDWrapper):
         if self.seed is not None:
             self.rng = np.random.default_rng(self.seed + idx)
 
+        x = self.dataset.getitem_x(idx, ctx=ctx)
         # check if apply
         p = self.rng.random()
         if p > self.total_p:
-            nones = (False, -1, -1, (-1, -1, -1, -1))
-            ctx[self.ctx_key] = nones
-            return nones
+            values = (False, -1, -1, x, (-1, -1, -1, -1))
+            ctx[self.ctx_key] = values
+            return values
 
         # sample parameters
         use_cutmix = p < self.cutmix_p
         idx2 = self.rng.integers(len(self.dataset))
         alpha = self.cutmix_alpha if use_cutmix else self.mixup_alpha
         lamb = torch.tensor(self.rng.beta(alpha, alpha))
-        x = self.dataset.getitem_x(idx, ctx=ctx)
         if use_cutmix:
             h, w = x.shape[1:]
             bbox, lamb = self.get_random_bbox(h=h, w=w, lamb=lamb)
@@ -95,9 +95,10 @@ class KDMixWrapper(KDWrapper):
             bbox = (-1, -1, -1, -1)
 
         # save to ctx
+        values = (use_cutmix, idx2, lamb, x, bbox)
         if ctx is not None:
-            ctx[self.ctx_key] = (use_cutmix, idx2, lamb, bbox)
-        return use_cutmix, idx2, lamb, x, bbox
+            ctx[self.ctx_key] = values
+        return values
 
     def getitem_x(self, idx, ctx=None):
         use_cutmix, idx2, lamb, x, bbox = self._shared(idx, ctx=ctx)
