@@ -46,6 +46,17 @@ class KDSubset(Subset):
     def all_wrapper_types(self):
         return [type(self)] + self.dataset.all_wrapper_types
 
+    def get_wrapper_of_type(self, wrapper_type):
+        wrappers = self.get_wrappers_of_type(wrapper_type)
+        assert len(wrappers) == 1
+        return wrappers[0]
+
+    def get_wrappers_of_type(self, wrapper_type):
+        wrappers = self.dataset.get_wrappers_of_type(wrapper_type)
+        if type(self) == wrapper_type:
+            return [self] + wrappers
+        return wrappers
+
     def worker_init_fn(self, rank, **kwargs):
         self.dataset.worker_init_fn(rank, **kwargs)
 
