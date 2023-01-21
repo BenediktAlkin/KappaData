@@ -33,6 +33,8 @@ from .datasets.kd_subset import KDSubset
 from .datasets.kd_wrapper import KDWrapper
 # transforms base
 from .transforms.base.kd_compose_transform import KDComposeTransform
+from .transforms.base.kd_scheduled_transform import KDScheduledTransform
+from .transforms.base.kd_stochastic_transform import KDStochasticTransform
 from .transforms.base.kd_transform import KDTransform
 # transforms
 from .transforms.image_pos_embed_grid import ImagePosEmbedGrid
