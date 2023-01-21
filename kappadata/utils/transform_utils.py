@@ -5,6 +5,7 @@ from torchvision.transforms import Normalize
 
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
 from kappadata.transforms.norm.base.kd_norm_base import KDNormBase
+from kappadata.wrappers.sample_wrappers import XTransformWrapper
 
 
 def flatten_transform(transform):
@@ -37,3 +38,14 @@ def get_denorm_transform(transform, inplace=False):
         Normalize(mean=(0., 0., 0.), std=tuple(1 / s for s in norm_transform.std)),
         Normalize(mean=tuple(-m for m in norm_transform.mean), std=(1., 1., 1.)),
     ])
+
+def get_x_transform(dataset):
+    wrappers = [wrapper for wrapper in dataset.all_wrappers if isinstance(wrapper, XTransformWrapper)]
+    if len(wrappers) == 1:
+        return wrappers[0].transform
+    # try to extract it from datasets that implement the x_transform themselves
+    if hasattr(dataset, "transform"):
+        return dataset.transform
+    if hasattr(dataset, "x_transform"):
+        return dataset.x_transform
+    return None
