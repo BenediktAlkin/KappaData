@@ -82,6 +82,8 @@ class KDConcatDataset(ConcatDataset):
 
     def get_wrapper_of_type(self, wrapper_type):
         wrappers = self.get_wrappers_of_type(wrapper_type)
+        if len(wrappers) == 0:
+            return None
         assert len(wrappers) == 1
         return wrappers[0]
 
