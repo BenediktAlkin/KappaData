@@ -73,6 +73,7 @@ from .wrappers.dataset_wrappers.shuffle_wrapper import ShuffleWrapper
 from .wrappers.dataset_wrappers.subset_wrapper import SubsetWrapper
 from .wrappers.mode_wrapper import ModeWrapper
 # wrappers.sample_wrappers
+from .wrappers.sample_wrappers.kd_mix_wrapper import KDMixWrapper
 from .wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
 from .wrappers.sample_wrappers.multi_view_wrapper import MultiViewWrapper
 from .wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
