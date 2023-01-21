@@ -14,8 +14,8 @@ class KDScheduledTransform(KDTransform):
         self.n_batches = None
         self.sample_counter = 0
         self.ctx_key = f"{self.ctx_prefix}.strength"
-        # default to linear from (0, 1]
-        self.schedule = object_to_schedule(schedule) or LinearIncreasingSchedule(exclude_first=True)
+        # default to linear from [0, 1]
+        self.schedule = object_to_schedule(schedule) or LinearIncreasingSchedule()
 
     def worker_init_fn(
             self,
