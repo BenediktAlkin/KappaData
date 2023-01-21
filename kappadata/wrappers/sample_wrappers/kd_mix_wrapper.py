@@ -3,7 +3,6 @@ import torch
 
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.error_messages import KD_MIX_WRAPPER_REQUIRES_SEED_OR_CONTEXT
-from kappadata.utils.id_counter import IdCounter
 from kappadata.utils.one_hot import to_one_hot_vector
 
 
@@ -44,8 +43,8 @@ class KDMixWrapper(KDWrapper):
         # rng with seed is set in _shared
         self.rng = np.random.default_rng()
 
-        # ctx key
-        self.ctx_key = f"{IdCounter.next()}-mix"
+        # TODO port to per property key
+        self.ctx_key = self.ctx_prefix
 
     @property
     def total_p(self) -> float:

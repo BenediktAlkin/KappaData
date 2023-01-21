@@ -1,5 +1,5 @@
 class KDTransform:
-    def __init__(self, ctx_prefix=None):
+    def __init__(self, ctx_prefix: str = None):
         self.ctx_prefix = ctx_prefix or type(self).__name__
         # sanity check to avoid accidentally overwriting base method
         assert type(self).scale_strength == KDTransform.scale_strength

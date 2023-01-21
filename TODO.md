@@ -1,5 +1,7 @@
 ##
 
+- unify prefixes (some objects start with KD others dont)
+
 - cleanup seeds
 - wrappers should also have set_rng instead of seed
 

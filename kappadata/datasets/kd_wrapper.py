@@ -3,9 +3,10 @@ from .kd_dataset import KDDataset
 
 
 class KDWrapper(KDDataset):
-    def __init__(self, dataset: KDDataset):
+    def __init__(self, dataset: KDDataset, ctx_prefix: str = None):
         super().__init__()
         self.dataset = dataset
+        self.ctx_prefix = ctx_prefix or type(self).__name__
         # children should overwrite _worker_init_fn
         assert type(self).worker_init_fn == KDWrapper.worker_init_fn
 
