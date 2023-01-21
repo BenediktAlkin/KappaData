@@ -6,7 +6,14 @@ from torchvision.transforms import Compose, Normalize
 from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
 from kappadata.transforms.norm.kd_image_range_norm import KDImageRangeNorm
-from kappadata.utils.transform_utils import flatten_transform, get_denorm_transform, get_norm_transform
+from kappadata.utils.transform_utils import (
+    flatten_transform,
+    get_denorm_transform,
+    get_norm_transform,
+    get_x_transform,
+)
+from tests_util.datasets import XDataset
+from kappadata import XTransformWrapper, KDRandomHorizontalFlip
 
 
 class TestTransformUtils(unittest.TestCase):
@@ -65,3 +72,9 @@ class TestTransformUtils(unittest.TestCase):
         self.assertIsNone(get_denorm_transform(lambda x: x))
         self.assertIsNone(get_denorm_transform(Compose([lambda x: x])))
         self.assertIsNone(get_denorm_transform(KDComposeTransform([lambda x: x])))
+
+    def test_get_x_transform(self):
+        self.assertIsNone(get_x_transform(None))
+        hflip = KDRandomHorizontalFlip()
+        ds = XDataset(x=None, transform=hflip)
+        self.assertEqual(hflip, get_x_transform(ds))

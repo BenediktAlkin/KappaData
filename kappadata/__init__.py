@@ -83,6 +83,11 @@ from .wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
 from .wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
 from .wrappers.torch_wrapper import TorchWrapper
 # utils
-from .utils.transform_utils import get_denorm_transform, get_norm_transform, flatten_transform
+from .utils.transform_utils import (
+    flatten_transform,
+    get_denorm_transform,
+    get_norm_transform,
+    get_x_transform,
+)
 # factory
 from .factory import object_to_transform

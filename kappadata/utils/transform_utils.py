@@ -40,6 +40,8 @@ def get_denorm_transform(transform, inplace=False):
     ])
 
 def get_x_transform(dataset):
+    if dataset is None:
+        return None
     wrappers = [wrapper for wrapper in dataset.all_wrappers if isinstance(wrapper, XTransformWrapper)]
     if len(wrappers) == 1:
         return wrappers[0].transform
