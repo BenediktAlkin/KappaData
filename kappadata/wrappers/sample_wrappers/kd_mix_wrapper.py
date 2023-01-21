@@ -78,7 +78,7 @@ class KDMixWrapper(KDWrapper):
         # check if apply
         p = self.rng.random()
         if p > self.total_p:
-            nones = (False, -1, -1, -1, (-1, -1, -1, -1))
+            nones = (False, -1, -1, (-1, -1, -1, -1))
             ctx[self.ctx_key] = nones
             return nones
 
@@ -95,10 +95,9 @@ class KDMixWrapper(KDWrapper):
             bbox = (-1, -1, -1, -1)
 
         # save to ctx
-        result = (use_cutmix, idx2, lamb, x, bbox)
         if ctx is not None:
-            ctx[self.ctx_key] = result
-        return result
+            ctx[self.ctx_key] = (use_cutmix, idx2, lamb, bbox)
+        return use_cutmix, idx2, lamb, x, bbox
 
     def getitem_x(self, idx, ctx=None):
         use_cutmix, idx2, lamb, x, bbox = self._shared(idx, ctx=ctx)
