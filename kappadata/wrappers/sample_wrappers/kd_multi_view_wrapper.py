@@ -24,35 +24,35 @@ class KDMultiViewWrapper(KDWrapper):
             if not isinstance(configs[i], KDMultiViewConfig):
                 if isinstance(configs[i], (list, tuple)):
                     # parse tuple/list/callable
-                    # - MultiViewWrapper(configs=[(2, ToTensor()])
-                    # - MultiViewWrapper(configs=[2])
-                    # - MultiViewWrapper(configs=[ToTensor()])
+                    # - KDMultiViewWrapper(configs=[(2, ToTensor())])
+                    # - KDMultiViewWrapper(configs=[2])
+                    # - KDMultiViewWrapper(configs=[ToTensor()])
                     if len(configs[i]) == 2:
-                        # MultiViewWrapper(configs=[(2, ToTensor()])
+                        # KDMultiViewWrapper(configs=[(2, ToTensor())])
                         n_views, transform = configs[i]
                     elif len(configs[i]) == 1:
                         if isinstance(configs[i], int):
-                            # MultiViewWrapper(configs=[2])
+                            # KDMultiViewWrapper(configs=[2])
                             n_views = configs[i]
                             transform = None
                         else:
-                            # MultiViewWrapper(configs=[ToTensor()])
+                            # KDMultiViewWrapper(configs=[ToTensor()])
                             n_views = 1
                             transform = configs[i]
                     else:
                         raise NotImplementedError
                 elif isinstance(configs[i], dict):
                     # parse from dict
-                    # - MultiViewWrapper(configs=[dict(n_views=2, transform=ToTensor())])
-                    # - MultiViewWrapper(configs=[dict(transform=ToTensor())])
-                    # - MultiViewWrapper(configs=[dict(n_views=2)])
+                    # - KDMultiViewWrapper(configs=[dict(n_views=2, transform=ToTensor())])
+                    # - KDMultiViewWrapper(configs=[dict(transform=ToTensor())])
+                    # - KDMultiViewWrapper(configs=[dict(n_views=2)])
                     assert "n_views" in configs[i] or "transform" in configs[i]
                     n_views = configs[i].get("n_views", 1)
                     transform = configs[i].get("transform", None)
                 else:
                     # parse transform/n_views only
-                    # - MultiViewWrapper(configs=[ToTensor()])
-                    # - MultiViewWrapper(configs=[1])
+                    # - KDMultiViewWrapper(configs=[ToTensor()])
+                    # - KDMultiViewWrapper(configs=[1])
                     if isinstance(configs[i], int):
                         n_views = configs[i]
                         transform = None
