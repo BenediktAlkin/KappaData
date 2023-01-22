@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from kappadata.transforms import AddGaussianNoiseTransform, KDIdentityTransform
+from kappadata.transforms import AddGaussianNoiseTransform, KDIdentityTransform, KDComposeTransform
 from kappadata.wrappers.sample_wrappers.kd_multi_view_wrapper import KDMultiViewWrapper
 from tests_util.datasets.x_dataset import XDataset
 
@@ -20,6 +20,9 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             dict(n_views=2, transform=dict(kind="kd_identity_transform"))
         ])
         wrapper7 = KDMultiViewWrapper(dataset=ds, configs=[dict(n_views=2)])
+        wrapper8 = KDMultiViewWrapper(dataset=ds, configs=[
+            dict(transform=[dict(kind="kd_identity_transform"), dict(kind="kd_identity_transform")])
+        ])
         for n_views, wrapper in [
             (2, wrapper0),
             (2, wrapper1),
@@ -29,10 +32,15 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             (1, wrapper5),
             (2, wrapper6),
             (2, wrapper7),
+            (1, wrapper8),
         ]:
             self.assertEqual(1, len(wrapper.transform_configs))
             self.assertEqual(n_views, wrapper.transform_configs[0].n_views)
-            self.assertIsInstance(wrapper.transform_configs[0].transform, KDIdentityTransform)
+            if isinstance(wrapper.transform_configs[0].transform, KDComposeTransform):
+                for transform in wrapper.transform_configs[0].transform.transforms:
+                    self.assertIsInstance(transform, KDIdentityTransform)
+            else:
+                self.assertIsInstance(wrapper.transform_configs[0].transform, KDIdentityTransform)
 
 
     def test_2views(self):
