@@ -32,10 +32,11 @@ from .datasets.kd_dataset import KDDataset
 from .datasets.kd_subset import KDSubset
 from .datasets.kd_wrapper import KDWrapper
 # transforms base
-from .transforms.base.kd_compose_transform import KDComposeTransform
-from .transforms.base.kd_scheduled_transform import KDScheduledTransform
-from .transforms.base.kd_stochastic_transform import KDStochasticTransform
-from .transforms.base.kd_transform import KDTransform
+from .transforms.base import KDComposeTransform
+from .transforms.base import KDIdentityTransform
+from .transforms.base import KDScheduledTransform
+from .transforms.base import KDStochasticTransform
+from .transforms.base import KDTransform
 # transforms
 from .transforms.image_pos_embed_grid import ImagePosEmbedGrid
 from .transforms.image_pos_embed_sincos import ImagePosEmbedSincos
@@ -78,7 +79,7 @@ from .wrappers.mode_wrapper import ModeWrapper
 # wrappers.sample_wrappers
 from .wrappers.sample_wrappers.kd_mix_wrapper import KDMixWrapper
 from .wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
-from .wrappers.sample_wrappers.multi_view_wrapper import MultiViewWrapper
+from .wrappers.sample_wrappers.kd_multi_view_wrapper import KDMultiViewWrapper
 from .wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
 from .wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
 from .wrappers.torch_wrapper import TorchWrapper
