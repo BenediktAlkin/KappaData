@@ -60,7 +60,7 @@ class KDMultiViewWrapper(KDWrapper):
                         n_views = 1
                         transform = configs[i]
                 # allow transform to be passed as dict
-                if isinstance(transform, dict):
+                if isinstance(transform, (list, tuple, dict)):
                     transform = object_to_transform(transform)
                 if transform is None:
                     transform = KDIdentityTransform()
