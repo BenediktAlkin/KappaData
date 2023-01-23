@@ -3,9 +3,12 @@ from .kd_dataset import KDDataset
 
 
 class KDWrapper(KDDataset):
-    def __init__(self, dataset: KDDataset):
+    def __init__(self, dataset: KDDataset, ctx_prefix: str = None):
         super().__init__()
         self.dataset = dataset
+        self.ctx_prefix = ctx_prefix or type(self).__name__
+        # children should overwrite _worker_init_fn
+        assert type(self).worker_init_fn == KDWrapper.worker_init_fn
 
     def __len__(self):
         return len(self.dataset)
@@ -43,3 +46,16 @@ class KDWrapper(KDDataset):
     @property
     def all_wrapper_types(self):
         return [type(self)] + self.dataset.all_wrapper_types
+
+    def get_wrappers_of_type(self, wrapper_type):
+        wrappers = self.dataset.get_wrappers_of_type(wrapper_type)
+        if type(self) == wrapper_type:
+            return [self] + wrappers
+        return wrappers
+
+    def worker_init_fn(self, rank, **kwargs):
+        self._worker_init_fn(rank, **kwargs)
+        self.dataset.worker_init_fn(rank, **kwargs)
+
+    def _worker_init_fn(self, rank, **kwargs):
+        pass

@@ -3,7 +3,6 @@ import torch
 
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.error_messages import KD_MIX_WRAPPER_REQUIRES_SEED_OR_CONTEXT
-from kappadata.utils.id_counter import IdCounter
 from kappadata.utils.one_hot import to_one_hot_vector
 
 
@@ -41,10 +40,11 @@ class KDMixWrapper(KDWrapper):
         self.mixup_p = mixup_p
         self.cutmix_p = cutmix_p
         self.seed = seed
-        self.rng = np.random.default_rng(seed=seed)
+        # rng with seed is set in _shared
+        self.rng = np.random.default_rng()
 
-        # ctx key
-        self.ctx_key = f"{IdCounter.next()}-mix"
+        # TODO port to per property key
+        self.ctx_key = self.ctx_prefix
 
     @property
     def total_p(self) -> float:
@@ -75,33 +75,35 @@ class KDMixWrapper(KDWrapper):
         if self.seed is not None:
             self.rng = np.random.default_rng(self.seed + idx)
 
+        x = self.dataset.getitem_x(idx, ctx=ctx)
         # check if apply
         p = self.rng.random()
         if p > self.total_p:
-            nones = (None, None, None, None, None)
-            ctx[self.ctx_key] = nones
-            return nones
+            values = (False, -1, torch.tensor(-1.), x, torch.tensor((-1, -1, -1, -1)))
+            ctx[self.ctx_key] = values
+            return values
 
         # sample parameters
         use_cutmix = p < self.cutmix_p
-        idx2 = self.rng.integers(len(self.dataset))
+        idx2 = int(self.rng.integers(len(self.dataset)))
         alpha = self.cutmix_alpha if use_cutmix else self.mixup_alpha
         lamb = torch.tensor(self.rng.beta(alpha, alpha))
-        x = self.dataset.getitem_x(idx, ctx=ctx)
         if use_cutmix:
             h, w = x.shape[1:]
             bbox, lamb = self.get_random_bbox(h=h, w=w, lamb=lamb)
         else:
-            bbox = None
+            bbox = torch.tensor((-1, -1, -1, -1))
 
         # save to ctx
-        result = (use_cutmix, idx2, lamb, x, bbox)
+        values = (use_cutmix, idx2, lamb, x, bbox)
         if ctx is not None:
-            ctx[self.ctx_key] = result
-        return result
+            ctx[self.ctx_key] = values
+        return values
 
     def getitem_x(self, idx, ctx=None):
         use_cutmix, idx2, lamb, x, bbox = self._shared(idx, ctx=ctx)
+        if idx2 == -1:
+            return x
         x2 = self.dataset.getitem_x(idx2, ctx={})
         if use_cutmix:
             top, left, bot, right = bbox
@@ -114,6 +116,8 @@ class KDMixWrapper(KDWrapper):
     def getitem_class(self, idx, ctx=None):
         _, idx2, lamb, _, _ = self._shared(idx, ctx=ctx)
         y = self.dataset.getitem_class(idx, ctx=ctx)
+        if idx2 == -1:
+            return y
         y2 = self.dataset.getitem_class(idx2, ctx={})
         y = to_one_hot_vector(y, n_classes=self.dataset.n_classes)
         y2 = to_one_hot_vector(y2, n_classes=self.dataset.n_classes)

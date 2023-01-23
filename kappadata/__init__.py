@@ -32,8 +32,11 @@ from .datasets.kd_dataset import KDDataset
 from .datasets.kd_subset import KDSubset
 from .datasets.kd_wrapper import KDWrapper
 # transforms base
-from .transforms.base.kd_compose_transform import KDComposeTransform
-from .transforms.base.kd_transform import KDTransform
+from .transforms.base import KDComposeTransform
+from .transforms.base import KDIdentityTransform
+from .transforms.base import KDScheduledTransform
+from .transforms.base import KDStochasticTransform
+from .transforms.base import KDTransform
 # transforms
 from .transforms.image_pos_embed_grid import ImagePosEmbedGrid
 from .transforms.image_pos_embed_sincos import ImagePosEmbedSincos
@@ -49,6 +52,7 @@ from .transforms.kd_random_grayscale import KDRandomGrayscale
 from .transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from .transforms.kd_random_resized_crop import KDRandomResizedCrop
 from .transforms.kd_random_solarize import KDRandomSolarize
+from .transforms.kd_resize import KDResize
 # transforms norm
 from .transforms.norm.kd_image_norm import KDImageNorm
 from .transforms.norm.kd_image_range_norm import KDImageRangeNorm
@@ -73,10 +77,18 @@ from .wrappers.dataset_wrappers.shuffle_wrapper import ShuffleWrapper
 from .wrappers.dataset_wrappers.subset_wrapper import SubsetWrapper
 from .wrappers.mode_wrapper import ModeWrapper
 # wrappers.sample_wrappers
+from .wrappers.sample_wrappers.kd_mix_wrapper import KDMixWrapper
 from .wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
-from .wrappers.sample_wrappers.multi_view_wrapper import MultiViewWrapper
+from .wrappers.sample_wrappers.kd_multi_view_wrapper import KDMultiViewWrapper
 from .wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
 from .wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
 from .wrappers.torch_wrapper import TorchWrapper
 # utils
-from .utils.transform_utils import get_denorm_transform, get_norm_transform, flatten_transform
+from .utils.transform_utils import (
+    flatten_transform,
+    get_denorm_transform,
+    get_norm_transform,
+    get_x_transform,
+)
+# factory
+from .factory import object_to_transform

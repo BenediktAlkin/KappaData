@@ -17,10 +17,10 @@ class KDRandomColorJitter(KDRandomApplyBase):
 
     def _populate_ctx_on_skip(self, ctx):
         ctx[self.color_jitter.ctx_key_fn_idx] = [-1, -1, -1, -1]
-        ctx[self.color_jitter.ctx_key_brightness] = -1
-        ctx[self.color_jitter.ctx_key_contrast] = -1
-        ctx[self.color_jitter.ctx_key_saturation] = -1
-        ctx[self.color_jitter.ctx_key_hue] = -1
+        ctx[self.color_jitter.ctx_key_brightness] = -1.
+        ctx[self.color_jitter.ctx_key_contrast] = -1.
+        ctx[self.color_jitter.ctx_key_saturation] = -1.
+        ctx[self.color_jitter.ctx_key_hue] = -1.
 
     # TODO reset_seed is deprecated
     def reset_seed(self):

@@ -1,24 +1,26 @@
-from kappaschedules import ScheduleBase, LinearIncreasing
-from torch.utils.data import get_worker_info
+from kappaschedules import LinearIncreasingSchedule, object_to_schedule
 
+from kappadata.factory import object_to_transform
 from .kd_transform import KDTransform
 
 
 class KDScheduledTransform(KDTransform):
-    def __init__(self, transform: KDTransform, schedule: ScheduleBase = None):
+    def __init__(self, transform, schedule=None):
         super().__init__()
-        self.transform = transform
+        self.transform = object_to_transform(transform)
         self.rank = None
         self.num_workers = None
         self.batch_size = None
         self.n_batches = None
         self.sample_counter = 0
-        # default to linear from 0 to 1
-        self.schedule = schedule or LinearIncreasing()
+        self.ctx_key = f"{self.ctx_prefix}.strength"
+        # default to linear from [0, 1]
+        self.schedule = object_to_schedule(schedule) or LinearIncreasingSchedule()
 
-    def worker_init_fn(
+    def _worker_init_fn(
             self,
             rank,
+            num_workers,
             batch_size=None,
             dataset_length=None,
             drop_last=None,
@@ -28,7 +30,7 @@ class KDScheduledTransform(KDTransform):
             **__,
     ):
         self.rank = rank
-        self.num_workers = get_worker_info().num_workers
+        self.num_workers = num_workers
         assert batch_size is not None
         self.batch_size = batch_size
 
@@ -57,13 +59,19 @@ class KDScheduledTransform(KDTransform):
             raise NotImplementedError
 
     def __call__(self, x, ctx=None):
-        # caulculate progress
-        assert self.n_batches is not None, "call KDScheduledTransform.worker_init_fn before applying the transform"
-        batch_idx = self.sample_counter // self.batch_size * self.num_workers + self.rank
-        strength = self.schedule.get_value(batch_idx, self.n_batches)
-        self.sample_counter += 1
+        # ideally this would be checked here, but this prohibits and call to the dataset outside the DataLoader loop
+        # right now it is up to the user to make sure that worker_init_fn is called
+        # assert self.n_batches is not None, "call KDScheduledTransform.worker_init_fn before applying the transform"
 
-        # scale
-        self.transform.scale_strength(strength)
+        if self.n_batches is not None:
+            # caulculate progress
+            batch_idx = self.sample_counter // self.batch_size * self.num_workers + self.rank
+            strength = self.schedule.get_value(batch_idx, self.n_batches)
+            self.sample_counter += 1
 
+            # scale
+            self.transform.scale_strength(strength)
+
+            if ctx is not None:
+                ctx[self.ctx_key] = strength
         return self.transform(x, ctx=ctx)

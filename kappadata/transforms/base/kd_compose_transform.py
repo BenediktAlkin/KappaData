@@ -1,12 +1,13 @@
 from kappadata.utils.is_deterministic_transform import has_stochastic_transform_with_seed, is_deterministic_transform
 from .kd_stochastic_transform import KDStochasticTransform
 from .kd_transform import KDTransform
+from kappadata.factory import object_to_transform
 
 
 class KDComposeTransform(KDTransform):
     def __init__(self, transforms, check_consistent_seeds=True):
         super().__init__()
-        self.transforms = transforms
+        self.transforms = [object_to_transform(transform) for transform in transforms]
         # TODO seeds are deprecated
         if check_consistent_seeds:
             if has_stochastic_transform_with_seed(transforms):

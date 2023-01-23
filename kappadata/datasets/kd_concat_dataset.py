@@ -80,5 +80,22 @@ class KDConcatDataset(ConcatDataset):
         # warning/exception here might make sense
         return self.datasets[0].all_wrapper_types
 
+    def get_wrapper_of_type(self, wrapper_type):
+        wrappers = self.get_wrappers_of_type(wrapper_type)
+        if len(wrappers) == 0:
+            return None
+        assert len(wrappers) == 1
+        return wrappers[0]
+
+    def get_wrappers_of_type(self, wrapper_type):
+        if len(self.datasets) == 1:
+            return self.datasets[0].get_wrappers_of_type(wrapper_type)
+        # warning/exception here might make sense
+        return self.datasets[0].get_wrappers_of_type(wrapper_type)
+
+    def worker_init_fn(self, rank, **kwargs):
+        for dataset in self.datasets:
+            dataset.worker_init_fn(rank, **kwargs)
+
     def __getitem__(self, idx):
         raise UseModeWrapperException
