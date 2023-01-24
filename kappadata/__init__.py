@@ -70,6 +70,7 @@ from .utils.is_deterministic_transform import (
 )
 # wrappers.dataset_wrappers
 from .wrappers.dataset_wrappers.class_filter_wrapper import ClassFilterWrapper
+from .wrappers.dataset_wrappers.classwise_subset_wrapper import ClasswiseSubsetWrapper
 from .wrappers.dataset_wrappers.oversampling_wrapper import OversamplingWrapper
 from .wrappers.dataset_wrappers.percent_filter_wrapper import PercentFilterWrapper
 from .wrappers.dataset_wrappers.repeat_wrapper import RepeatWrapper
