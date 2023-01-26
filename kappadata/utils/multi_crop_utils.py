@@ -1,5 +1,6 @@
 import torch
 
+
 class MultiCropJointForwardModule(torch.nn.Module):
     def __init__(self, module):
         super().__init__()
@@ -7,6 +8,7 @@ class MultiCropJointForwardModule(torch.nn.Module):
 
     def forward(self, *args, **kwargs):
         return multi_crop_joint_forward(self.module, *args, **kwargs)
+
 
 class MultiCropSplitForwardModule(torch.nn.Module):
     def __init__(self, module):

@@ -1,6 +1,6 @@
-import numpy as np
 import unittest
 
+import numpy as np
 import torch
 
 from kappadata.transforms.patchify_image import PatchifyImage

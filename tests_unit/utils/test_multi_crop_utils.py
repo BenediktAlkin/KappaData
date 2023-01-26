@@ -1,6 +1,8 @@
+import unittest
+
 import torch
 import torch.nn as nn
-import unittest
+
 from kappadata.utils.multi_crop_utils import (
     multi_crop_split_forward,
     multi_crop_joint_forward,
@@ -8,6 +10,7 @@ from kappadata.utils.multi_crop_utils import (
     MultiCropJointForwardModule,
 )
 from tests_util.modules.memorize_shape_module import MemorizeShapeModule
+
 
 class TestMultiCropUtils(unittest.TestCase):
     class MultiCropModule(nn.Module):

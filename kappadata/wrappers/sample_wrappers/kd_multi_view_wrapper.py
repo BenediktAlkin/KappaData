@@ -1,11 +1,12 @@
+from copy import deepcopy
 from dataclasses import dataclass
 
 import numpy as np
 
 from kappadata.datasets.kd_wrapper import KDWrapper
-from kappadata.transforms import KDTransform, KDComposeTransform, KDStochasticTransform, KDIdentityTransform
-from copy import deepcopy
 from kappadata.factory import object_to_transform
+from kappadata.transforms import KDTransform, KDComposeTransform, KDStochasticTransform, KDIdentityTransform
+
 
 @dataclass
 class KDMultiViewConfig:

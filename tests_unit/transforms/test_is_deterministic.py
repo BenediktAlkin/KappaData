@@ -1,6 +1,6 @@
-import numpy as np
 import unittest
 
+import numpy as np
 import torch
 from torchvision.transforms.functional import to_pil_image, to_tensor
 

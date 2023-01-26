@@ -1,13 +1,12 @@
 import unittest
 
 import torch
+from torch.utils.data import DataLoader
 
 from kappadata.error_messages import KD_MIX_WRAPPER_REQUIRES_SEED_OR_CONTEXT
+from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.wrappers.sample_wrappers.kd_mix_wrapper import KDMixWrapper
 from tests_util.datasets import create_image_classification_dataset
-from torch.utils.data import DataLoader
-from kappadata.wrappers.mode_wrapper import ModeWrapper
-from kappadata.collators.base.kd_compose_collator import KDComposeCollator
 
 
 class TestOneHotWrapper(unittest.TestCase):
@@ -49,7 +48,6 @@ class TestOneHotWrapper(unittest.TestCase):
         for i in range(10):
             wrapper.seed = i
             next(iter(DataLoader(ds, batch_size=len(ds))))
-
 
     def test_seed_noctx(self):
         ds = KDMixWrapper(

@@ -2,8 +2,9 @@ import unittest
 from dataclasses import dataclass
 from unittest.mock import patch
 
-from kappadata.transforms.base.kd_scheduled_transform import KDScheduledTransform, KDTransform
+from kappadata.transforms.base.kd_scheduled_transform import KDScheduledTransform
 from tests_util.transforms.strength_transform import StrengthTransform
+
 
 @dataclass
 class WorkerInfoMock:

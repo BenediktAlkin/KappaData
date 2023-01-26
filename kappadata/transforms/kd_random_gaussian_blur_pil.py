@@ -5,7 +5,7 @@ from .kd_gaussian_blur_pil import KDGaussianBlurPIL
 class KDRandomGaussianBlurPIL(KDRandomApplyBase):
     def __init__(self, sigma, **kwargs):
         super().__init__(**kwargs)
-        self.gaussian_blur = KDGaussianBlurPIL(sigma=sigma,ctx_prefix=self.ctx_prefix)
+        self.gaussian_blur = KDGaussianBlurPIL(sigma=sigma, ctx_prefix=self.ctx_prefix)
 
     def set_rng(self, rng):
         self.gaussian_blur.set_rng(rng)

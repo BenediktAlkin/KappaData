@@ -42,7 +42,6 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             else:
                 self.assertIsInstance(wrapper.transform_configs[0].transform, KDIdentityTransform)
 
-
     def test_2views(self):
         data = torch.randn(10, generator=torch.Generator().manual_seed(5))
         ds = KDMultiViewWrapper(

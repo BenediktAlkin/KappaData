@@ -3,10 +3,10 @@ from functools import partial
 from torchvision.transforms import Compose
 from torchvision.transforms import Normalize
 
+from kappadata import KDScheduledTransform
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
 from kappadata.transforms.norm.base.kd_norm_base import KDNormBase
 from kappadata.wrappers.sample_wrappers import XTransformWrapper
-from kappadata import KDScheduledTransform
 
 
 def flatten_transform(transform):
@@ -41,6 +41,7 @@ def get_denorm_transform(transform, inplace=False):
         Normalize(mean=(0., 0., 0.), std=tuple(1 / s for s in norm_transform.std)),
         Normalize(mean=tuple(-m for m in norm_transform.mean), std=(1., 1., 1.)),
     ])
+
 
 def get_x_transform(dataset):
     if dataset is None:

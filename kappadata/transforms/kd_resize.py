@@ -1,6 +1,7 @@
-from .base import KDTransform
 from torchvision.transforms import Resize
 from torchvision.transforms.functional import InterpolationMode
+
+from .base import KDTransform
 
 
 class KDResize(KDTransform):

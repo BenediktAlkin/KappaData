@@ -1,11 +1,12 @@
 import unittest
 
+import numpy as np
 import torch
 
 from kappadata.transforms import AddGaussianNoiseTransform
 from kappadata.wrappers.sample_wrappers import XTransformWrapper
 from tests_util.datasets.x_dataset import XDataset
-import numpy as np
+
 
 class TestXTransformWrapper(unittest.TestCase):
     def test_seed(self):
@@ -21,4 +22,3 @@ class TestXTransformWrapper(unittest.TestCase):
         ds = XTransformWrapper(dataset=ds, transform=transform)
         for i in range(len(ds)):
             self.assertNotEqual(ds.getitem_x(i).tolist(), ds.getitem_x(i).tolist())
-

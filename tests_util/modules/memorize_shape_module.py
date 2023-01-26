@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+
 class MemorizeShapeModule(nn.Module):
     def __init__(self, module):
         super().__init__()

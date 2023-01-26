@@ -1,7 +1,9 @@
-from copy import deepcopy
 import inspect
-import torchvision.transforms
+from copy import deepcopy
 from itertools import chain
+
+import torchvision.transforms
+
 
 def object_to_transform(obj):
     if obj is None:
@@ -23,7 +25,6 @@ def object_to_transform(obj):
     kind = obj.pop("kind")
 
     # import here to avoid circular dependencies
-    import kappadata.transforms
     import kappadata.common.transforms
     # get all names and ctors of possible transforms
     kd_pascal_ctor_list = inspect.getmembers(kappadata.transforms, inspect.isclass)

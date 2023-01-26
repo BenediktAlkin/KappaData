@@ -1,5 +1,6 @@
-import torch
 import unittest
+
+import torch
 
 from kappadata import XTransformWrapper, KDRandomHorizontalFlip
 from tests_util.datasets import XDataset

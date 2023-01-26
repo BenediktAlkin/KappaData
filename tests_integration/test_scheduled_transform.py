@@ -1,14 +1,16 @@
 import unittest
-from dataclasses import dataclass
-from torch.utils.data import DataLoader
-import torch
-from kappadata.wrappers.mode_wrapper import ModeWrapper
-from kappadata.transforms.base.kd_scheduled_transform import KDScheduledTransform, KDTransform
-from tests_util.transforms.strength_transform import StrengthTransform
-from kappadata.wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
 from functools import partial
-from tests_util.datasets.x_dataset import XDataset
+
+import torch
+from torch.utils.data import DataLoader
+
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
+from kappadata.transforms.base.kd_scheduled_transform import KDScheduledTransform
+from kappadata.wrappers.mode_wrapper import ModeWrapper
+from kappadata.wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
+from tests_util.datasets.x_dataset import XDataset
+from tests_util.transforms.strength_transform import StrengthTransform
+
 
 class TestScheduledTransform(unittest.TestCase):
     def _test(self, transform):
