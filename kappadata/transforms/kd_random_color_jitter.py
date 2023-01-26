@@ -5,15 +5,17 @@ from .kd_color_jitter import KDColorJitter
 class KDRandomColorJitter(KDRandomApplyBase):
     def __init__(self, brightness=0, contrast=0, saturation=0, hue=0, **kwargs):
         super().__init__(**kwargs)
-        seed = self.seed + 1 if self.seed is not None else None
         self.color_jitter = KDColorJitter(
             brightness=brightness,
             contrast=contrast,
             saturation=saturation,
             hue=hue,
-            seed=seed,
             ctx_prefix=self.ctx_prefix,
         )
+
+    def set_rng(self, rng):
+        self.color_jitter.set_rng(rng)
+        return super().set_rng(rng)
 
     def _populate_ctx_on_skip(self, ctx):
         ctx[self.color_jitter.ctx_key_fn_idx] = [-1, -1, -1, -1]

@@ -1,3 +1,4 @@
+import numpy as np
 import unittest
 
 import torch
@@ -22,7 +23,7 @@ class TestPatchifyShuffleUnpatchifyImage(unittest.TestCase):
         target = torch.tensor([3, 4, 9, 10, 7, 8, 13, 14, 11, 12, 1, 2, 15, 16, 5, 6]).view(1, 4, 4)
         forward = PatchifyImage(patch_size=2)
 
-        rotate = PatchwiseShuffle(seed=235)
+        rotate = PatchwiseShuffle().set_rng(np.random.default_rng(seed=235))
         backward = UnpatchifyImage()
         ctx = {}
         rotated = rotate(forward(source, ctx), ctx)

@@ -1,3 +1,4 @@
+import numpy as np
 import unittest
 
 import torch
@@ -26,7 +27,7 @@ class TestPatchifyRotateUnpatchifyImage(unittest.TestCase):
         target = torch.tensor([6, 5, 4, 8, 2, 1, 3, 7, 13, 9, 11, 12, 14, 10, 15, 16]).view(1, 4, 4)
         forward = PatchifyImage(patch_size=2)
 
-        rotate = PatchwiseRandomRotation(seed=235)
+        rotate = PatchwiseRandomRotation().set_rng(np.random.default_rng(seed=235))
         backward = UnpatchifyImage()
         ctx = {}
         rotated = rotate(forward(source, ctx), ctx)

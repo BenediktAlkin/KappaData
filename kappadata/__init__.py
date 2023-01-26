@@ -61,13 +61,6 @@ from .transforms.patchwise_random_rotation import PatchwiseRandomRotation
 from .transforms.patchwise_shuffle import PatchwiseShuffle
 from .transforms.save_state_to_context_transform import SaveStateToContextTransform
 from .transforms.unpatchify_image import UnpatchifyImage
-# utils
-from .utils.is_deterministic_transform import (
-    is_deterministic_transform,
-    IsDeterministicTransformResult,
-    has_stochastic_transform_with_seed,
-    is_randomly_seeded_transform,
-)
 # wrappers.dataset_wrappers
 from .wrappers.dataset_wrappers.class_filter_wrapper import ClassFilterWrapper
 from .wrappers.dataset_wrappers.classwise_subset_wrapper import ClasswiseSubsetWrapper

@@ -11,8 +11,6 @@
 
 - collator rng
 
-- new multiviewwrapper reset_seed; assert unequal seeds of all sub transforms
-
 ## features
 
 - mixup/cutmix with binary label

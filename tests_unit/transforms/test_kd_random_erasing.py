@@ -26,7 +26,7 @@ class TestKDRandomErasing(unittest.TestCase):
     def test_equivalent_to_timm(self):
         images = torch.randn(16, 3, 32, 32, generator=torch.Generator().manual_seed(3))
         timm_fn = RandomErasing(probability=0.25, mode="pixel", device="cpu")
-        kd_fn = KDRandomErasing(p=0.25, mode="pixelwise", seed=5)
+        kd_fn = KDRandomErasing(p=0.25, mode="pixelwise").set_rng(np.random.default_rng(seed=5))
 
         timm_images = self._run(lambda: self._forward(images.clone(), timm_fn))
         kd_images = self._forward(images.clone(), kd_fn)

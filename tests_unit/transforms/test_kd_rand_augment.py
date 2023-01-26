@@ -54,9 +54,8 @@ class TestKDRandAug(unittest.TestCase):
             magnitude=9,
             magnitude_std=0.5,
             interpolation="bicubic",
-            seed=5,
             fill_color=tuple([min(255, round(255 * x)) for x in IMAGENET_DEFAULT_MEAN]),
-        )
+        ).set_rng(np.random.default_rng(seed=5))
         timm_fn = self.create_mae_randaug(magnitude=9, magnitude_std=0.5)
 
         timm_images = self._run(lambda: self._forward(timm_fn))

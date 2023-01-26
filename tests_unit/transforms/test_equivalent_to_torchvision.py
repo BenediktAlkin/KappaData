@@ -39,7 +39,7 @@ class TestEquivalentToTorchvision(unittest.TestCase):
         data_rng = torch.Generator().manual_seed(5)
 
         tv_transform = tv_class(**kwargs)
-        kd_transform = kd_class(seed=5, **kwargs)
+        kd_transform = kd_class(**kwargs).set_rng(np.random.default_rng(seed=5))
 
         for _ in range(10):
             x = torch.randn(3, 32, 32, generator=data_rng)
