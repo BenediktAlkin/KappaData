@@ -22,11 +22,6 @@ class KDRandomColorJitter(KDRandomApplyBase):
         ctx[self.color_jitter.ctx_key_saturation] = -1.
         ctx[self.color_jitter.ctx_key_hue] = -1.
 
-    # TODO reset_seed is deprecated
-    def reset_seed(self):
-        super().reset_seed()
-        self.color_jitter.reset_seed()
-
     def _scale_strength(self, factor):
         self.color_jitter.scale_strength(factor)
 

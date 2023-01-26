@@ -8,11 +8,6 @@ class KDRandomGaussianBlurPIL(KDRandomApplyBase):
         seed = self.seed + 1 if self.seed is not None else None
         self.gaussian_blur = KDGaussianBlurPIL(sigma=sigma, seed=seed, ctx_prefix=self.ctx_prefix)
 
-    # TODO reset_seed is deprecated
-    def reset_seed(self):
-        super().reset_seed()
-        self.gaussian_blur.reset_seed()
-
     def _populate_ctx_on_skip(self, ctx):
         ctx[self.gaussian_blur.ctx_key] = -1.
 

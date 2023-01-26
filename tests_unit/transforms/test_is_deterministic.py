@@ -39,7 +39,8 @@ class TestIsDeterministic(unittest.TestCase):
         transformed_history = []
         contexts_history = []
         for _ in range(3):
-            transform.reset_seed()
+            # TODO
+            # transform.reset_seed()
             transformed = []
             contexts = []
             for image in images:

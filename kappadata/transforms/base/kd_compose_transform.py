@@ -26,12 +26,6 @@ class KDComposeTransform(KDTransform):
                 x = t(x)
         return x
 
-    # TODO reset_seed is deprecated
-    def reset_seed(self):
-        for t in self.transforms:
-            if isinstance(t, KDStochasticTransform):
-                t.reset_seed()
-
     def set_rng(self, rng):
         for t in self.transforms:
             if isinstance(t, KDStochasticTransform):
