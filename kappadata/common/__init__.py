@@ -11,6 +11,7 @@ from .transforms import BYOLTransform0, BYOLTransform1
 from .transforms import MAEFinetuneTransform
 # norm
 from .transforms.norm.kd_cifar10_norm import KDCifar10Norm
+from .transforms.norm.kd_cifar100_norm import KDCifar100Norm
 from .transforms.norm.kd_image_net_norm import KDImageNetNorm
 # wrappers
 from .wrappers import BYOLMultiViewWrapper
