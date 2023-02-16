@@ -8,23 +8,37 @@ from .base.kd_stochastic_transform import KDStochasticTransform
 
 
 class KDRandomRotation(KDStochasticTransform):
-    def __init__(self, interpolation="bilinear", **kwargs):
+    def __init__(self, degrees, interpolation="nearest", expand=False, center=None, fill=0, **kwargs):
         super().__init__(**kwargs)
-        self.rotation = RandomRotation(interpolation=InterpolationMode(interpolation), **kwargs)
-        self.degree_lb = self.og_degree_lb = self.rotation.degrees[0]
-        self.degree_ub = self.og_degree_ub = self.rotation.degrees[1]
+        self.rotation = RandomRotation(
+            degrees=degrees,
+            interpolation=InterpolationMode(interpolation),
+            expand=expand,
+            center=center,
+            fill=fill,
+        )
+        self.degree_lb = self.og_degree_lb = float(self.rotation.degrees[0])
+        self.degree_ub = self.og_degree_ub = float(self.rotation.degrees[1])
 
     def _scale_strength(self, factor):
+        assert self.og_degree_lb == self.og_degree_ub
         self.degree_lb = self.og_degree_lb * factor
         self.degree_ub = self.og_degree_ub * factor
 
     def __call__(self, x, ctx=None):
         fill = self.rotation.fill
-        if isinstance(img, torch.Tensor):
+        if isinstance(x, torch.Tensor):
             if isinstance(fill, (int, float)):
-                fill = [float(fill)] * F.get_image_num_channels(img)
+                fill = [float(fill)] * F.get_image_num_channels(x)
             else:
                 fill = [float(f) for f in fill]
-        angle = float(torch.empty(1).uniform_(float(self.degree_lb), float(self.degree_ub)).item())
+        angle = self.rng.uniform(self.degree_lb, self.degree_ub)
 
-        return F.rotate(img, angle, self.rotation.resample, self.rotation.expand, self.rotation.center, fill)
+        return F.rotate(
+            img=x,
+            angle=angle,
+            interpolation=self.rotation.interpolation,
+            expand=self.rotation.expand,
+            center=self.rotation.center,
+            fill=fill,
+        )

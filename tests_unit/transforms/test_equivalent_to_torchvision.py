@@ -11,6 +11,7 @@ from torchvision.transforms import (
     RandomGrayscale,
     RandomHorizontalFlip,
     RandomResizedCrop,
+    RandomRotation,
     RandomSolarize,
 )
 from torchvision.transforms.functional import to_pil_image, to_tensor
@@ -22,6 +23,7 @@ from kappadata.transforms.kd_random_crop import KDRandomCrop
 from kappadata.transforms.kd_random_grayscale import KDRandomGrayscale
 from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
+from kappadata.transforms.kd_random_rotation import KDRandomRotation
 from kappadata.transforms.kd_random_solarize import KDRandomSolarize
 
 
@@ -42,7 +44,7 @@ class TestEquivalentToTorchvision(unittest.TestCase):
         kd_transform = kd_class(**kwargs).set_rng(np.random.default_rng(seed=5))
 
         for _ in range(10):
-            x = torch.randn(3, 32, 32, generator=data_rng)
+            x = torch.randn(1, 4, 4, generator=data_rng)
             x = to_pil_image(x)
 
             expected = to_tensor(tv_transform(x))
@@ -103,6 +105,13 @@ class TestEquivalentToTorchvision(unittest.TestCase):
             kd_class=KDRandomResizedCrop,
             tv_class=RandomResizedCrop,
             kwargs=dict(size=18),
+        )
+
+    def test_random_rotation(self):
+        self._run(
+            kd_class=KDRandomRotation,
+            tv_class=RandomRotation,
+            kwargs=dict(degrees=25),
         )
 
     def test_random_solarize(self):
