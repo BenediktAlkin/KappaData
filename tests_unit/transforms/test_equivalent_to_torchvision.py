@@ -44,7 +44,7 @@ class TestEquivalentToTorchvision(unittest.TestCase):
         kd_transform = kd_class(**kwargs).set_rng(np.random.default_rng(seed=5))
 
         for _ in range(10):
-            x = torch.randn(1, 4, 4, generator=data_rng)
+            x = torch.randn(3, 32, 32, generator=data_rng)
             x = to_pil_image(x)
 
             expected = to_tensor(tv_transform(x))
