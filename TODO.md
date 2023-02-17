@@ -1,6 +1,7 @@
 ##
 
-- batchwise denorm transforms
+- test batchwise denormalization
+- normalizations can be implemented much cleaner by merging sample and batchwise operations together
 - factory
 
 - unify prefixes (some objects start with KD others dont)
