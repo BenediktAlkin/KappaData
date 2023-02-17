@@ -1,5 +1,6 @@
 ##
 
+- batchwise denorm transforms
 - factory
 
 - unify prefixes (some objects start with KD others dont)
