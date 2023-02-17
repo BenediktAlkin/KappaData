@@ -14,7 +14,7 @@ def main():
     images = torch.stack([to_tensor(default_loader(image)) for image in images]) * 255
 
 
-    hists = color_histogram(images, bins=32, density=True)
+    hists = color_histogram(images, bins=128, density=True)
     for i in range(3):
         plt.plot(range(len(hists[0][i])), hists[0][i])
         plt.show()

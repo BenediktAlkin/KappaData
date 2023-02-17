@@ -4,6 +4,7 @@ def color_histogram(images, bins, density=False):
     # image should be a batch of denormalized images
     assert images.ndim == 4
     assert torch.all(images >= 0.) and torch.all(images <= 255.)
+    assert 256 % bins == 0
 
     # create histogram
     # assign a bin to each pixel (values will be in [0, bins])
