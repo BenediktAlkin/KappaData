@@ -71,6 +71,7 @@ from .utils.transform_utils import (
     get_norm_transform,
     get_x_transform,
 )
+from .utils.color_histogram import color_histogram
 # wrappers.dataset_wrappers
 from .wrappers.dataset_wrappers.class_filter_wrapper import ClassFilterWrapper
 from .wrappers.dataset_wrappers.classwise_subset_wrapper import ClasswiseSubsetWrapper
