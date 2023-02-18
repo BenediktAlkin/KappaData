@@ -10,10 +10,7 @@ def color_histogram(images, bins, density=False, batch_size=None):
     n_images, channels, height, width = images.shape
 
     # calculate in chunks to avoid OOM
-    if batch_size is None:
-        n_chunks = 1
-    else:
-        n_chunks = math.ceil(n_images / batch_size)
+    n_chunks = math.ceil(n_images / (batch_size or n_images))
     counts = []
     for chunk in images.chunk(n_chunks):
         # create histogram
