@@ -12,11 +12,12 @@ def main():
         root / "ILSVRC2012_val_00046145.JPEG",
     ]
     images = torch.stack([to_tensor(default_loader(image)) for image in images]) * 255
+    images = images.to(torch.device("cuda"))
+    images = images.repeat(100, 1, 1, 1)
 
-
-    hists = color_histogram(images, bins=128, density=True)
+    hists = color_histogram(images, bins=128, density=True, batch_size=10)
     for i in range(3):
-        plt.plot(range(len(hists[0][i])), hists[0][i])
+        plt.plot(range(len(hists[0][i])), hists[0][i].cpu())
         plt.show()
 
 
