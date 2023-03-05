@@ -32,6 +32,8 @@ class KDMixCollator(KDSingleCollator):
             **kwargs,
     ):
         super().__init__(**kwargs)
+        # TODO assign None to mixup_p and cutmix_p and only default to 0.5 if it is none
+        # TODO this allows to just set mixup_p=1.0 and only use mixup without requiring cutmix_p=0
         # check probabilities
         assert isinstance(mixup_p, (int, float)) and 0. <= mixup_p <= 1., f"invalid mixup_p {mixup_p}"
         assert isinstance(cutmix_p, (int, float)) and 0. <= cutmix_p <= 1., f"invalid mixup_p {mixup_p}"
