@@ -71,8 +71,8 @@ class KDRandomErasing(KDRandomApplyBase):
                 h = int(round(math.sqrt(target_area * aspect_ratio)))
                 w = int(round(math.sqrt(target_area / aspect_ratio)))
                 if w < img_w and h < img_h:
-                    top = int(self.rng.integers(0, img_h - h))
-                    left = int(self.rng.integers(0, img_w - w))
+                    top = int(self.rng.integers(0, img_h - h + 1))
+                    left = int(self.rng.integers(0, img_w - w + 1))
                     x[:, top:top + h, left:left + w] = self._get_replacement(c=c, h=h, w=w)
                     break
         return x

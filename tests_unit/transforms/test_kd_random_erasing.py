@@ -13,9 +13,9 @@ class TestKDRandomErasing(unittest.TestCase):
     def _run(run_fn):
         patch_rng = np.random.default_rng(seed=5)
         patch_normal_fn = lambda self: torch.from_numpy(patch_rng.standard_normal(size=self.shape, dtype=np.float32))
-        with patch("random.random", lambda: patch_rng.random()):
-            with patch("random.uniform", lambda low, high: patch_rng.uniform(low, high)):
-                with patch("random.randint", lambda low, high: int(patch_rng.integers(low, high))):
+        with patch("random.randint", lambda low, high: int(patch_rng.integers(low, high + 1)) if low != high else low):
+            with patch("random.random", lambda: patch_rng.random()):
+                with patch("random.uniform", lambda low, high: patch_rng.uniform(low, high)):
                     with patch("torch.Tensor.normal_", patch_normal_fn):
                         return run_fn()
 
