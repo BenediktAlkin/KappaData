@@ -25,7 +25,8 @@ from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFli
 from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
 from kappadata.transforms.kd_random_rotation import KDRandomRotation
 from kappadata.transforms.kd_random_solarize import KDRandomSolarize
-
+# TODO
+#from tests_util.patch_rng import patch_rng
 
 class TestEquivalentToTorchvision(unittest.TestCase):
     def _run(self, **kwargs):
@@ -50,6 +51,25 @@ class TestEquivalentToTorchvision(unittest.TestCase):
             expected = to_tensor(tv_transform(x))
             actual = to_tensor(kd_transform(x))
             self.assertTrue(torch.all(expected == actual))
+
+    # TODO make all methods like these (and sort out which methods actually need to be mocked)
+    # @patch_rng(fn_names=["torch.randint", "torch.randperm", "torch.rand", "torch.Tensor.uniform_"])
+    # def test(self):
+    #     data_rng = torch.Generator().manual_seed(5)
+    #     kd_class = KDColorJitter
+    #     tv_class = ColorJitter
+    #     kwargs = dict(brightness=0.8, contrast=0.8, saturation=0.8, hue=0.2)
+    #     tv_transform = tv_class(**kwargs)
+    #     kd_transform = kd_class(**kwargs).set_rng(np.random.default_rng(seed=5))
+    #
+    #     for _ in range(10):
+    #         x = torch.randn(3, 32, 32, generator=data_rng)
+    #         x = to_pil_image(x)
+    #
+    #         expected = to_tensor(tv_transform(x))
+    #         actual = to_tensor(kd_transform(x))
+    #         self.assertTrue(torch.all(expected == actual))
+
 
     def test_color_jitter(self):
         self._run(
