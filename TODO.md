@@ -1,5 +1,6 @@
 ##
 
+- test interleaved sampler
 - test batchwise denormalization
 - normalizations can be implemented much cleaner by merging sample and batchwise operations together
 - factory
