@@ -6,3 +6,5 @@ KD_MIX_WRAPPER_REQUIRES_SEED_OR_CONTEXT = (
     "KDMixWrapper requires either a context or a seed to ensure same mixing of samples and labels "
     "(NOTE: using a seed will additionally make the transform deterministc per sample)"
 )
+
+REQUIRES_MIXUP_P_OR_CUTMIX_P = "at least one of mixup_p or cutmix_p is required"

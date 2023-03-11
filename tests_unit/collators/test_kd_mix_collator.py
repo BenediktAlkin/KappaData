@@ -8,9 +8,18 @@ from kappadata.utils.one_hot import to_one_hot_matrix
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
 from tests_util.datasets import create_image_classification_dataset
+from kappadata.error_messages import REQUIRES_MIXUP_P_OR_CUTMIX_P
 
 
 class TestKDMixCollator(unittest.TestCase):
+    def test_ctor_probs(self):
+        self.assertEqual(0., KDMixCollator(mixup_p=1., mixup_alpha=0.8).cutmix_p)
+        self.assertEqual(0., KDMixCollator(cutmix_p=1., cutmix_alpha=1.0).mixup_p)
+        with self.assertRaises(AssertionError) as ex:
+            self.assertEqual(0., KDMixCollator())
+        self.assertEqual(REQUIRES_MIXUP_P_OR_CUTMIX_P, str(ex.exception))
+
+
     def test_mixup(self):
         ds = create_image_classification_dataset(size=16, seed=19521, channels=1, resolution=8, n_classes=4)
         ds = OneHotWrapper(dataset=ds)
@@ -21,7 +30,6 @@ class TestKDMixCollator(unittest.TestCase):
         mix_collator = KDMixCollator(
             mixup_alpha=1.,
             mixup_p=1.,
-            cutmix_p=0.,
             apply_mode="sample",
             lamb_mode="sample",
             shuffle_mode="roll",

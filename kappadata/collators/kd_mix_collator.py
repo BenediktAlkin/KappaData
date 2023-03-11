@@ -3,7 +3,7 @@ import torch
 
 from kappadata.collators.base.kd_single_collator import KDSingleCollator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
-
+from kappadata.error_messages import REQUIRES_MIXUP_P_OR_CUTMIX_P
 
 class KDMixCollator(KDSingleCollator):
     """
@@ -23,8 +23,8 @@ class KDMixCollator(KDSingleCollator):
             self,
             mixup_alpha: float = None,
             cutmix_alpha: float = None,
-            mixup_p: float = 0.5,
-            cutmix_p: float = 0.5,
+            mixup_p: float = None,
+            cutmix_p: float = None,
             apply_mode: str = "batch",
             lamb_mode: str = "batch",
             shuffle_mode: str = "flip",
@@ -32,13 +32,22 @@ class KDMixCollator(KDSingleCollator):
             **kwargs,
     ):
         super().__init__(**kwargs)
-        # TODO assign None to mixup_p and cutmix_p and only default to 0.5 if it is none
-        # TODO this allows to just set mixup_p=1.0 and only use mixup without requiring cutmix_p=0
+        # check probabilities
+        assert (mixup_p is not None) ^ (cutmix_p is not None), REQUIRES_MIXUP_P_OR_CUTMIX_P
+        if mixup_p is None and cutmix_p is None:
+            # no percentages specified -> equal split by default
+            mixup_p = 0.5
+            cutmix_p = 0.5
+        # assign 0 probability if one is not specified
+        mixup_p = mixup_p or 0.
+        cutmix_p = cutmix_p or 0.
+
         # check probabilities
         assert isinstance(mixup_p, (int, float)) and 0. <= mixup_p <= 1., f"invalid mixup_p {mixup_p}"
         assert isinstance(cutmix_p, (int, float)) and 0. <= cutmix_p <= 1., f"invalid mixup_p {mixup_p}"
         assert 0. < mixup_p + cutmix_p <= 1., f"0 < mixup_p + cutmix_p <= 1 (got {mixup_p + cutmix_p})"
         if mixup_p + cutmix_p != 1.:
+            # TODO
             raise NotImplementedError
 
         # check alphas
