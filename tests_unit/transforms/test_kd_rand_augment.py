@@ -41,14 +41,14 @@ class TestKDRandAug(unittest.TestCase):
         return [to_tensor(fn(img)) for img in images]
 
     @patch_rng(fn_names=["numpy.random.choice", "random.random", "random.uniform", "random.gauss"])
-    def test_equivalent_to_timm(self):
+    def test_equivalent_to_timm(self, seed):
         kd_fn = KDRandAugment(
             num_ops=2,
             magnitude=9,
             magnitude_std=0.5,
             interpolation="bicubic",
             fill_color=tuple([min(255, round(255 * x)) for x in IMAGENET_DEFAULT_MEAN]),
-        ).set_rng(np.random.default_rng(seed=0))
+        ).set_rng(np.random.default_rng(seed=seed))
         timm_fn = self.create_mae_randaug(magnitude=9, magnitude_std=0.5)
 
         timm_images = self._forward(timm_fn)

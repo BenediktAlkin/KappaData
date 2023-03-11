@@ -1,13 +1,14 @@
 import torch
 from unittest.mock import patch
 import numpy as np
-from contextlib import ContextDecorator
+from functools import partial
 
 
-class patch_rng(ContextDecorator):
+class patch_rng:
     def __init__(self, fn_names, seed=0):
         super().__init__()
         self.ctx_managers = []
+        self.seed = seed
         rng = np.random.default_rng(seed=seed)
         for fn_name in fn_names:
             if fn_name == "numpy.random.beta":
@@ -51,6 +52,13 @@ class patch_rng(ContextDecorator):
             else:
                 raise NotImplementedError(fn_name)
             self.ctx_managers.append(ctx_manager)
+
+    def __call__(self, func):
+        def inner(*args, **kwargs):
+            with self:
+                return func(*args, **kwargs, seed=self.seed)
+
+        return inner
 
     def __enter__(self):
         for ctx_manager in self.ctx_managers:

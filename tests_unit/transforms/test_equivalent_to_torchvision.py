@@ -29,11 +29,13 @@ from tests_util.patch_rng import patch_rng
 
 
 class TestEquivalentToTorchvision(unittest.TestCase):
-    def _run(self, kd_class, tv_class, kwargs, seed=0):
-        data_rng = torch.Generator().manual_seed(seed)
+    def _run(self, kd_class, tv_class, kwargs, seed=None):
+        data_rng = torch.Generator().manual_seed(123)
 
         tv_transform = tv_class(**kwargs)
-        kd_transform = kd_class(**kwargs).set_rng(np.random.default_rng(seed=seed))
+        kd_transform = kd_class(**kwargs)
+        if seed is not None:
+            kd_transform.set_rng(np.random.default_rng(seed=seed))
 
         for _ in range(10):
             x = torch.randn(3, 32, 32, generator=data_rng)
@@ -44,19 +46,21 @@ class TestEquivalentToTorchvision(unittest.TestCase):
             self.assertTrue(torch.all(expected == actual))
 
     @patch_rng(fn_names=["torch.randperm", "torch.Tensor.uniform_"])
-    def test_color_jitter(self):
+    def test_color_jitter(self, seed):
         self._run(
             kd_class=KDColorJitter,
             tv_class=ColorJitter,
             kwargs=dict(brightness=0.8, contrast=0.8, saturation=0.8, hue=0.2),
+            seed=seed,
         )
 
     @patch_rng(fn_names=["torch.Tensor.uniform_"])
-    def test_gaussian_blur_tv(self):
+    def test_gaussian_blur_tv(self, seed):
         self._run(
             kd_class=KDGaussianBlurTV,
             tv_class=GaussianBlur,
             kwargs=dict(kernel_size=23, sigma=[0.1, 2.]),
+            seed=seed,
         )
 
     def test_gaussian_blur_pil(self):
@@ -74,49 +78,55 @@ class TestEquivalentToTorchvision(unittest.TestCase):
         )
 
     @patch_rng(fn_names=["torch.randint"])
-    def test_random_crop(self):
+    def test_random_crop(self, seed):
         self._run(
             kd_class=KDRandomCrop,
             tv_class=RandomCrop,
             kwargs=dict(size=18),
+            seed=seed,
         )
 
     @patch_rng(fn_names=["torch.rand"])
-    def test_random_grayscale(self):
+    def test_random_grayscale(self, seed):
         self._run(
             kd_class=KDRandomGrayscale,
             tv_class=RandomGrayscale,
             kwargs=dict(p=0.3),
+            seed=seed,
         )
 
     @patch_rng(fn_names=["torch.rand"])
-    def test_random_horizontal_flip(self):
+    def test_random_horizontal_flip(self, seed):
         self._run(
             kd_class=KDRandomHorizontalFlip,
             tv_class=RandomHorizontalFlip,
             kwargs=dict(p=0.5),
+            seed=seed,
         )
 
     @patch_rng(fn_names=["torch.Tensor.uniform_", "torch.randint"])
-    def test_random_resized_crop(self):
+    def test_random_resized_crop(self, seed):
         self._run(
             kd_class=KDRandomResizedCrop,
             tv_class=RandomResizedCrop,
             kwargs=dict(size=18),
+            seed=seed,
         )
 
     @patch_rng(fn_names=["torch.Tensor.uniform_"])
-    def test_random_rotation(self):
+    def test_random_rotation(self, seed):
         self._run(
             kd_class=KDRandomRotation,
             tv_class=RandomRotation,
             kwargs=dict(degrees=25),
+            seed=seed,
         )
 
     @patch_rng(fn_names=["torch.rand"])
-    def test_random_solarize(self):
+    def test_random_solarize(self, seed):
         self._run(
             kd_class=KDRandomSolarize,
             tv_class=RandomSolarize,
             kwargs=dict(p=0.2, threshold=128),
+            seed=seed,
         )
