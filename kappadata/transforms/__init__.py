@@ -28,7 +28,6 @@ from .kd_random_solarize import KDRandomSolarize
 from .kd_resize import KDResize
 from .kd_solarize import KDSolarize
 # norm
-from .norm.kd_image_net_norm import KDImageNetNorm
 from .norm.kd_image_norm import KDImageNorm
 from .norm.kd_image_range_norm import KDImageRangeNorm
 #

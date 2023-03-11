@@ -6,7 +6,7 @@ from kappadata.transforms.kd_random_grayscale import KDRandomGrayscale
 from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
 from kappadata.transforms.kd_random_solarize import KDRandomSolarize
-from kappadata.transforms.norm.kd_image_net_norm import KDImageNetNorm
+from .norm.kd_image_net_norm import KDImageNetNorm
 
 
 class BYOLTransform0(KDComposeTransform):
