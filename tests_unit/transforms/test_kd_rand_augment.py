@@ -9,18 +9,10 @@ from torchvision.transforms.functional import to_pil_image
 from torchvision.transforms.functional import to_tensor
 
 from kappadata.transforms.kd_rand_augment import KDRandAugment
+from tests_util.patch_rng import patch_rng
 
 
 class TestKDRandAug(unittest.TestCase):
-    @staticmethod
-    def _run(run_fn):
-        patch_rng = np.random.default_rng(seed=5)
-        with patch("numpy.random.choice", patch_rng.choice):
-            with patch("random.random", lambda: patch_rng.random()):
-                with patch("random.uniform", lambda low, high: patch_rng.uniform(low, high)):
-                    with patch("random.gauss", lambda mu, sigma: patch_rng.normal(mu, sigma)):
-                        return run_fn()
-
     @staticmethod
     def create_mae_randaug(magnitude, magnitude_std):
         config_str = f"rand-m{magnitude}-mstd{magnitude_std}-inc1"
@@ -48,6 +40,7 @@ class TestKDRandAug(unittest.TestCase):
         # return results
         return [to_tensor(fn(img)) for img in images]
 
+    @patch_rng(fn_names=["numpy.random.choice", "random.random", "random.uniform", "random.gauss"])
     def test_equivalent_to_timm(self):
         kd_fn = KDRandAugment(
             num_ops=2,
@@ -55,10 +48,10 @@ class TestKDRandAug(unittest.TestCase):
             magnitude_std=0.5,
             interpolation="bicubic",
             fill_color=tuple([min(255, round(255 * x)) for x in IMAGENET_DEFAULT_MEAN]),
-        ).set_rng(np.random.default_rng(seed=5))
+        ).set_rng(np.random.default_rng(seed=0))
         timm_fn = self.create_mae_randaug(magnitude=9, magnitude_std=0.5)
 
-        timm_images = self._run(lambda: self._forward(timm_fn))
+        timm_images = self._forward(timm_fn)
         kd_images = self._forward(kd_fn)
         for i, (timm_image, kd_image) in enumerate(zip(timm_images, kd_images)):
             self.assertTrue(torch.all(timm_image == kd_image), f"images are unequal idx={i}")

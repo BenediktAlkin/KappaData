@@ -19,21 +19,19 @@ from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
 from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
+from tests_util.patch_rng import patch_rng
 
 class TestMaeFinetuneTransform(unittest.TestCase):
-    def run_test(self, *args, **kwargs):
-        rng = np.random.default_rng(seed=5)
-        patch_normal_fn = lambda tensor: torch.from_numpy(rng.standard_normal(size=tensor.shape, dtype=np.float32))
-        with patch("random.uniform", lambda low, high: rng.uniform(low, high)):
-            with patch("random.randint", lambda low, high: int(rng.integers(low, high + 1)) if low != high else low):
-                with patch("torch.rand", lambda _: torch.tensor(rng.random(), dtype=torch.float64)):
-                    with patch("random.random", lambda: rng.random()):
-                        with patch("random.gauss", lambda mu, sigma: rng.normal(mu, sigma)):
-                            with patch("numpy.random.choice", rng.choice):
-                                with patch("torch.Tensor.normal_", patch_normal_fn):
-                                    self._run_test(*args, **kwargs)
-
-    def _run_test(self, images):
+    @patch_rng(fn_names=[
+        "random.uniform",
+        "random.randint",
+        "torch.rand",
+        "random.random",
+        "random.gauss",
+        "numpy.random.choice",
+        "torch.Tensor.normal_",
+    ])
+    def _run(self, images):
         timm_transform = create_transform(
             input_size=32,
             is_training=True,
@@ -59,7 +57,7 @@ class TestMaeFinetuneTransform(unittest.TestCase):
             KDImageNetNorm(),
             KDRandomErasing(p=0.25, mode="pixelwise", max_count=1),
         ])
-        kd_transform.set_rng(np.random.default_rng(seed=5))
+        kd_transform.set_rng(np.random.default_rng(seed=0))
 
         for i in range(len(images)):
             x = to_pil_image(images[i].clone())
@@ -71,4 +69,4 @@ class TestMaeFinetuneTransform(unittest.TestCase):
 
     def test(self):
         images = torch.rand(100, 3, 32, 32, generator=torch.Generator().manual_seed(513))
-        self.run_test(images)
+        self._run(images)

@@ -4,9 +4,8 @@ import numpy as np
 from contextlib import ContextDecorator
 
 
-# TODO refactor tests to use this
 class patch_rng(ContextDecorator):
-    def __init__(self, fn_names, seed=5):
+    def __init__(self, fn_names, seed=0):
         super().__init__()
         self.ctx_managers = []
         rng = np.random.default_rng(seed=seed)
