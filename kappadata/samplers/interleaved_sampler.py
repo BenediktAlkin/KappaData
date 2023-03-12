@@ -53,13 +53,13 @@ class InterleavedSampler:
         while True:
             sample_in_epoch = 0
             for main_idx in self.main_sampler:
+                sample += 1
+                sample_in_epoch += 1
+                sample_in_update += 1
                 if sample_in_update == self.batch_size or sample_in_epoch == samples_per_epoch:
                     yield True, main_idx
                 else:
                     yield False, main_idx
-                sample += 1
-                sample_in_epoch += 1
-                sample_in_update += 1
                 # check if interleaved dataset has to be iterated (only possible after a update)
                 # sample_in_update == self.batch_size -> full batch
                 # if not drop_last -> last batch is not full but is also an update
@@ -81,8 +81,13 @@ class InterleavedSampler:
                                  sample_at_last_update // config.every_n_samples < sample // config.every_n_samples)
                         ):
                             index_offset = self.index_offsets[config_idx]
+                            sample_in_interleaved = 0
                             for interleaved_idx in config.sampler:
-                                if interleaved_idx % self.batch_size == 0 or interleaved_idx == len(config.sampler):
+                                sample_in_interleaved += 1
+                                if (
+                                        sample_in_interleaved % self.batch_size == 0 or
+                                        sample_in_interleaved == len(config.sampler)
+                                ):
                                     yield True, index_offset + interleaved_idx
                                 else:
                                     yield False, index_offset + interleaved_idx

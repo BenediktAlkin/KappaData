@@ -24,12 +24,18 @@ class TestInterleavedSampler(unittest.TestCase):
                 epochs=1,
             ),
             expected=[
-                0, 1, 2, 3,  # main
-                10, 11, 12, 13, 14,  # configs[0]
-                4, 5, 6, 7,  # main
-                10, 11, 12, 13, 14,  # configs[0]
-                8, 9,  # main
-                10, 11, 12, 13, 14,  # configs[0] (last batch is counted as an update as drop_last=False
+                # main
+                0, 1, 2, 3,
+                # configs[0]
+                10, 11, 12, 13, 14,
+                # main
+                4, 5, 6, 7,
+                # configs[0]
+                10, 11, 12, 13, 14,
+                # main
+                8, 9,
+                # configs[0] (last batch is counted as an update as drop_last=False)
+                10, 11, 12, 13, 14,
             ],
         )
 
