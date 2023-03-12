@@ -36,9 +36,17 @@ class InterleavedSampler:
         self.updates = updates
         self.samples = samples
 
-        self.index_offsets = [len(self.main_sampler.data_source)]
+        def _get_data_source(sampler):
+            if hasattr(sampler, "data_source"):
+                return sampler.data_source
+            if hasattr(sampler, "dataset"):
+                return sampler.dataset
+            raise NotImplementedError
+
+        self.index_offsets = [len(_get_data_source(self.main_sampler))]
         for config in self.configs[:-1]:
-            self.index_offsets.append(self.index_offsets[-1] + len(config.sampler.data_source))
+            self.index_offsets.append(self.index_offsets[-1] + len(_get_data_source(config.sampler)))
+
 
     def __iter__(self):
         if self.drop_last:

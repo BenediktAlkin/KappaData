@@ -3,6 +3,7 @@ import unittest
 
 from kappadata.samplers.interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
 from torch.utils.data import RandomSampler, SequentialSampler
+from torch.utils.data.distributed import DistributedSampler
 
 class TestInterleavedSampler(unittest.TestCase):
     def _run(self, sampler, expected):
@@ -54,10 +55,14 @@ class TestInterleavedSampler(unittest.TestCase):
                 epochs=1,
             ),
             expected=[
-                0, 1, 2, 3,  # main
-                10, 11, 12, 13, 14,  # configs[0]
-                4, 5, 6, 7,  # main
-                10, 11, 12, 13, 14,  # configs[0]
+                # main
+                0, 1, 2, 3,
+                # configs[0]
+                10, 11, 12, 13, 14,
+                # main
+                4, 5, 6, 7,
+                # configs[0]
+                10, 11, 12, 13, 14,
             ],
         )
 
@@ -80,11 +85,16 @@ class TestInterleavedSampler(unittest.TestCase):
                 epochs=1,
             ),
             expected=[
-                0, 1, 2, 3,  # main
-                10, 11, 12, 13, 14,  # configs[0]
-                4, 5, 6, 7,  # main
-                10, 11, 12, 13, 14,  # configs[0]
-                15, 16,  # configs[1]
+                # main
+                0, 1, 2, 3,
+                # configs[0]
+                10, 11, 12, 13, 14,
+                # main
+                4, 5, 6, 7,
+                # configs[0]
+                10, 11, 12, 13, 14,
+                # configs[1]
+                15, 16,
             ],
         )
 
@@ -102,9 +112,12 @@ class TestInterleavedSampler(unittest.TestCase):
                 epochs=1,
             ),
             expected=[
-                0, 1, 2, 3, 4, 5, 6, 7,  # main
-                10, 11, 12, 13, 14,  # configs[0]
-                8, 9,  # main
+                # main
+                0, 1, 2, 3, 4, 5, 6, 7,
+                # configs[0]
+                10, 11, 12, 13, 14,
+                # main
+                8, 9,
             ],
         )
 
@@ -122,8 +135,60 @@ class TestInterleavedSampler(unittest.TestCase):
                 epochs=1,
             ),
             expected=[
-                4, 1, 7, 5, 3, 9, 0, 8,  # main
-                10, 11, 12, 13, 14,  # configs[0]
-                6, 2,  # main
+                # main
+                4, 1, 7, 5, 3, 9, 0, 8,
+                # configs[0]
+                10, 11, 12, 13, 14,
+                # main
+                6, 2,
+            ],
+        )
+
+    def test_distsequential_enu1distsequential_rank0of2(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=DistributedSampler(list(range(10)), shuffle=False, num_replicas=2, rank=0),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=DistributedSampler(list(range(5)), shuffle=False, num_replicas=2, rank=0),
+                        every_n_updates=1,
+                    ),
+                ],
+                batch_size=4,
+                epochs=1,
+            ),
+            expected=[
+                # main
+                0, 2, 4, 6,
+                # configs[0]
+                10, 12, 14,
+                # main
+                8,
+                # configs[0]
+                10, 12, 14,
+            ],
+        )
+    def test_distsequential_enu1distsequential_rank1of2(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=DistributedSampler(list(range(10)), shuffle=False, num_replicas=2, rank=1),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=DistributedSampler(list(range(5)), shuffle=False, num_replicas=2, rank=1),
+                        every_n_updates=1,
+                    ),
+                ],
+                batch_size=4,
+                epochs=1,
+            ),
+            expected=[
+                # main
+                1, 3, 5, 7,
+                # configs[0]
+                11, 13, 10,
+                # main
+                9,
+                # configs[0]
+                11, 13, 10,
             ],
         )
