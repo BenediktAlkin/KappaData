@@ -8,11 +8,12 @@ class InterleavedBatchSampler:
     def __iter__(self):
         idxs = []
         for is_full_batch, idx in self.interleaved_sampler:
+            idxs.append(idx)
             if is_full_batch:
                 yield idxs
                 idxs = []
-            else:
-                idxs.append(idx)
+        assert len(idxs) == 0
+
 
     def __len__(self):
         raise NotImplementedError
