@@ -110,6 +110,7 @@ class TestInterleavedSampler(unittest.TestCase):
                 ],
                 batch_size=4,
                 epochs=1,
+                drop_last=False,
             ),
             expected=[
                 # main
@@ -133,6 +134,7 @@ class TestInterleavedSampler(unittest.TestCase):
                 ],
                 batch_size=4,
                 epochs=1,
+                drop_last=False,
             ),
             expected=[
                 # main
@@ -156,6 +158,7 @@ class TestInterleavedSampler(unittest.TestCase):
                 ],
                 batch_size=4,
                 epochs=1,
+                drop_last=False,
             ),
             expected=[
                 # main
@@ -180,6 +183,7 @@ class TestInterleavedSampler(unittest.TestCase):
                 ],
                 batch_size=4,
                 epochs=1,
+                drop_last=False,
             ),
             expected=[
                 # main

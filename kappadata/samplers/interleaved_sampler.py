@@ -12,7 +12,7 @@ class InterleavedSamplerConfig:
 
 
 class InterleavedSampler:
-    def __init__(self, main_sampler, configs, batch_size, drop_last=False, epochs=None, updates=None, samples=None):
+    def __init__(self, main_sampler, configs, batch_size, drop_last=True, epochs=None, updates=None, samples=None):
         super().__init__()
         assert isinstance(batch_size, int) and 0 < batch_size
         assert epochs is None or (isinstance(epochs, int) and 0 < epochs)
