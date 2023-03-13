@@ -31,7 +31,7 @@ class TestMaeFinetuneTransform(unittest.TestCase):
         "numpy.random.choice",
         "torch.Tensor.normal_",
     ])
-    def _run(self, images):
+    def _run(self, images, seed):
         timm_transform = create_transform(
             input_size=32,
             is_training=True,
@@ -57,7 +57,7 @@ class TestMaeFinetuneTransform(unittest.TestCase):
             KDImageNetNorm(),
             KDRandomErasing(p=0.25, mode="pixelwise", max_count=1),
         ])
-        kd_transform.set_rng(np.random.default_rng(seed=0))
+        kd_transform.set_rng(np.random.default_rng(seed=seed))
 
         for i in range(len(images)):
             x = to_pil_image(images[i].clone())

@@ -15,7 +15,7 @@ from tests_util.patch_rng import patch_rng
 
 class TestMixupEqualsTimm(unittest.TestCase):
     @patch_rng(fn_names=["numpy.random.rand", "numpy.random.beta", "numpy.random.randint"])
-    def _run(self, batch_size, smoothing, mixup_alpha, cutmix_alpha, mixup_p, cutmix_p, mode):
+    def _run(self, batch_size, smoothing, mixup_alpha, cutmix_alpha, mixup_p, cutmix_p, mode, seed):
         with patch("torch.Tensor.flip", lambda tensor, dim: tensor.roll(1, dim)):
             ds = create_image_classification_dataset(seed=552, size=100, channels=3, resolution=32, n_classes=10)
             mixup_ds = LabelSmoothingWrapper(dataset=ds, smoothing=smoothing)
@@ -27,7 +27,7 @@ class TestMixupEqualsTimm(unittest.TestCase):
                 apply_mode=mode,
                 lamb_mode=mode,
                 shuffle_mode="flip",
-                seed=0,
+                seed=seed,
                 dataset_mode="x class",
                 return_ctx=False,
             )

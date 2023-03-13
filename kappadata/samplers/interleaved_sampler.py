@@ -1,6 +1,6 @@
 import torch
 from dataclasses import dataclass
-from torch.utils.data import SequentialSampler
+from torch.utils.data import SequentialSampler, ConcatDataset
 
 @dataclass
 class InterleavedSamplerConfig:
@@ -46,7 +46,10 @@ class InterleavedSampler:
         self.index_offsets = [len(_get_data_source(self.main_sampler))]
         for config in self.configs[:-1]:
             self.index_offsets.append(self.index_offsets[-1] + len(_get_data_source(config.sampler)))
-
+        self.dataset = ConcatDataset(
+            [_get_data_source(self.main_sampler)] +
+            [_get_data_source(config.sampler) for config in self.configs]
+        )
 
     def __iter__(self):
         if self.drop_last:
