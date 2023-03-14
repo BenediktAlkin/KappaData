@@ -1,3 +1,2 @@
 from .infinite_batch_sampler import InfiniteBatchSampler
-from .infinite_batch_sampler_iterator import InfiniteBatchSamplerIterator
 from .interleaved_batch_sampler import InterleavedBatchSampler

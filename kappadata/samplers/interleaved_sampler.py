@@ -18,6 +18,7 @@ class InterleavedSampler:
         assert epochs is None or (isinstance(epochs, int) and 0 < epochs)
         assert updates is None or (isinstance(updates, int) and 0 < updates)
         assert samples is None or (isinstance(samples, int) and 0 < samples)
+        assert sum([epochs is not None, updates is not None, samples is not None]) <= 1
         for config in configs:
             assert (
                     (config.every_n_epochs is not None) or

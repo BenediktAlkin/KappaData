@@ -1,8 +1,8 @@
 import unittest
 
 from kappadata.samplers.interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
-from kappadata.batch_samplers.interleaved_batch_sampler import InterleavedBatchSampler
-from torch.utils.data import SequentialSampler, RandomSampler
+from kappadata.samplers.batch_samplers.interleaved_batch_sampler import InterleavedBatchSampler
+from torch.utils.data import SequentialSampler
 
 
 class TestInterleavedSamplers(unittest.TestCase):

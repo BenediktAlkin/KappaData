@@ -1,5 +1,5 @@
 import unittest
-from kappadata.batch_samplers.interleaved_batch_sampler import InterleavedBatchSampler
+from kappadata.samplers.batch_samplers.interleaved_batch_sampler import InterleavedBatchSampler
 
 
 class TestInterleavedBatchSampler(unittest.TestCase):

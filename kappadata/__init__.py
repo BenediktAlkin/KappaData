@@ -8,10 +8,6 @@ import kappadata.transforms.norm
 import kappadata.wrappers
 import kappadata.wrappers.dataset_wrappers
 import kappadata.wrappers.sample_wrappers
-# batch_samplers
-from .batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
-from .batch_samplers.infinite_batch_sampler_iterator import InfiniteBatchSamplerIterator
-from .batch_samplers.interleaved_batch_sampler import InterleavedBatchSampler
 # caching
 from .caching.shared_dict_dataset import SharedDictDataset
 # collators
@@ -38,6 +34,9 @@ from .datasets.kd_wrapper import KDWrapper
 from .factory import object_to_transform
 # samplers
 from .samplers.interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
+# samplers.batch_samplers
+from .samplers.batch_samplers import InfiniteBatchSampler
+from .samplers.batch_samplers import InterleavedBatchSampler
 # transforms base
 from .transforms.base import KDComposeTransform
 from .transforms.base import KDIdentityTransform

@@ -4,8 +4,8 @@ from functools import partial
 import torch
 from torch.utils.data import DataLoader, RandomSampler, DistributedSampler, SequentialSampler
 
-from kappadata.batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
-from kappadata.batch_samplers.infinite_batch_sampler_iterator import InfiniteBatchSamplerIterator
+from kappadata.samplers.batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
+from tests_util.infinite_batch_sampler_iterator import InfiniteBatchSamplerIterator
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from tests_util.datasets.index_dataset import IndexDataset
 
