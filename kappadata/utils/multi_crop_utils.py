@@ -1,13 +1,5 @@
 import torch
-
-
-class MultiCropJointForwardModule(torch.nn.Module):
-    def __init__(self, module):
-        super().__init__()
-        self.module = module
-
-    def forward(self, *args, **kwargs):
-        return multi_crop_joint_forward(self.module, *args, **kwargs)
+from collections import defaultdict
 
 
 class MultiCropSplitForwardModule(torch.nn.Module):
@@ -19,30 +11,13 @@ class MultiCropSplitForwardModule(torch.nn.Module):
         return multi_crop_split_forward(self.module, *args, **kwargs)
 
 
-def multi_crop_joint_forward(model, x):
-    # concat if input is list/tuple
-    if isinstance(x, (list, tuple)):
-        n_chunks = len(x)
-        x = torch.concat(x)
-    else:
-        n_chunks = None
-
-    # joint forward
-    y = model(x)
-
-    # chunk if input was list/tuple
-    if n_chunks is not None:
-        return y.chunk(n_chunks)
-    return y
-
-
-def multi_crop_split_forward(model, x, n_chunks=None):
+def multi_crop_split_forward(model, x, batch_size=None):
     # chunk if input is tensor
     if torch.is_tensor(x):
-        assert n_chunks is not None and len(x) % n_chunks == 0
-        x = x.chunk(n_chunks)
+        assert batch_size is not None and len(x) % batch_size == 0
+        x = x.chunk(len(x) // batch_size)
     else:
-        assert n_chunks is None
+        assert isinstance(x, (list, tuple)) and batch_size is None
 
     # split forward
     results = []
@@ -50,7 +25,14 @@ def multi_crop_split_forward(model, x, n_chunks=None):
         results.append(model(chunk))
 
     # concat if input was tensor
-    if n_chunks is not None:
+    if batch_size is not None:
         results = torch.concat(results)
 
     return results
+
+def concat_same_shape_inputs(x):
+    assert isinstance(x, (list, tuple))
+    results = defaultdict(list)
+    for xx in x:
+        results[tuple(xx.shape[1:])].append(xx)
+    return [torch.concat(v) for v in results.values()]
