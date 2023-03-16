@@ -30,6 +30,7 @@ def multi_crop_split_forward(model, x, batch_size=None):
 
     return results
 
+# TODO write unittests
 def concat_same_shape_inputs(x):
     if torch.is_tensor(x):
         return [x], len(x)
