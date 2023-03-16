@@ -4,8 +4,8 @@ import torch
 import torch.nn as nn
 
 from kappadata.utils.multi_crop_utils import (
-    multi_crop_split_forward,
-    MultiCropSplitForwardModule,
+    split_forward,
+    SplitForwardModule,
     concat_same_shape_inputs,
     split_same_shape_inputs,
 )
@@ -21,7 +21,7 @@ class TestMultiCropUtils(unittest.TestCase):
 
         def forward(self, x, batch_size):
             x = self.layer0(x)
-            x = multi_crop_split_forward(self.layer1, x, batch_size=batch_size)
+            x = split_forward(self.layer1, x, batch_size=batch_size)
             return x
 
     def test_tensor_2views(self):

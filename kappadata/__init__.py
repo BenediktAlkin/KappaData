@@ -75,6 +75,7 @@ from .utils.transform_utils import (
     get_x_transform,
 )
 from .utils.color_histogram import color_histogram
+from .utils.multi_crop_utils import SplitForwardModule
 # wrappers.dataset_wrappers
 from .wrappers.dataset_wrappers.class_filter_wrapper import ClassFilterWrapper
 from .wrappers.dataset_wrappers.classwise_subset_wrapper import ClasswiseSubsetWrapper

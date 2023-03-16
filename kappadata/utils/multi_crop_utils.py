@@ -2,16 +2,17 @@ import torch
 from collections import defaultdict
 
 
-class MultiCropSplitForwardModule(torch.nn.Module):
-    def __init__(self, module):
+class SplitForwardModule(torch.nn.Module):
+    def __init__(self, module, batch_size):
         super().__init__()
         self.module = module
+        self.batch_size = batch_size
 
     def forward(self, *args, **kwargs):
-        return multi_crop_split_forward(self.module, *args, **kwargs)
+        return split_forward(self.module, *args, batch_size=self.batch_size, **kwargs)
 
 
-def multi_crop_split_forward(model, x, batch_size=None):
+def split_forward(model, x, batch_size=None):
     # chunk if input is tensor
     if torch.is_tensor(x):
         assert batch_size is not None and len(x) % batch_size == 0
