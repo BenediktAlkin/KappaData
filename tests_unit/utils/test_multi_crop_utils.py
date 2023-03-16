@@ -7,6 +7,7 @@ from kappadata.utils.multi_crop_utils import (
     multi_crop_split_forward,
     MultiCropSplitForwardModule,
     concat_same_shape_inputs,
+    split_same_shape_inputs,
 )
 from tests_util.modules.memorize_shape_module import MemorizeShapeModule
 
@@ -42,6 +43,11 @@ class TestMultiCropUtils(unittest.TestCase):
         self.assertEqual(5, batch_size)
         self.assertEqual((5, 10), actual[0].shape)
 
+    def test_split_same_shape_inputs_noop(self):
+        actual = split_same_shape_inputs(torch.randn(15, 10), batch_size=5)
+        self.assertEqual(1, len(actual))
+        self.assertEqual((15, 10), actual[0].shape)
+
     def test_concat_same_shape_inputs(self):
         x = [
             torch.randn(5, 10),
@@ -57,3 +63,12 @@ class TestMultiCropUtils(unittest.TestCase):
         self.assertEqual((15, 10), actual[0].shape)
         self.assertEqual((10, 8), actual[1].shape)
         self.assertEqual((5, 12), actual[2].shape)
+
+    def test_split_same_shape_inputs(self):
+        actual = split_same_shape_inputs([torch.randn(15, 10), torch.randn(10, 8)], batch_size=5)
+        self.assertEqual(5, len(actual))
+        self.assertEqual((5, 10), actual[0].shape)
+        self.assertEqual((5, 10), actual[1].shape)
+        self.assertEqual((5, 10), actual[2].shape)
+        self.assertEqual((5, 8), actual[3].shape)
+        self.assertEqual((5, 8), actual[4].shape)

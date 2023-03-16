@@ -37,3 +37,13 @@ def concat_same_shape_inputs(x):
     for xx in x:
         results[tuple(xx.shape[1:])].append(xx)
     return [torch.concat(v) for v in results.values()], len(x[0])
+
+def split_same_shape_inputs(x, batch_size):
+    if torch.is_tensor(x):
+        return [x]
+    assert isinstance(x, list)
+    results = []
+    for xx in x:
+        assert len(xx) % batch_size == 0
+        results += xx.chunk(len(xx) // batch_size)
+    return results
