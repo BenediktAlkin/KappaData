@@ -31,8 +31,9 @@ def multi_crop_split_forward(model, x, batch_size=None):
     return results
 
 def concat_same_shape_inputs(x):
-    assert isinstance(x, (list, tuple))
+    if torch.is_tensor(x):
+        return [x], len(x)
     results = defaultdict(list)
     for xx in x:
         results[tuple(xx.shape[1:])].append(xx)
-    return [torch.concat(v) for v in results.values()]
+    return [torch.concat(v) for v in results.values()], len(x[0])
