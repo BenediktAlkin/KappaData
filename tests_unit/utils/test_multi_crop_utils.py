@@ -37,17 +37,23 @@ class TestMultiCropUtils(unittest.TestCase):
         self.assertEqual((5, 8), model.layer1.shapes[0])
         self.assertEqual((5, 8), model.layer1.shapes[1])
 
+    def test_concat_same_shape_inputs_noop(self):
+        actual, batch_size = concat_same_shape_inputs(torch.randn(5, 10))
+        self.assertEqual(5, batch_size)
+        self.assertEqual((5, 10), actual[0].shape)
+
     def test_concat_same_shape_inputs(self):
         x = [
             torch.randn(5, 10),
-            torch.randn(3, 10),
-            torch.randn(3, 8),
-            torch.randn(4, 10),
-            torch.randn(4, 12),
-            torch.randn(6, 8),
+            torch.randn(5, 10),
+            torch.randn(5, 8),
+            torch.randn(5, 10),
+            torch.randn(5, 12),
+            torch.randn(5, 8),
         ]
-        actual = concat_same_shape_inputs(x)
+        actual, batch_size = concat_same_shape_inputs(x)
         self.assertEqual(3, len(actual))
-        self.assertEqual((12, 10), actual[0].shape)
-        self.assertEqual((9, 8), actual[1].shape)
-        self.assertEqual((4, 12), actual[2].shape)
+        self.assertEqual(5, batch_size)
+        self.assertEqual((15, 10), actual[0].shape)
+        self.assertEqual((10, 8), actual[1].shape)
+        self.assertEqual((5, 12), actual[2].shape)
