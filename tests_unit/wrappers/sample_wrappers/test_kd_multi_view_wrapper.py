@@ -23,6 +23,9 @@ class TestKDMultiViewWrapper(unittest.TestCase):
         wrapper8 = KDMultiViewWrapper(dataset=ds, configs=[
             dict(transform=[dict(kind="kd_identity_transform"), dict(kind="kd_identity_transform")])
         ])
+        wrapper9 = KDMultiViewWrapper(dataset=ds, configs=[
+            [dict(kind="kd_identity_transform"), dict(kind="kd_identity_transform")],
+        ])
         for n_views, wrapper in [
             (2, wrapper0),
             (2, wrapper1),
@@ -33,6 +36,7 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             (2, wrapper6),
             (2, wrapper7),
             (1, wrapper8),
+            (1, wrapper9),
         ]:
             self.assertEqual(1, len(wrapper.transform_configs))
             self.assertEqual(n_views, wrapper.transform_configs[0].n_views)

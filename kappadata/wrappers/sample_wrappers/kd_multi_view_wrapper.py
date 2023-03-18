@@ -28,7 +28,7 @@ class KDMultiViewWrapper(KDWrapper):
                     # - KDMultiViewWrapper(configs=[(2, ToTensor())])
                     # - KDMultiViewWrapper(configs=[2])
                     # - KDMultiViewWrapper(configs=[ToTensor()])
-                    if len(configs[i]) == 2:
+                    if len(configs[i]) == 2 and isinstance(configs[i][0], int):
                         # KDMultiViewWrapper(configs=[(2, ToTensor())])
                         n_views, transform = configs[i]
                     elif len(configs[i]) == 1:
@@ -41,7 +41,9 @@ class KDMultiViewWrapper(KDWrapper):
                             n_views = 1
                             transform = configs[i]
                     else:
-                        raise NotImplementedError
+                        # KDMultiViewWrapper(configs=[[Resize, Norm], [Resize, Norm]])
+                        n_views = 1
+                        transform = configs[i]
                 elif isinstance(configs[i], dict):
                     # parse from dict
                     # - KDMultiViewWrapper(configs=[dict(n_views=2, transform=ToTensor())])
