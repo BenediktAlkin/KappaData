@@ -19,6 +19,12 @@ from .collators.pad_sequences_collator import PadSequencesCollator
 from .common.transforms.norm.kd_cifar10_norm import KDCifar10Norm
 from .common.transforms.norm.kd_cifar100_norm import KDCifar100Norm
 from .common.transforms.norm.kd_image_net_norm import KDImageNetNorm
+from common.wrappers import (
+    BYOLMultiViewWrapper,
+    ImagenetMinaugMultiViewWrapper,
+    ImagenetMinaugXTransformWrapper,
+    ImagenetNoaugXTransformWrapper,
+)
 # copying
 from .copying import (
     copy_imagefolder_from_global_to_local,
