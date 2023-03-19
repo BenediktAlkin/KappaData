@@ -69,6 +69,8 @@ class TestInfiniteBatchSampler(unittest.TestCase):
 
                             infinite_iter = iter(infinite_loader)
                             for expected_epoch_counter in range(n_epochs):
+                                if isinstance(finite_loader.sampler, DistributedSampler):
+                                    finite_loader.sampler.set_epoch(expected_epoch_counter)
                                 for expected_batch_counter, expected_batch in enumerate(finite_loader):
                                     actual_epoch_counter, actual_batch_counter, actual_batch = next(infinite_iter)
                                     self.assertEqual(expected_epoch_counter, actual_epoch_counter)

@@ -171,6 +171,7 @@ class TestInterleavedSampler(unittest.TestCase):
                 10, 12, 14,
             ],
         )
+
     def test_distsequential_enu1distsequential_rank1of2(self):
         self._run(
             sampler=InterleavedSampler(
