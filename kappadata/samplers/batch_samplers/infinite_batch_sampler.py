@@ -1,4 +1,5 @@
 from torch.utils.data.sampler import BatchSampler
+from torch.utils.data import DistributedSampler
 
 
 class InfiniteBatchSampler(BatchSampler):
@@ -30,6 +31,8 @@ class InfiniteBatchSampler(BatchSampler):
         updates = 0
         samples = 0
         while True:
+            if isinstance(self.sampler, DistributedSampler):
+                self.sampler.set_epoch(epoch)
             for batch in super().__iter__():
                 updates += 1
                 samples += len(batch)
