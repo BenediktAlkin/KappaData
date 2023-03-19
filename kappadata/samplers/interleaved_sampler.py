@@ -11,13 +11,14 @@ class InterleavedSamplerConfig:
 
 
 class InterleavedSampler:
-    def __init__(self, main_sampler, configs, batch_size, drop_last=True, epochs=None, updates=None, samples=None):
+    def __init__(self, main_sampler, batch_size, configs=None, drop_last=True, epochs=None, updates=None, samples=None):
         super().__init__()
         assert isinstance(batch_size, int) and 0 < batch_size
         assert epochs is None or (isinstance(epochs, int) and 0 < epochs)
         assert updates is None or (isinstance(updates, int) and 0 < updates)
         assert samples is None or (isinstance(samples, int) and 0 < samples)
         assert sum([epochs is not None, updates is not None, samples is not None]) <= 1
+        configs = configs or []
         for config in configs:
             assert (
                     (config.every_n_epochs is not None) or
@@ -53,6 +54,8 @@ class InterleavedSampler:
 
     def __iter__(self):
         if self.drop_last:
+            if len(self.main_sampler) < self.batch_size:
+                self.batch_size = len(self.main_sampler)
             samples_per_epoch = len(self.main_sampler) // self.batch_size * self.batch_size
         else:
             samples_per_epoch = len(self.main_sampler)
