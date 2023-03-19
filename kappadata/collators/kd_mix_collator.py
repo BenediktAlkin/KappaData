@@ -2,8 +2,9 @@ import numpy as np
 import torch
 
 from kappadata.collators.base.kd_single_collator import KDSingleCollator
-from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.error_messages import REQUIRES_MIXUP_P_OR_CUTMIX_P
+from kappadata.wrappers.mode_wrapper import ModeWrapper
+
 
 class KDMixCollator(KDSingleCollator):
     """

@@ -1,6 +1,8 @@
-import torch
 from dataclasses import dataclass
-from torch.utils.data import SequentialSampler, ConcatDataset, DistributedSampler
+from dataclasses import dataclass
+
+from torch.utils.data import ConcatDataset, DistributedSampler
+
 
 @dataclass
 class InterleavedSamplerConfig:

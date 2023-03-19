@@ -5,7 +5,6 @@ import torch.nn as nn
 
 from kappadata.utils.multi_crop_utils import (
     split_forward,
-    SplitForwardModule,
     concat_same_shape_inputs,
     split_same_shape_inputs,
 )

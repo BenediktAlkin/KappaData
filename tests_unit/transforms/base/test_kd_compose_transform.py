@@ -2,10 +2,10 @@ import unittest
 
 import torch
 
+from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
 from kappadata.transforms.kd_random_gaussian_blur_pil import KDRandomGaussianBlurPIL
 from kappadata.transforms.kd_random_grayscale import KDRandomGrayscale
-from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 
 
 class TestKDComposeTransform(unittest.TestCase):

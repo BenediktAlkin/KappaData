@@ -1,5 +1,7 @@
-import torch
 import math
+
+import torch
+
 
 def color_histogram(images, bins, density=False, batch_size=None):
     # image should be a batch of denormalized images

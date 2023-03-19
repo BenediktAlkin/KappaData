@@ -6,7 +6,6 @@ from torchvision.transforms.functional import InterpolationMode
 from .base.kd_stochastic_transform import KDStochasticTransform
 
 
-
 class KDRandomRotation(KDStochasticTransform):
     def __init__(self, degrees, interpolation="nearest", expand=False, center=None, fill=0, **kwargs):
         super().__init__(**kwargs)

@@ -1,5 +1,5 @@
-from torch.utils.data.sampler import BatchSampler
 from torch.utils.data import DistributedSampler
+from torch.utils.data.sampler import BatchSampler
 
 
 class InfiniteBatchSampler(BatchSampler):
@@ -15,6 +15,7 @@ class InfiniteBatchSampler(BatchSampler):
     With InfiniteBatchSampler this downtime is avoided.
     TODO code example
     """
+
     def __init__(self, *args, epochs=None, updates=None, samples=None, **kwargs):
         super().__init__(*args, **kwargs)
         assert epochs is None or (isinstance(epochs, int) and 0 < epochs)
@@ -24,7 +25,6 @@ class InfiniteBatchSampler(BatchSampler):
         self.epochs = epochs
         self.updates = updates
         self.samples = samples
-
 
     def __iter__(self):
         epochs = 0

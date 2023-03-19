@@ -1,5 +1,6 @@
-import torch
 from collections import defaultdict
+
+import torch
 
 
 class SplitForwardModule(torch.nn.Module):
@@ -31,6 +32,7 @@ def split_forward(model, x, batch_size=None):
 
     return results
 
+
 def concat_same_shape_inputs(x):
     if torch.is_tensor(x):
         return [x], len(x)
@@ -38,6 +40,7 @@ def concat_same_shape_inputs(x):
     for xx in x:
         results[tuple(xx.shape[1:])].append(xx)
     return [torch.concat(v) for v in results.values()], len(x[0])
+
 
 def split_same_shape_inputs(x, batch_size):
     if torch.is_tensor(x):

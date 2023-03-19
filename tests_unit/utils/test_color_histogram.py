@@ -1,7 +1,9 @@
-import torch
 import unittest
 
+import torch
+
 from kappadata.utils.color_histogram import color_histogram
+
 
 class TestColorHistogram(unittest.TestCase):
     def test_uniform_bins(self):

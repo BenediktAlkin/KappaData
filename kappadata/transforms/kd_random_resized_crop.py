@@ -1,12 +1,12 @@
+import math
+
 import numpy as np
-import torch
 from torchvision.transforms import InterpolationMode
 from torchvision.transforms.functional import resized_crop, get_image_size
 
 from kappadata.utils.param_checking import to_2tuple
 from .base.kd_stochastic_transform import KDStochasticTransform
 
-import math
 
 class KDRandomResizedCrop(KDStochasticTransform):
     def __init__(
@@ -37,7 +37,7 @@ class KDRandomResizedCrop(KDStochasticTransform):
         area = height * width
 
         # the torch version has a floating point error which is bad for testing
-        #log_ratio = torch.log(torch.tensor(self.ratio))
+        # log_ratio = torch.log(torch.tensor(self.ratio))
         log_ratio = (math.log(self.ratio[0]), math.log(self.ratio[1]))
         for _ in range(10):
             target_area = area * self.rng.uniform(self.scale[0], self.scale[1])

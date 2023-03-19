@@ -4,11 +4,11 @@ import torch
 from torch.utils.data import DataLoader
 
 from kappadata.collators.kd_mix_collator import KDMixCollator
+from kappadata.error_messages import REQUIRES_MIXUP_P_OR_CUTMIX_P
 from kappadata.utils.one_hot import to_one_hot_matrix
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from kappadata.wrappers.sample_wrappers.one_hot_wrapper import OneHotWrapper
 from tests_util.datasets import create_image_classification_dataset
-from kappadata.error_messages import REQUIRES_MIXUP_P_OR_CUTMIX_P
 
 
 class TestKDMixCollator(unittest.TestCase):
@@ -18,7 +18,6 @@ class TestKDMixCollator(unittest.TestCase):
         with self.assertRaises(AssertionError) as ex:
             self.assertEqual(0., KDMixCollator())
         self.assertEqual(REQUIRES_MIXUP_P_OR_CUTMIX_P, str(ex.exception))
-
 
     def test_mixup(self):
         ds = create_image_classification_dataset(size=16, seed=19521, channels=1, resolution=8, n_classes=4)

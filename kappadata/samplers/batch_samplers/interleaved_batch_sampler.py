@@ -1,5 +1,3 @@
-
-
 class InterleavedBatchSampler:
     def __init__(self, interleaved_sampler):
         super().__init__()
@@ -13,7 +11,6 @@ class InterleavedBatchSampler:
                 yield idxs
                 idxs = []
         assert len(idxs) == 0
-
 
     def __len__(self):
         raise NotImplementedError
