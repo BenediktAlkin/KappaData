@@ -1,5 +1,6 @@
 ##
 
+- refactor everything to use from .module import (class1, class2, ...)
 - distributed sampler with any sampler (not just RandomSampler/SequentialSampler)
 - test interleaved sampler
 - test batchwise denormalization
