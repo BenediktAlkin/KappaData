@@ -1,14 +1,13 @@
 import torch
 from dataclasses import dataclass
-from torch.utils.data import SequentialSampler, ConcatDataset
+from torch.utils.data import SequentialSampler, ConcatDataset, DistributedSampler
 
 @dataclass
 class InterleavedSamplerConfig:
-    sampler: bool
+    sampler: object
     every_n_epochs: int = None
     every_n_updates: int = None
     every_n_samples: int = None
-    drop_last: bool = False
 
 
 class InterleavedSampler:
@@ -64,6 +63,8 @@ class InterleavedSampler:
         sample_in_update = 0
         while True:
             sample_in_epoch = 0
+            if isinstance(self.main_sampler, DistributedSampler):
+                self.main_sampler.set_epoch(epoch)
             for main_idx in self.main_sampler:
                 sample += 1
                 sample_in_epoch += 1
