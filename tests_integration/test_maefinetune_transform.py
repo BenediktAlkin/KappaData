@@ -1,25 +1,18 @@
 import unittest
-from unittest.mock import patch
 
 import numpy as np
 import torch
-from timm.data.mixup import Mixup
-from torch.utils.data import DataLoader
-
-from kappadata.collators.kd_mix_collator import KDMixCollator
-from kappadata.wrappers.mode_wrapper import ModeWrapper
-from kappadata.wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
-from tests_util.datasets import create_image_classification_dataset
 from timm.data import create_transform, IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from kappadata.wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
 from torchvision.transforms.functional import to_pil_image
-from kappadata.transforms.kd_random_erasing import KDRandomErasing
-from kappadata.transforms.kd_rand_augment import KDRandAugment
-from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
-from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
+
 from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
+from kappadata.transforms.kd_rand_augment import KDRandAugment
+from kappadata.transforms.kd_random_erasing import KDRandomErasing
+from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
+from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
 from tests_util.patch_rng import patch_rng
+
 
 class TestMaeFinetuneTransform(unittest.TestCase):
     @patch_rng(fn_names=[

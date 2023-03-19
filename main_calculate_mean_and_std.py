@@ -1,9 +1,10 @@
-import einops
-from torchvision.datasets import CIFAR100
-from torchvision.transforms import ToTensor
-from kappadata import TorchWrapper, ModeWrapper, KDDataset
 import torch
 from torch.utils.data import DataLoader
+from torchvision.datasets import CIFAR100
+from torchvision.transforms import ToTensor
+
+from kappadata import TorchWrapper, ModeWrapper, KDDataset
+
 
 def calculate_mean_and_std(dataset, batch_size=64, num_workers=0):
     assert isinstance(dataset, KDDataset), "use KDDataset with getitem_x"

@@ -1,10 +1,13 @@
 # TODO include as testcase
-import torch
-from kappadata.utils.color_histogram import color_histogram
-from torchvision.datasets.folder import default_loader
 from pathlib import Path
-from torchvision.transforms.functional import to_tensor
+
 import matplotlib.pyplot as plt
+import torch
+from torchvision.datasets.folder import default_loader
+from torchvision.transforms.functional import to_tensor
+
+from kappadata.utils.color_histogram import color_histogram
+
 
 def main():
     root = Path("~/Documents/data").expanduser()

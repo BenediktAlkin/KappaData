@@ -1,7 +1,7 @@
-import torch
 from unittest.mock import patch
+
 import numpy as np
-from functools import partial
+import torch
 
 
 class patch_rng:
