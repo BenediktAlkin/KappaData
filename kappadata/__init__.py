@@ -20,7 +20,7 @@ from .common.transforms.norm.kd_cifar10_norm import KDCifar10Norm
 from .common.transforms.norm.kd_cifar100_norm import KDCifar100Norm
 from .common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 from .common.wrappers import (
-    BYOLMultiViewWrapper,
+    ByolMultiViewWrapper,
     ImagenetMinaugMultiViewWrapper,
     ImagenetMinaugXTransformWrapper,
     ImagenetNoaugXTransformWrapper,

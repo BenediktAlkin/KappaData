@@ -15,7 +15,7 @@ from .transforms.norm.kd_cifar100_norm import KDCifar100Norm
 from .transforms.norm.kd_image_net_norm import KDImageNetNorm
 # wrappers
 from .wrappers import (
-    BYOLMultiViewWrapper,
+    ByolMultiViewWrapper,
     ImagenetMinaugMultiViewWrapper,
     ImagenetMinaugXTransformWrapper,
     ImagenetNoaugXTransformWrapper,
