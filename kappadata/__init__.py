@@ -64,6 +64,7 @@ from .transforms.kd_random_grayscale import KDRandomGrayscale
 from .transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from .transforms.kd_random_resized_crop import KDRandomResizedCrop
 from .transforms.kd_random_solarize import KDRandomSolarize
+from .transforms.kd_rearrange import KDRearrange
 from .transforms.kd_resize import KDResize
 # transforms norm
 from .transforms.norm.kd_image_norm import KDImageNorm

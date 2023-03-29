@@ -25,6 +25,7 @@ from .kd_random_grayscale import KDRandomGrayscale
 from .kd_random_horizontal_flip import KDRandomHorizontalFlip
 from .kd_random_resized_crop import KDRandomResizedCrop
 from .kd_random_solarize import KDRandomSolarize
+from .kd_rearrange import KDRearrange
 from .kd_resize import KDResize
 from .kd_solarize import KDSolarize
 # norm
