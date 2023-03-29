@@ -52,6 +52,7 @@ from .transforms.base import KDTransform
 # transforms
 from .transforms.image_pos_embed_grid import ImagePosEmbedGrid
 from .transforms.image_pos_embed_sincos import ImagePosEmbedSincos
+from .transforms.kd_bucketize import KDBucketize
 from .transforms.kd_color_jitter import KDColorJitter
 from .transforms.kd_gaussian_blur_pil import KDGaussianBlurPIL
 from .transforms.kd_gaussian_blur_tv import KDGaussianBlurTV

@@ -9,6 +9,7 @@ from .base import KDTransform
 # augs
 from .image_pos_embed_grid import ImagePosEmbedGrid
 from .image_pos_embed_sincos import ImagePosEmbedSincos
+from .kd_bucketize import KDBucketize
 #
 from .kd_color_jitter import KDColorJitter
 from .kd_gaussian_blur_pil import KDGaussianBlurPIL
