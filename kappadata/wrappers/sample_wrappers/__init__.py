@@ -5,4 +5,4 @@ from .one_hot_wrapper import OneHotWrapper
 from .source_transform_wrapper import SourceTransformWrapper
 from .target_transform_wrapper import TargetTransformWrapper
 from .x_transform_wrapper import XTransformWrapper
-from .y_transform_wrapper import YransformWrapper
+from .y_transform_wrapper import YTransformWrapper
