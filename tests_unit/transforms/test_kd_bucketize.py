@@ -1,6 +1,5 @@
 import unittest
 
-import einops
 import torch
 
 from kappadata.transforms.kd_bucketize import KDBucketize

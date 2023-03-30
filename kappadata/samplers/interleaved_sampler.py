@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from dataclasses import dataclass
 
 from torch.utils.data import ConcatDataset, DistributedSampler
 

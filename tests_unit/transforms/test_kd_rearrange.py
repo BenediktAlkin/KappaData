@@ -1,6 +1,5 @@
 import unittest
 
-import einops
 import torch
 
 from kappadata.transforms.kd_rearrange import KDRearrange

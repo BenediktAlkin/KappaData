@@ -1,4 +1,3 @@
-import einops
 import torch
 from torchvision.transforms.functional import to_tensor
 
@@ -12,7 +11,6 @@ class KDBucketize(KDTransform):
         self.n_buckets = n_buckets
         self.min_value = min_value
         self.max_value = max_value
-
 
     def __call__(self, x, ctx=None):
         if not torch.is_tensor(x):
