@@ -2,14 +2,12 @@ import unittest
 
 from torch.utils.data import SequentialSampler
 
-from kappadata.samplers.batch_samplers.interleaved_batch_sampler import InterleavedBatchSampler
 from kappadata.samplers.interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
 
 
-class TestInterleavedSamplers(unittest.TestCase):
+class TestInterleavedSamplerBatchsampler(unittest.TestCase):
     def _run(self, sampler, expected):
-        batch_sampler = InterleavedBatchSampler(sampler)
-        batch_sampler_iter = iter(batch_sampler)
+        batch_sampler_iter = iter(sampler.batch_sampler)
         for i in range(len(expected)):
             actual = next(batch_sampler_iter)
             self.assertEqual(expected[i], actual)

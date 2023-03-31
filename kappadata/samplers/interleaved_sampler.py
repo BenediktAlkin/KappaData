@@ -1,3 +1,5 @@
+import bisect
+from torch.utils.data import default_collate
 from dataclasses import dataclass
 
 from torch.utils.data import ConcatDataset, DistributedSampler
@@ -9,10 +11,23 @@ class InterleavedSamplerConfig:
     every_n_epochs: int = None
     every_n_updates: int = None
     every_n_samples: int = None
+    collator: callable = None
 
 
 class InterleavedSampler:
-    def __init__(self, main_sampler, batch_size, configs=None, drop_last=True, epochs=None, updates=None, samples=None):
+    def __init__(
+            self,
+            main_sampler,
+            batch_size,
+            configs=None,
+            # properties of main sampler
+            drop_last=True,
+            main_collator=None,
+            # duration of InterleavedSampler
+            epochs=None,
+            updates=None,
+            samples=None,
+    ):
         super().__init__()
         assert isinstance(batch_size, int) and 0 < batch_size
         assert epochs is None or (isinstance(epochs, int) and 0 < epochs)
@@ -48,10 +63,58 @@ class InterleavedSampler:
         self.index_offsets = [len(_get_data_source(self.main_sampler))]
         for config in self.configs[:-1]:
             self.index_offsets.append(self.index_offsets[-1] + len(_get_data_source(config.sampler)))
-        self.dataset = ConcatDataset(
+
+
+        class InterleavedConcatDataset(ConcatDataset):
+            """ same as ConcatDataset but it returns the dataset index """
+            def __getitem__(self, idx):
+                if idx < 0:
+                    if -idx > len(self):
+                        raise ValueError("absolute value of index should not exceed dataset length")
+                    idx = len(self) + idx
+                dataset_idx = bisect.bisect_right(self.cumulative_sizes, idx)
+                if dataset_idx == 0:
+                    sample_idx = idx
+                else:
+                    sample_idx = idx - self.cumulative_sizes[dataset_idx - 1]
+                return dataset_idx, self.datasets[dataset_idx][sample_idx]
+
+        self.dataset = InterleavedConcatDataset(
             [_get_data_source(self.main_sampler)] +
             [_get_data_source(config.sampler) for config in self.configs]
         )
+
+        class InterleavedCollator:
+            def __init__(self, collators):
+                self.collators = collators
+
+            def __call__(self, data):
+                dataset_idx, data = data
+                return self.collators[dataset_idx](data)
+
+        self.collator = InterleavedCollator(
+            [main_collator] +
+            [config.collator or default_collate for config in self.configs]
+        )
+
+        class InterleavedBatchSampler:
+            def __init__(self, interleaved_sampler):
+                super().__init__()
+                self.interleaved_sampler = interleaved_sampler
+
+            def __iter__(self):
+                idxs = []
+                for is_full_batch, idx in self.interleaved_sampler:
+                    idxs.append(idx)
+                    if is_full_batch:
+                        yield idxs
+                        idxs = []
+                assert len(idxs) == 0
+
+            def __len__(self):
+                raise NotImplementedError
+
+        self.batch_sampler = InterleavedBatchSampler(self)
 
     def __iter__(self):
         if self.drop_last:

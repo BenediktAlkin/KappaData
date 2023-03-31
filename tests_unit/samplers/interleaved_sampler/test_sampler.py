@@ -7,7 +7,7 @@ from torch.utils.data.distributed import DistributedSampler
 from kappadata.samplers.interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
 
 
-class TestInterleavedSampler(unittest.TestCase):
+class TestInterleavedSamplerSampler(unittest.TestCase):
     def _run(self, sampler, expected):
         actual = [i for (_, i) in sampler]
         self.assertEqual(expected, actual)

@@ -38,11 +38,8 @@ from .datasets.kd_subset import KDSubset
 from .datasets.kd_wrapper import KDWrapper
 # factory
 from .factory import object_to_transform
-# samplers.batch_samplers
-from .samplers.batch_samplers import InfiniteBatchSampler
-from .samplers.batch_samplers import InterleavedBatchSampler
 # samplers
-from .samplers.interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
+from .samplers import InfiniteBatchSampler, InterleavedSampler, InterleavedSamplerConfig
 # transforms base
 from .transforms.base import KDComposeTransform
 from .transforms.base import KDIdentityTransform

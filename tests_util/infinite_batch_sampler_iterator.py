@@ -1,4 +1,4 @@
-from kappadata.samplers.batch_samplers.infinite_batch_sampler import InfiniteBatchSampler
+from kappadata.samplers.infinite_batch_sampler import InfiniteBatchSampler
 
 
 class InfiniteBatchSamplerIterator:
