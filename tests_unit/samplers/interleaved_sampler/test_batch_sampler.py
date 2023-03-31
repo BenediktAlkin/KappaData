@@ -5,7 +5,7 @@ from torch.utils.data import SequentialSampler
 from kappadata.samplers.interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
 
 
-class TestInterleavedSamplerBatchsampler(unittest.TestCase):
+class TestInterleavedSamplerBatchSampler(unittest.TestCase):
     def _run(self, sampler, expected):
         batch_sampler_iter = iter(sampler.batch_sampler)
         for i in range(len(expected)):

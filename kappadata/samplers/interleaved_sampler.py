@@ -1,5 +1,5 @@
 import bisect
-from torch.utils.data import default_collate
+from torch.utils.data import default_collate, DataLoader
 from dataclasses import dataclass
 
 from torch.utils.data import ConcatDataset, DistributedSampler
@@ -89,11 +89,12 @@ class InterleavedSampler:
                 self.collators = collators
 
             def __call__(self, data):
-                dataset_idx, data = data
-                return self.collators[dataset_idx](data)
+                dataset_idxs, data = zip(*data)
+                assert all(dataset_idxs[0] == idx for idx in dataset_idxs)
+                return self.collators[dataset_idxs[0]](data)
 
         self.collator = InterleavedCollator(
-            [main_collator] +
+            [main_collator or default_collate] +
             [config.collator or default_collate for config in self.configs]
         )
 
@@ -115,6 +116,15 @@ class InterleavedSampler:
                 raise NotImplementedError
 
         self.batch_sampler = InterleavedBatchSampler(self)
+
+    def get_data_loader(self, num_workers: int = 0, pin_memory: bool = False) -> DataLoader:
+        return DataLoader(
+            dataset=self.dataset,
+            batch_sampler=self.batch_sampler,
+            collate_fn=self.collator,
+            num_workers=num_workers,
+            pin_memory=pin_memory,
+        )
 
     def __iter__(self):
         if self.drop_last:
