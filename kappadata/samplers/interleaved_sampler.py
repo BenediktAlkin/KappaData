@@ -30,6 +30,7 @@ class InterleavedSampler:
     ):
         super().__init__()
         assert isinstance(batch_size, int) and 0 < batch_size
+        assert batch_size <= len(main_sampler)
         assert epochs is None or (isinstance(epochs, int) and 0 < epochs)
         assert updates is None or (isinstance(updates, int) and 0 < updates)
         assert samples is None or (isinstance(samples, int) and 0 < samples)

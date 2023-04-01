@@ -1,7 +1,7 @@
 import unittest
 
 import torch
-from torch.utils.data import RandomSampler, SequentialSampler
+from torch.utils.data import RandomSampler, SequentialSampler, TensorDataset
 from kappadata.samplers.interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
 
 
@@ -10,7 +10,11 @@ class TestInterleavedSamplerCollator(unittest.TestCase):
         loader_iter = iter(sampler.get_data_loader())
         for i in range(len(expected)):
             actual = next(loader_iter)
-            self.assertEqual(expected[i], actual.tolist())
+            if isinstance(actual, list):
+                for j in range(len(actual)):
+                    self.assertEqual(expected[i][j], actual[j].tolist())
+            else:
+                self.assertEqual(expected[i], actual.tolist())
         with self.assertRaises(StopIteration):
             next(loader_iter)
 
@@ -37,6 +41,23 @@ class TestInterleavedSamplerCollator(unittest.TestCase):
                 [4],
                 # main
                 [6, 2],
+            ],
+        )
+
+    def test_random_dataset(self):
+        x = torch.randn(10, 3, 8, 8, generator=torch.Generator().manual_seed(43897))
+        y = torch.randint(0, 10, size=(len(x),), generator=torch.Generator().manual_seed(4389787))
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=RandomSampler(TensorDataset(x, y), generator=torch.Generator().manual_seed(0)),
+                batch_size=4,
+                epochs=1,
+                drop_last=False,
+            ),
+            expected=[
+                (x[[4, 1, 7, 5]].tolist(), y[[4, 1, 7, 5]].tolist()),
+                (x[[3, 9, 0, 8]].tolist(), y[[3, 9, 0, 8]].tolist()),
+                (x[[6, 2]].tolist(), y[[6, 2]].tolist()),
             ],
         )
 
