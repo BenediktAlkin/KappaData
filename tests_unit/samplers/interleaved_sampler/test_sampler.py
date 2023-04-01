@@ -42,6 +42,65 @@ class TestInterleavedSamplerSampler(unittest.TestCase):
             ],
         )
 
+    def test_sequential_nodroplast_ene1sequential(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=SequentialSampler(list(range(10))),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=SequentialSampler(list(range(5))),
+                        every_n_epochs=1,
+                    ),
+                ],
+                batch_size=4,
+                drop_last=False,
+                epochs=2,
+            ),
+            expected=[
+                # main
+                0, 1, 2, 3,
+                4, 5, 6, 7,
+                8, 9,
+                # configs[0]
+                10, 11, 12, 13, 14,
+                # main
+                0, 1, 2, 3,
+                4, 5, 6, 7,
+                8, 9,
+                # configs[0]
+                10, 11, 12, 13, 14,
+            ],
+        )
+
+    def test_sequential_nodroplast_ene2sequential(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=SequentialSampler(list(range(10))),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=SequentialSampler(list(range(5))),
+                        every_n_epochs=2,
+                    ),
+                ],
+                batch_size=4,
+                drop_last=False,
+                epochs=2,
+            ),
+            expected=[
+                # main
+                0, 1, 2, 3,
+                4, 5, 6, 7,
+                8, 9,
+                # main
+                0, 1, 2, 3,
+                4, 5, 6, 7,
+                8, 9,
+                # configs[0]
+                10, 11, 12, 13, 14,
+            ],
+        )
+
+
     def test_sequential_droplast_enu1sequential(self):
         self._run(
             sampler=InterleavedSampler(

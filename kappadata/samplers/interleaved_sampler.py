@@ -166,7 +166,11 @@ class InterleavedSampler:
                     # check if interleaved dataset has to be iterated
                     for config_idx, config in enumerate(self.configs):
                         if (
-                                (config.every_n_epochs is not None and sample_in_epoch == samples_per_epoch) or
+                                (
+                                        config.every_n_epochs is not None and
+                                        sample_in_epoch == samples_per_epoch and
+                                        epoch % config.every_n_epochs == 0
+                                ) or
                                 (config.every_n_updates is not None and update % config.every_n_updates == 0) or
                                 (config.every_n_samples is not None and
                                  sample_at_last_update // config.every_n_samples < sample // config.every_n_samples)
