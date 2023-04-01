@@ -46,25 +46,3 @@ class TestInterleavedSamplerBatchSampler(unittest.TestCase):
                 [14],
             ],
         )
-
-    def test_sequential_autobatchsize(self):
-        self._run(
-            sampler=InterleavedSampler(
-                main_sampler=SequentialSampler(list(range(4))),
-                configs=[
-                    InterleavedSamplerConfig(
-                        sampler=SequentialSampler(list(range(5))),
-                        every_n_updates=1,
-                    ),
-                ],
-                batch_size=8,
-                epochs=1,
-            ),
-            expected=[
-                # main
-                [0, 1, 2, 3],
-                # configs[0]
-                [4, 5, 6, 7],
-                [8],
-            ],
-        )

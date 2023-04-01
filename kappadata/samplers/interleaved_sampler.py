@@ -139,6 +139,7 @@ class InterleavedSampler:
         epoch = 0
         update = 0
         sample_in_update = 0
+        sample_at_last_update = 0
         while True:
             sample_in_epoch = 0
             if isinstance(self.main_sampler, DistributedSampler):
@@ -157,36 +158,39 @@ class InterleavedSampler:
                 if sample_in_update == self.batch_size or sample_in_epoch == samples_per_epoch:
                     # keep track of what the sample counter was at the last update for every_n_sample checks
                     sample_in_update = 0
-                    sample_at_last_update = sample
                     # increase counters
                     update += 1
                     if sample_in_epoch == samples_per_epoch:
                         epoch += 1
 
-                    # check if interleaved dataset has to be iterated
                     for config_idx, config in enumerate(self.configs):
-                        if (
-                                (
-                                        config.every_n_epochs is not None and
-                                        sample_in_epoch == samples_per_epoch and
-                                        epoch % config.every_n_epochs == 0
-                                ) or
-                                (config.every_n_updates is not None and update % config.every_n_updates == 0) or
-                                (config.every_n_samples is not None and
-                                 sample_at_last_update // config.every_n_samples < sample // config.every_n_samples)
-                        ):
-                            index_offset = self.index_offsets[config_idx]
-                            sample_in_interleaved = 0
-                            for interleaved_idx in config.sampler:
-                                sample_in_interleaved += 1
-                                if (
-                                        sample_in_interleaved % self.batch_size == 0 or
-                                        sample_in_interleaved == len(config.sampler)
-                                ):
-                                    yield True, index_offset + interleaved_idx
-                                else:
-                                    yield False, index_offset + interleaved_idx
+                        # check if interleaved dataset has to be iterated
+                        should_iter = False
+                        if config.every_n_epochs is not None:
+                            # can only occour at the end of an epoch
+                            should_iter = sample_in_epoch == samples_per_epoch and epoch % config.every_n_epochs == 0
+                        if config.every_n_updates is not None:
+                            should_iter = update % config.every_n_updates == 0
+                        if config.every_n_samples is not None:
+                            if sample % config.every_n_samples == 0:
+                                should_iter = True
+                            elif sample_at_last_update // config.every_n_samples < sample // config.every_n_samples:
+                                should_iter = True
+                        if not should_iter:
+                            continue
+                        index_offset = self.index_offsets[config_idx]
+                        sample_in_interleaved = 0
+                        for interleaved_idx in config.sampler:
+                            sample_in_interleaved += 1
+                            if (
+                                    sample_in_interleaved % self.batch_size == 0 or
+                                    sample_in_interleaved == len(config.sampler)
+                            ):
+                                yield True, index_offset + interleaved_idx
+                            else:
+                                yield False, index_offset + interleaved_idx
 
+                    sample_at_last_update = sample
                     # check if end is reached
                     if (
                             (self.epochs is not None and epoch == self.epochs) or
