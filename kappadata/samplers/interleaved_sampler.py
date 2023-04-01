@@ -100,13 +100,13 @@ class InterleavedSampler:
         )
 
         class InterleavedBatchSampler:
-            def __init__(self, interleaved_sampler):
+            def __init__(self, sampler):
                 super().__init__()
-                self.interleaved_sampler = interleaved_sampler
+                self.sampler = sampler
 
             def __iter__(self):
                 idxs = []
-                for is_full_batch, idx in self.interleaved_sampler:
+                for is_full_batch, idx in self.sampler:
                     idxs.append(idx)
                     if is_full_batch:
                         yield idxs
