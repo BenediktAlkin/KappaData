@@ -1,5 +1,6 @@
 ##
 
+- variable batch_size in interleaved sampler (batch_size per config)
 - get_wrapper_of_type doesnt consider inherited types (e.g. for BYOL augmentation wrapper)
 - refactor everything to use from .module import (class1, class2, ...)
 - distributed sampler with any sampler (not just RandomSampler/SequentialSampler)
