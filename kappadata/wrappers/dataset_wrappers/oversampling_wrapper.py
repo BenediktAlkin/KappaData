@@ -31,7 +31,7 @@ class OversamplingWrapper(KDSubset):
                     # get indices of samples with class to oversample
                     all_indices = torch.arange(len(dataset), dtype=torch.long)
                     sample_idxs = all_indices[classes == i]
-                    indices = torch.concatenate([indices, torch.tile(sample_idxs, dims=[multiply_factor])])
+                    indices = torch.concat([indices, torch.tile(sample_idxs, dims=[multiply_factor])])
         else:
             raise NotImplementedError(f"invalid oversampling strategy {self.strategy}")
         super().__init__(dataset=dataset, indices=indices.tolist())
