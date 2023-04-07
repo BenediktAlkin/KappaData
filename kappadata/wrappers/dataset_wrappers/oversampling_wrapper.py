@@ -11,7 +11,8 @@ class OversamplingWrapper(KDSubset):
         if hasattr(dataset, "getall_class"):
             classes = dataset.getall_class()
         else:
-            classes = np.array([dataset.getitem_class(i) for i in range(len(dataset))])
+            classes = [dataset.getitem_class(i) for i in range(len(dataset))]
+        classes = np.array(classes)
         class_counts = get_class_counts(classes, dataset.n_classes)
         max_class_count = np.max(class_counts)
         indices = np.arange(len(dataset), dtype=np.int32)
