@@ -7,10 +7,11 @@ def get_class_counts(classes, n_classes):
         n_classes = 2
 
     # torch has much better asymptotic complexity (noticable from 1e9)
-    if isinstance(classes, np.ndarray):
-        classes = torch.from_numpy(classes).long()
-    else:
-        classes = torch.tensor(classes, dtype=torch.long)
+    if not torch.is_tensor(classes):
+        if isinstance(classes, np.ndarray):
+            classes = torch.from_numpy(classes).long()
+        else:
+            classes = torch.tensor(classes, dtype=torch.long)
     # it is much faster on GPU, but also requires a lot of memory for large numbers
     counts = torch.zeros(n_classes, dtype=torch.long)
     unique_classes, unique_counts = classes.unique(return_counts=True)
