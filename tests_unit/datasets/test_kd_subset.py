@@ -3,6 +3,7 @@ import unittest
 from kappadata.datasets.kd_subset import KDSubset
 from kappadata.errors import UseModeWrapperException
 from tests_util.datasets.index_dataset import IndexDataset
+from tests_util.datasets.class_dataset import ClassDataset
 
 
 class TestKDSubset(unittest.TestCase):
@@ -87,3 +88,8 @@ class TestKDSubset(unittest.TestCase):
         wrapper2 = KDSubset(wrapper1, indices=[1, 0])
         self.assertEqual([KDSubset], wrapper1.all_wrapper_types)
         self.assertEqual([KDSubset, KDSubset], wrapper2.all_wrapper_types)
+
+    def test_getall_class(self):
+        root_ds = ClassDataset(classes=[0, 0, 1, 1, 0, 2])
+        wrapper1 = KDSubset(root_ds, indices=[0, 2, 1, 5])
+        self.assertEqual([0, 1, 0, 2], wrapper1.getall_class())

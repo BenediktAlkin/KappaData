@@ -3,6 +3,7 @@ import unittest
 from kappadata.datasets.kd_concat_dataset import KDConcatDataset
 from kappadata.errors import UseModeWrapperException
 from tests_util.datasets.index_dataset import IndexDataset
+from tests_util.datasets.class_dataset import ClassDataset
 
 
 class TestKDConcatDataset(unittest.TestCase):
@@ -72,3 +73,9 @@ class TestKDConcatDataset(unittest.TestCase):
         ds1 = IndexDataset(size=4)
         ds = KDConcatDataset([ds0, ds1])
         self.assertEqual([], ds.all_wrapper_types)
+
+    def test_getall_class(self):
+        ds0 = ClassDataset(classes=[0, 0, 1, 1, 0])
+        ds1 = ClassDataset(classes=[2, 3, 0, 1])
+        ds = KDConcatDataset([ds0, ds1])
+        self.assertEqual([0, 0, 1, 1, 0, 2, 3, 0, 1], ds.getall_class())

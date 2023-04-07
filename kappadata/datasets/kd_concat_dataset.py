@@ -13,6 +13,9 @@ class KDConcatDataset(ConcatDataset):
             return partial(self._call_getitem, item)
         if item == "datasets":
             return getattr(super(), item)
+        if item.startswith("getall_"):
+            # all methods starting with getall_ have to concatenate the result of dataset.getall_... for all datasets
+            return partial(self._call_getall, item)
         # warning/exception here might make sense
         return getattr(self.datasets[0], item)
 
@@ -20,6 +23,14 @@ class KDConcatDataset(ConcatDataset):
         dataset_idx, sample_idx = self._to_concat_idx(idx)
         func = getattr(self.datasets[dataset_idx], item)
         return func(sample_idx, *args, **kwargs)
+
+    def _call_getall(self, item):
+        result = []
+        for dataset in self.datasets:
+            dataset_result = getattr(dataset, item)()
+            assert isinstance(dataset_result, list)
+            result += dataset_result
+        return result
 
     def _to_concat_idx(self, idx):
         """

@@ -24,3 +24,6 @@ class ClassDataset(KDDataset):
 
     def __len__(self):
         return len(self.classes)
+
+    def getall_class(self):
+        return [c for c in self.classes]

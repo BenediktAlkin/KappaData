@@ -13,10 +13,17 @@ class KDSubset(Subset):
             return partial(self._call_getitem, func)
         if item == "dataset":
             return getattr(super(), item)
+        if item.startswith("getall_"):
+            # subsample getitem_ with the indices
+            return partial(self._call_getall, item)
         return getattr(self.dataset, item)
 
     def _call_getitem(self, func, idx, *args, **kwargs):
         return func(self.indices[idx], *args, **kwargs)
+
+    def _call_getall(self, item):
+        result = getattr(self.dataset, item)()
+        return [result[i] for i in self.indices]
 
     def __enter__(self):
         return self
