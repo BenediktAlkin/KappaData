@@ -1,5 +1,6 @@
 ##
 
+- port everything to use torch operations (much better asymptotic complexity for e.g. oversampling wrapper)
 - variable batch_size in interleaved sampler (batch_size per config)
 - get_wrapper_of_type doesnt consider inherited types (e.g. for BYOL augmentation wrapper)
 - refactor everything to use from .module import (class1, class2, ...)

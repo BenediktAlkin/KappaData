@@ -1,6 +1,8 @@
+import torch
+import numpy as np
 import unittest
 
-from kappadata.utils.class_counts import get_class_counts_and_indices
+from kappadata.utils.class_counts import get_class_counts_and_indices, get_class_counts
 from tests_util.datasets.class_dataset import ClassDataset
 
 
@@ -21,3 +23,13 @@ class TestClassCounts(unittest.TestCase):
         self.assertEqual([1], indices[1].tolist())
         self.assertEqual([], indices[2].tolist())
         self.assertEqual([2], indices[3].tolist())
+
+    def test_get_class_count_torch(self):
+        classes = torch.tensor([0, 1, 1, 1, 0, 2, 5])
+        counts = get_class_counts(classes=classes, n_classes=6)
+        self.assertEqual([2, 3, 1, 0, 0, 1], counts.tolist())
+
+    def test_get_class_count_list(self):
+        classes = [0, 1, 1, 1, 0, 2, 5]
+        counts = get_class_counts(classes=classes, n_classes=6)
+        self.assertEqual([2, 3, 1, 0, 0, 1], counts.tolist())

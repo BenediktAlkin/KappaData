@@ -1,13 +1,19 @@
 import numpy as np
+import torch
 
 
 def get_class_counts(classes, n_classes):
     if n_classes == 1:
         n_classes = 2
-    assert len(classes) > 0 and n_classes > 1
-    unique_classes, unique_counts = np.unique(classes, return_counts=True)
-    # classes might have 0 samples
-    counts = np.zeros(n_classes, dtype=int)
+
+    # torch has much better asymptotic complexity (noticable from 1e9)
+    if isinstance(classes, np.ndarray):
+        classes = torch.from_numpy(classes).long()
+    else:
+        classes = torch.tensor(classes, dtype=torch.long)
+    # it is much faster on GPU, but also requires a lot of memory for large numbers
+    counts = torch.zeros(n_classes, dtype=torch.long)
+    unique_classes, unique_counts = classes.unique(return_counts=True)
     counts[unique_classes] = unique_counts
     return counts
 
