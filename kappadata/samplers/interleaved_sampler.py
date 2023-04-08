@@ -13,6 +13,16 @@ class InterleavedSamplerConfig:
     every_n_samples: int = None
     collator: callable = None
 
+    def __str__(self):
+        interval_strs = []
+        if self.every_n_epochs is not None:
+            interval_strs.append(f"every_n_epochs={self.every_n_epochs}")
+        if self.every_n_updates is not None:
+            interval_strs.append(f"every_n_updates={self.every_n_updates}")
+        if self.every_n_samples is not None:
+            interval_strs.append(f"every_n_samples={self.every_n_samples}")
+        return f"{type(self).__name__}({','.join(interval_strs)})"
+
 
 class InterleavedSampler:
     def __init__(
