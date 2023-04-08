@@ -324,3 +324,33 @@ class TestInterleavedSamplerSampler(unittest.TestCase):
                 100, 101, 102, 103, 104,
             ],
         )
+
+
+    def test_sequential_droplast_nointervalonsampleend(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=SequentialSampler(list(range(100))),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=SequentialSampler(list(range(5))),
+                        every_n_samples=6,
+                    ),
+                ],
+                batch_size=4,
+                drop_last=True,
+                samples=16,
+            ),
+            expected=[
+                # main
+                0, 1, 2, 3,
+                4, 5, 6, 7,
+                # config[0]
+                100, 101, 102, 103, 104,
+                # main
+                8, 9, 10, 11,
+                # config[0]
+                100, 101, 102, 103, 104,
+                # main
+                12, 13, 14, 15,
+            ],
+        )
