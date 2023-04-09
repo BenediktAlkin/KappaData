@@ -39,7 +39,7 @@ class TestMixupEqualsTimm(unittest.TestCase):
                 switch_prob=cutmix_p,
                 mode=mode,
                 label_smoothing=smoothing,
-                num_classes=ds.n_classes,
+                num_classes=ds.getdim_class(),
             )
             raw_loader = DataLoader(ModeWrapper(ds, mode="x class"), batch_size=batch_size)
             for i, ((raw_x, raw_y), (kd_x, kd_y)) in enumerate(zip(raw_loader, kd_loader)):

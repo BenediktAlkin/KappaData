@@ -21,12 +21,11 @@ class ClassificationDataset(KDDataset):
     def getitem_class(self, idx, ctx=None):
         return self.classes[idx]
 
-    @property
-    def n_classes(self):
+    def getshape_class(self):
         max_class = max(self.classes)
         if torch.is_tensor(max_class):
             max_class = max_class.item()
-        return max_class + 1
+        return max_class + 1,
 
     def __len__(self):
         return len(self.classes)

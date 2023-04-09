@@ -93,3 +93,14 @@ class TestKDSubset(unittest.TestCase):
         root_ds = ClassDataset(classes=[0, 0, 1, 1, 0, 2])
         wrapper1 = KDSubset(root_ds, indices=[0, 2, 1, 5])
         self.assertEqual([0, 1, 0, 2], wrapper1.getall_class())
+
+    def test_getshape(self):
+        root_ds = ClassDataset(classes=[0, 0, 1, 1, 0, 2])
+        wrapper1 = KDSubset(root_ds, indices=[0, 2, 1, 5])
+        self.assertEqual((3,), wrapper1.getshape("class"))
+
+    def test_getdim(self):
+        root_ds = ClassDataset(classes=[0, 0, 1, 1, 0, 2])
+        wrapper1 = KDSubset(root_ds, indices=[0, 2, 1, 5])
+        self.assertEqual(3, wrapper1.getdim("class"))
+        self.assertEqual(3, wrapper1.getdim_class())

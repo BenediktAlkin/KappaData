@@ -47,7 +47,7 @@ class TestKDMixCollator(unittest.TestCase):
         self.assertTrue(torch.all(x == expected_x))
 
         # check y
-        og_y = to_one_hot_matrix(ds.classes, n_classes=ds.n_classes)
+        og_y = to_one_hot_matrix(ds.classes, n_classes=ds.getdim_class())
         expected_y = og_y * lamb_y + og_y.roll(shifts=1, dims=0) * (1. - lamb_y)
         self.assertTrue(torch.all(y == expected_y))
 

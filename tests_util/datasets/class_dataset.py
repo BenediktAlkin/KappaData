@@ -7,15 +7,15 @@ class ClassDataset(KDDataset):
         self.classes = classes
         self._n_classes = n_classes
         if class_names is not None:
-            assert len(class_names) == self.n_classes
+            assert len(class_names) == self.getdim_class()
             self._class_names = class_names
 
     def getitem_class(self, idx, _=None):
         return self.classes[idx]
 
-    @property
-    def n_classes(self):
-        return self._n_classes or max(self.classes) + 1
+    def getshape_class(self):
+        n_classes = self._n_classes or max(self.classes) + 1
+        return n_classes,
 
     @property
     def class_names(self):

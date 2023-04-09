@@ -119,8 +119,8 @@ class KDMixWrapper(KDWrapper):
         if idx2 == -1:
             return y
         y2 = self.dataset.getitem_class(idx2, ctx={})
-        y = to_one_hot_vector(y, n_classes=self.dataset.n_classes)
-        y2 = to_one_hot_vector(y2, n_classes=self.dataset.n_classes)
+        y = to_one_hot_vector(y, n_classes=self.dataset.getdim_class())
+        y2 = to_one_hot_vector(y2, n_classes=self.dataset.getdim_class())
 
         y.mul_(lamb).add_(y2.mul_(1. - lamb))
         return y

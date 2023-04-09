@@ -1,7 +1,10 @@
 import unittest
 
 from kappadata.errors import UseModeWrapperException
+from kappadata.error_messages import getshape_instead_of_getdim
 from tests_util.datasets.index_dataset import IndexDataset
+from tests_util.datasets.class_dataset import ClassDataset
+from kappadata.datasets.kd_dataset import KDDataset
 
 
 class TestKDDataset(unittest.TestCase):
@@ -39,3 +42,25 @@ class TestKDDataset(unittest.TestCase):
     def test_all_wrapper_types(self):
         root_ds = IndexDataset(size=3)
         self.assertEqual([], root_ds.all_wrapper_types)
+
+    def test_getshape(self):
+        root_ds = ClassDataset(classes=[0, 1, 2])
+        self.assertEqual((3,), root_ds.getshape("class"))
+
+    def test_getdim(self):
+        root_ds = ClassDataset(classes=[0, 1, 2])
+        self.assertEqual(3, root_ds.getdim("class"))
+        self.assertEqual(3, root_ds.getdim_class())
+
+    def test_detect_getdim_implementation(self):
+        class GetdimDataset(KDDataset):
+            def __len__(self):
+                raise RuntimeError
+
+            @staticmethod
+            def getdim_class():
+                return 3
+
+        with self.assertRaises(AssertionError) as ex:
+            GetdimDataset()
+        self.assertEqual(getshape_instead_of_getdim(["getdim_class"]), str(ex.exception))

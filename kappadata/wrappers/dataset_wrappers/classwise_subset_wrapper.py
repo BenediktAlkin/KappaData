@@ -25,7 +25,7 @@ class ClasswiseSubsetWrapper(KDSubset):
             end_index = min(end_index, len(dataset))
             start_index = start_index or 0
             assert start_index <= end_index
-            for i in range(dataset.n_classes):
+            for i in range(dataset.getdim_class()):
                 if check_enough_samples:
                     assert counts[i] >= end_index, too_little_samples_for_class(i, counts[i], end_index)
                 if start_index >= counts[i]:
@@ -41,7 +41,7 @@ class ClasswiseSubsetWrapper(KDSubset):
             start_percent = start_percent or 0.
             end_percent = end_percent or 1.
             assert start_percent <= end_percent
-            for i in range(dataset.n_classes):
+            for i in range(dataset.getdim_class()):
                 start_index = int(start_percent * counts[i])
                 end_index = int(end_percent * counts[i])
                 sub_indices += all_indices[i][start_index:end_index].tolist()
