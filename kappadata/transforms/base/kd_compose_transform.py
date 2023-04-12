@@ -12,11 +12,27 @@ class KDComposeTransform(KDTransform):
         if ctx is None:
             ctx = {}
         for t in self.transforms:
-            if isinstance(t, KDTransform):
-                x = t(x, ctx)
+            if isinstance(x, (list, tuple)):
+                # apply for each sample
+                x = [self._apply(t, xx, ctx) for xx in x]
+                # flatten outputs in case they are a list (i.e. avoid list of lists)
+                flat = []
+                for xx in x:
+                    if isinstance(xx, (list, tuple)):
+                        flat += xx
+                    else:
+                        flat.append(xx)
+                x = flat
             else:
-                x = t(x)
+                # apply to one sample
+                x = self._apply(t, x, ctx)
         return x
+
+    @staticmethod
+    def _apply(t, x, ctx):
+        if isinstance(t, KDTransform):
+            return t(x, ctx)
+        return t(x)
 
     def set_rng(self, rng):
         for t in self.transforms:

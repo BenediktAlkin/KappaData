@@ -14,6 +14,13 @@ class KDRandomCrop(KDStochasticTransform):
         self.padding_mode = padding_mode
 
     def __call__(self, img, ctx=None):
+        img = self._pad_image(img)
+        i, j, h, w = self.get_params(img)
+        if ctx is not None:
+            ctx["random_crop"] = dict(i=i, j=j, h=h, w=w)
+        return crop(img, i, j, h, w)
+
+    def _pad_image(self, img):
         if self.padding is not None:
             img = pad(img, self.padding, self.fill, self.padding_mode)
 
@@ -27,11 +34,7 @@ class KDRandomCrop(KDStochasticTransform):
             padding = [0, self.size[0] - height]
             img = pad(img, padding, self.fill, self.padding_mode)
 
-        i, j, h, w = self.get_params(img)
-        if ctx is not None:
-            ctx["random_crop"] = dict(i=i, j=j, h=h, w=w)
-
-        return crop(img, i, j, h, w)
+        return img
 
     def get_params(self, img):
         w, h = get_image_size(img)
