@@ -42,6 +42,31 @@ class TestInterleavedSamplerSampler(unittest.TestCase):
             ],
         )
 
+    def test_sequential_nodroplast_ene1sequential_startepoch(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=SequentialSampler(list(range(10))),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=SequentialSampler(list(range(5))),
+                        every_n_epochs=1,
+                    ),
+                ],
+                batch_size=4,
+                start_epoch=1,
+                drop_last=False,
+                epochs=2,
+            ),
+            expected=[
+                # main
+                0, 1, 2, 3,
+                4, 5, 6, 7,
+                8, 9,
+                # configs[0]
+                10, 11, 12, 13, 14,
+            ],
+        )
+
     def test_sequential_nodroplast_ene2sequential(self):
         self._run(
             sampler=InterleavedSampler(

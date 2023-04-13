@@ -37,6 +37,9 @@ class InterleavedSampler:
             epochs=None,
             updates=None,
             samples=None,
+            start_epoch=None,
+            start_update=None,
+            start_sample=None,
     ):
         super().__init__()
         assert isinstance(batch_size, int) and 0 < batch_size
@@ -56,6 +59,27 @@ class InterleavedSampler:
             assert config.every_n_updates is None or 0 < config.every_n_updates
             assert config.every_n_samples is None or 0 < config.every_n_samples
 
+        # infer full start checkpoint from one of epoch/update/sample
+        if start_epoch is not None:
+            assert isinstance(start_epoch, int) and start_update is None and start_sample is None
+            start_update = len(main_sampler) // batch_size * start_epoch
+            start_sample = start_update * batch_size
+        elif start_update is not None:
+            assert start_epoch is None and isinstance(start_update, int) and start_sample is None
+            start_epoch = int(start_update / (len(main_sampler) // batch_size))
+            start_sample = start_update * batch_size
+            if start_update % (len(main_sampler) // batch_size) != 0 or not drop_last:
+                raise NotImplementedError("defining start_update would require to skip forward in the sampler")
+        elif start_sample is not None:
+            assert start_epoch is None and start_update is None and isinstance(start_sample, int)
+            assert start_sample % batch_size == 0
+            start_update = start_sample // batch_size
+            start_epoch = int(start_update / (len(main_sampler) // batch_size))
+            if start_update % (len(main_sampler) // batch_size) != 0 or not drop_last:
+                raise NotImplementedError("defining start_update would require to skip forward in the sampler")
+        else:
+            start_epoch = start_update = start_sample = 0
+
         self.main_sampler = main_sampler
         self.drop_last = drop_last
         self.configs = configs
@@ -63,6 +87,9 @@ class InterleavedSampler:
         self.epochs = epochs
         self.updates = updates
         self.samples = samples
+        self.start_epoch = start_epoch
+        self.start_update = start_update
+        self.start_sample = start_sample
 
         def _get_data_source(sampler):
             if hasattr(sampler, "data_source"):
@@ -145,9 +172,9 @@ class InterleavedSampler:
         else:
             samples_per_epoch = len(self.main_sampler)
 
-        sample = 0
-        epoch = 0
-        update = 0
+        epoch = self.start_epoch
+        update = self.start_update
+        sample = self.start_sample
         sample_in_update = 0
         sample_at_last_update = 0
         while True:
