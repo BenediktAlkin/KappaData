@@ -38,7 +38,7 @@ def main(root, mask_ratio, n_masks):
         mask = torch.gather(mask, dim=0, index=ids_restore)
 
         # visualize
-        masked_img = visualize_masked_image(img, size=size, patch_size=patch_size, mask=mask, border=0)
+        masked_img = visualize_masked_image(img, size=size, patch_size=patch_size, mask=mask, border=2)
         masked_img.save(temp_dir / f"{root.name}_{i}.png")
 
 

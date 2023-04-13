@@ -28,7 +28,7 @@ def visualize_masked_image(img, size=300, patch_size=75, mask=None, border=2, fi
         fill_value = 1.
     else:
         raise NotImplementedError
-    background = torch.full_like(patches, fill_value=fill_value)
+    background = torch.full_like(patches, fill_value=221 / 255)
 
     # mask out
     mask = einops.rearrange(mask, "l -> 1 l 1 1")
