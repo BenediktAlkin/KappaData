@@ -1,18 +1,27 @@
+import numpy as np
 import torch
 import einops
+from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
 from torchvision.transforms.functional import to_tensor, resize, to_pil_image, InterpolationMode
 from kappadata.transforms.patchify_image import PatchifyImage
 from kappadata.transforms.unpatchify_image import UnpatchifyImage
 from kappadata.utils.param_checking import to_2tuple
 
-def visualize_masked_image(img, size=300, patch_size=75, mask=None, border=2, fill="gray"):
+def visualize_masked_image(img, size=300, patch_size=75, mask=None, border=2, fill="gray", scale=None, seed=None):
     if not torch.is_tensor(img):
         img = to_tensor(img)
     assert img.ndim == 3
     assert mask.ndim == 1
 
     # preprocess
-    img = resize(img, size=to_2tuple(size), interpolation=InterpolationMode.BILINEAR)
+    size = to_2tuple(size)
+    if scale is None:
+        img = resize(img, size=size, interpolation=InterpolationMode.BILINEAR)
+    else:
+        rrc = KDRandomResizedCrop(scale=scale, size=size, interpolation=InterpolationMode.BILINEAR)
+        if seed is not None:
+            rrc.set_rng(np.random.default_rng(seed=seed))
+        img = rrc(img)
 
     # patchify
     ctx = {}

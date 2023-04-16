@@ -31,14 +31,23 @@ def main(root, mask_ratio, n_masks):
         n_masks = 1
     for i in range(n_masks):
         # generate mask
-        mask_noise = torch.randn(seqlen, generator=torch.Generator().manual_seed(0 + i))
+        seed = 0 + i
+        mask_noise = torch.randn(seqlen, generator=torch.Generator().manual_seed(seed))
         ids_restore = torch.argsort(mask_noise)
         mask = torch.ones_like(mask_noise)
         mask[int(len(mask) * mask_ratio):] = 0
         mask = torch.gather(mask, dim=0, index=ids_restore)
 
         # visualize
-        masked_img = visualize_masked_image(img, size=size, patch_size=patch_size, mask=mask, border=2)
+        masked_img = visualize_masked_image(
+            img,
+            size=size,
+            patch_size=patch_size,
+            mask=mask,
+            border=2,
+            seed=seed,
+            scale=(0.2, 1.0),
+        )
         masked_img.save(temp_dir / f"{root.name}_{i}.png")
 
 
