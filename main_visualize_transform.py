@@ -31,6 +31,13 @@ def main(root, repeat):
     #     KDRandomSolarize(p=1., threshold=128),
     # ])
     # byol0
+    # transform = KDRandomResizedCrop(size=size, scale=(0.2, 1.0))
+    # transform = KDComposeTransform([
+    #     KDRandomHorizontalFlip(),
+    #     KDRandomColorJitter(p=0.8, brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1),
+    #     KDGaussianBlurPIL(sigma=(0.1, 2.0)),
+    #     KDRandomGrayscale(p=0.2),
+    # ])
     # transform = KDComposeTransform([
     #     KDRandomHorizontalFlip(),
     #     KDRandomColorJitter(p=0.8, brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1),
