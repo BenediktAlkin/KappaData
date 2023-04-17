@@ -26,19 +26,25 @@ def main(root, repeat):
     img = default_loader(root)
 
     size = 300
-    transform = KDComposeTransform([
-        KDRandomHorizontalFlip(),
-        KDRandomColorJitter(p=0.8, brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1),
-        KDGaussianBlurPIL(sigma=(0.1, 2.0)),
-        KDRandomGrayscale(p=0.2),
-    ])
+    # solarize
+    # transform = KDComposeTransform([
+    #     KDRandomSolarize(p=1., threshold=128),
+    # ])
+    # byol0
     # transform = KDComposeTransform([
     #     KDRandomHorizontalFlip(),
     #     KDRandomColorJitter(p=0.8, brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1),
-    #     KDRandomGaussianBlurPIL(p=0.1, sigma=(0.1, 2.0)),
+    #     KDGaussianBlurPIL(sigma=(0.1, 2.0)),
     #     KDRandomGrayscale(p=0.2),
-    #     KDRandomSolarize(p=0.2, threshold=128),
     # ])
+    # byol1
+    transform = KDComposeTransform([
+        KDRandomHorizontalFlip(),
+        KDRandomColorJitter(p=0.8, brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1),
+        KDRandomGaussianBlurPIL(p=0.1, sigma=(0.1, 2.0)),
+        KDRandomGrayscale(p=0.2),
+        KDRandomSolarize(p=0.2, threshold=128),
+    ])
 
     temp_dir = Path("temp/Transform")
     temp_dir.mkdir(exist_ok=True, parents=True)
