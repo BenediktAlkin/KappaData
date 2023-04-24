@@ -201,6 +201,8 @@ class KDMixCollator(KDSingleCollator):
         return bbox, lamb_adjusted
 
     def shuffle(self, item, permutation):
+        if len(item) == 1:
+            return item.clone(), None
         if self.shuffle_mode == "roll":
             return item.roll(shifts=1, dims=0), None
         if self.shuffle_mode == "flip":
