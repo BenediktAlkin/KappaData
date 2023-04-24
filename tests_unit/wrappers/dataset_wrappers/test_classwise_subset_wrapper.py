@@ -23,8 +23,9 @@ class TestClasswiseSubsetWrapper(unittest.TestCase):
         dataset = ShuffleWrapper(dataset=ClassDataset(classes=classes), seed=5)
         subset = ClasswiseSubsetWrapper(dataset=dataset, end_percent=0.1)
         self.assertEqual(50, len(subset))
-        counts = get_class_counts_from_dataset(subset)
+        counts, unlabeled_count = get_class_counts_from_dataset(subset)
         self.assertEqual([10, 15, 25], counts.tolist())
+        self.assertEqual(0, unlabeled_count)
 
     def test_index_complete_endidx(self):
         classes = [0, 1, 0, 0, 1, 0]

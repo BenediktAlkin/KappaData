@@ -26,10 +26,28 @@ class TestClassCounts(unittest.TestCase):
 
     def test_get_class_count_torch(self):
         classes = torch.tensor([0, 1, 1, 1, 0, 2, 5])
-        counts = get_class_counts(classes=classes, n_classes=6)
+        counts, unlabeled_count = get_class_counts(classes=classes, n_classes=6)
         self.assertEqual([2, 3, 1, 0, 0, 1], counts.tolist())
+        self.assertEqual(0, unlabeled_count)
 
     def test_get_class_count_list(self):
         classes = [0, 1, 1, 1, 0, 2, 5]
-        counts = get_class_counts(classes=classes, n_classes=6)
+        counts, unlabeled_count = get_class_counts(classes=classes, n_classes=6)
         self.assertEqual([2, 3, 1, 0, 0, 1], counts.tolist())
+        self.assertEqual(0, unlabeled_count)
+
+    def test_get_class_count_unlabeled(self):
+        classes = torch.tensor([0, 1, 1, 1, -1, -1, 0, -1, 2, 5, -1])
+        counts, unlabeled_count = get_class_counts(classes=classes, n_classes=6)
+        self.assertEqual([2, 3, 1, 0, 0, 1], counts.tolist())
+        self.assertEqual(4, unlabeled_count)
+
+    def test_get_class_count_invalid_class_negative(self):
+        classes = torch.tensor([0, 1, -2, 1, -1, -1, 0, -1, 2, 5, -1])
+        with self.assertRaises(AssertionError):
+            get_class_counts(classes=classes, n_classes=6)
+
+    def test_get_class_count_invalid_class_positive(self):
+        classes = torch.tensor([0, 1, -1, 1, -1, -1, 0, -1, 2, 6, -1])
+        with self.assertRaises(AssertionError):
+            get_class_counts(classes=classes, n_classes=6)

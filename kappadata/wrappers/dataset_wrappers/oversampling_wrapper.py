@@ -17,7 +17,7 @@ class OversamplingWrapper(KDSubset):
                 classes = torch.tensor(classes)
         else:
             classes = torch.tensor([dataset.getitem_class(i) for i in range(len(dataset))])
-        class_counts = get_class_counts(classes, dataset.getdim_class())
+        class_counts, _ = get_class_counts(classes, dataset.getdim_class())
         max_class_count = torch.max(class_counts)
         indices = torch.arange(len(dataset), dtype=torch.long)
         if self.strategy == "multiply":
