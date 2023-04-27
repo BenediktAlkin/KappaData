@@ -24,7 +24,7 @@ class InterleavedSamplerConfig:
         return f"{type(self).__name__}({','.join(interval_strs)})"
 
 
-class InterleavedConcatDataset(ConcatDataset):
+class _InterleavedConcatDataset(ConcatDataset):
     """ same as ConcatDataset but it returns the dataset index """
     def __getitem__(self, idx):
         if idx < 0:
@@ -118,7 +118,7 @@ class InterleavedSampler:
             self.index_offsets.append(self.index_offsets[-1] + len(_get_data_source(config.sampler)))
 
 
-        self.dataset = InterleavedConcatDataset(
+        self.dataset = _InterleavedConcatDataset(
             [_get_data_source(self.main_sampler)] +
             [_get_data_source(config.sampler) for config in self.configs]
         )
