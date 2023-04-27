@@ -24,6 +24,21 @@ class InterleavedSamplerConfig:
         return f"{type(self).__name__}({','.join(interval_strs)})"
 
 
+class InterleavedConcatDataset(ConcatDataset):
+    """ same as ConcatDataset but it returns the dataset index """
+    def __getitem__(self, idx):
+        if idx < 0:
+            if -idx > len(self):
+                raise ValueError("absolute value of index should not exceed dataset length")
+            idx = len(self) + idx
+        dataset_idx = bisect.bisect_right(self.cumulative_sizes, idx)
+        if dataset_idx == 0:
+            sample_idx = idx
+        else:
+            sample_idx = idx - self.cumulative_sizes[dataset_idx - 1]
+        return dataset_idx, self.datasets[dataset_idx][sample_idx]
+
+
 class InterleavedSampler:
     def __init__(
             self,
@@ -102,20 +117,6 @@ class InterleavedSampler:
         for config in self.configs[:-1]:
             self.index_offsets.append(self.index_offsets[-1] + len(_get_data_source(config.sampler)))
 
-
-        class InterleavedConcatDataset(ConcatDataset):
-            """ same as ConcatDataset but it returns the dataset index """
-            def __getitem__(self, idx):
-                if idx < 0:
-                    if -idx > len(self):
-                        raise ValueError("absolute value of index should not exceed dataset length")
-                    idx = len(self) + idx
-                dataset_idx = bisect.bisect_right(self.cumulative_sizes, idx)
-                if dataset_idx == 0:
-                    sample_idx = idx
-                else:
-                    sample_idx = idx - self.cumulative_sizes[dataset_idx - 1]
-                return dataset_idx, self.datasets[dataset_idx][sample_idx]
 
         self.dataset = InterleavedConcatDataset(
             [_get_data_source(self.main_sampler)] +
