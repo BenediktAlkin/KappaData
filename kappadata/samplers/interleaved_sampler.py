@@ -156,13 +156,19 @@ class InterleavedSampler:
 
         self.batch_sampler = InterleavedBatchSampler(self)
 
-    def get_data_loader(self, num_workers: int = 0, pin_memory: bool = False) -> DataLoader:
+    def get_data_loader(
+            self,
+            num_workers: int = 0,
+            pin_memory: bool = False,
+            prefetch_factor: int = 2,
+    ) -> DataLoader:
         return DataLoader(
             dataset=self.dataset,
             batch_sampler=self.batch_sampler,
             collate_fn=self.collator,
             num_workers=num_workers,
             pin_memory=pin_memory,
+            prefetch_factor=prefetch_factor,
         )
 
     def __iter__(self):
