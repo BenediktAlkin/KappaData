@@ -168,7 +168,7 @@ class InterleavedSampler:
             collate_fn=self.collator,
             num_workers=num_workers,
             pin_memory=pin_memory,
-            prefetch_factor=prefetch_factor,
+            prefetch_factor=prefetch_factor if num_workers > 0 else None,
         )
 
     def __iter__(self):
