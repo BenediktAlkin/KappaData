@@ -23,7 +23,8 @@ class InterleavedSamplerConfig:
             interval_strs.append(f"every_n_samples={self.every_n_samples}")
         return f"{type(self).__name__}({','.join(interval_strs)})"
 
-
+# can't be a local class as it is required to be pickleable
+# AttributeError: Can't pickle local object 'InterleavedSampler.__init__.<locals>._InterleavedConcatDataset'
 class _InterleavedConcatDataset(ConcatDataset):
     """ same as ConcatDataset but it returns the dataset index """
     def __getitem__(self, idx):
@@ -38,6 +39,36 @@ class _InterleavedConcatDataset(ConcatDataset):
             sample_idx = idx - self.cumulative_sizes[dataset_idx - 1]
         return dataset_idx, self.datasets[dataset_idx][sample_idx]
 
+
+# can't be a local class as it is required to be pickleable
+# AttributeError: Can't pickle local object 'InterleavedSampler.__init__.<locals>._InterleavedCollator'
+class _InterleavedCollator:
+    def __init__(self, collators):
+        self.collators = collators
+
+    def __call__(self, data):
+        dataset_idxs, data = zip(*data)
+        assert all(dataset_idxs[0] == idx for idx in dataset_idxs)
+        return self.collators[dataset_idxs[0]](data)
+
+# can't be a local class as it is required to be pickleable
+# AttributeError: Can't pickle local object 'InterleavedSampler.__init__.<locals>._InterleavedBatchSampler'
+class _InterleavedBatchSampler:
+    def __init__(self, sampler):
+        super().__init__()
+        self.sampler = sampler
+
+    def __iter__(self):
+        idxs = []
+        for is_full_batch, idx in self.sampler:
+            idxs.append(idx)
+            if is_full_batch:
+                yield idxs
+                idxs = []
+        assert len(idxs) == 0
+
+    def __len__(self):
+        raise NotImplementedError
 
 class InterleavedSampler:
     def __init__(
@@ -123,38 +154,12 @@ class InterleavedSampler:
             [_get_data_source(config.sampler) for config in self.configs]
         )
 
-        class InterleavedCollator:
-            def __init__(self, collators):
-                self.collators = collators
-
-            def __call__(self, data):
-                dataset_idxs, data = zip(*data)
-                assert all(dataset_idxs[0] == idx for idx in dataset_idxs)
-                return self.collators[dataset_idxs[0]](data)
-
-        self.collator = InterleavedCollator(
+        self.collator = _InterleavedCollator(
             [main_collator or default_collate] +
             [config.collator or default_collate for config in self.configs]
         )
 
-        class InterleavedBatchSampler:
-            def __init__(self, sampler):
-                super().__init__()
-                self.sampler = sampler
-
-            def __iter__(self):
-                idxs = []
-                for is_full_batch, idx in self.sampler:
-                    idxs.append(idx)
-                    if is_full_batch:
-                        yield idxs
-                        idxs = []
-                assert len(idxs) == 0
-
-            def __len__(self):
-                raise NotImplementedError
-
-        self.batch_sampler = InterleavedBatchSampler(self)
+        self.batch_sampler = _InterleavedBatchSampler(self)
 
     def get_data_loader(
             self,
