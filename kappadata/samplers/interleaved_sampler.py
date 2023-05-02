@@ -165,16 +165,19 @@ class InterleavedSampler:
             self,
             num_workers: int = 0,
             pin_memory: bool = False,
-            prefetch_factor: int = 2,
+            prefetch_factor: int = None,
     ) -> DataLoader:
+        # the default value of prefetch_factor changed from 2 to None in pytorch 2.0 -> pass via optional kwarg
+        kwargs = {}
+        if num_workers > 0 and prefetch_factor is not None:
+            kwargs["prefetch_factor"] = prefetch_factor
         return DataLoader(
             dataset=self.dataset,
             batch_sampler=self.batch_sampler,
             collate_fn=self.collator,
             num_workers=num_workers,
             pin_memory=pin_memory,
-            # NOTE: default value changed to None in pytorch 2.0 (previously it was 2)
-            prefetch_factor=prefetch_factor if num_workers > 0 else None,
+            **kwargs,
         )
 
     def __iter__(self):
