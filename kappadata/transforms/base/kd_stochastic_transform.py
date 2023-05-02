@@ -8,6 +8,10 @@ class KDStochasticTransform(KDTransform):
         super().__init__(**kwargs)
         self.rng = np.random.default_rng()
 
+    @property
+    def is_deterministic(self):
+        return False
+
     def set_rng(self, rng):
         self.rng = rng
         return self
