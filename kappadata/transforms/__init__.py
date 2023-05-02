@@ -1,5 +1,5 @@
 # augs
-from .add_gaussian_noise_transform import AddGaussianNoiseTransform
+from .add_noise_transform import AddNoiseTransform
 # base
 from .base import KDComposeTransform
 from .base import KDIdentityTransform

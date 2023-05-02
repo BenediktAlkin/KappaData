@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from kappadata.transforms import AddGaussianNoiseTransform, KDIdentityTransform, KDComposeTransform
+from kappadata.transforms import AddNoiseTransform, KDIdentityTransform, KDComposeTransform
 from kappadata.wrappers.sample_wrappers.kd_multi_view_wrapper import KDMultiViewWrapper
 from kappadata.wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
 from tests_util.datasets.x_dataset import XDataset
@@ -14,7 +14,7 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             KDMultiViewWrapper(
                 dataset=XTransformWrapper(
                     dataset=XDataset(x=torch.randn(10, generator=torch.Generator().manual_seed(5))),
-                    transform=AddGaussianNoiseTransform(),
+                    transform=AddNoiseTransform(),
                 ),
                 configs=[2],
             )
@@ -24,7 +24,7 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             KDMultiViewWrapper(
                 dataset=XTransformWrapper(
                     dataset=XDataset(x=torch.randn(10, generator=torch.Generator().manual_seed(5))),
-                    transform=KDComposeTransform([AddGaussianNoiseTransform()]),
+                    transform=KDComposeTransform([AddNoiseTransform()]),
                 ),
                 configs=[2],
             )
@@ -34,7 +34,7 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             KDMultiViewWrapper(
                 dataset=XTransformWrapper(
                     dataset=XDataset(x=torch.randn(10, generator=torch.Generator().manual_seed(5))),
-                    transform=KDComposeTransform([KDIdentityTransform(), AddGaussianNoiseTransform()]),
+                    transform=KDComposeTransform([KDIdentityTransform(), AddNoiseTransform()]),
                 ),
                 configs=[2],
             )
