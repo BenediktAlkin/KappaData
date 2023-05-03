@@ -10,6 +10,6 @@ class ShuffleWrapper(KDSubset):
             self.rng = np.random.default_rng(seed=seed)
         else:
             self.rng = np.random
-        indices = np.arange(len(dataset), dtype=np.int32)
+        indices = np.arange(len(dataset), dtype=np.int64)
         self.rng.shuffle(indices)
-        super().__init__(dataset=dataset, indices=indices.tolist())
+        super().__init__(dataset=dataset, indices=indices)
