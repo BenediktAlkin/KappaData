@@ -41,7 +41,10 @@ class KDMixWrapper(KDWrapper):
         self.cutmix_p = cutmix_p
         self.seed = seed
         # rng with seed is set in _shared
-        self.rng = np.random.default_rng()
+        # problem: if no seed is passed -> default_rng will not be affected by np.random.set_seed
+        # solution: sample a random integer from np.random.randint (which is affected by np.random.set_seed)
+        seed = np.random.randint(np.iinfo(np.int32).max)
+        self.rng = np.random.default_rng(seed=seed)
 
         # TODO port to per property key
         self.ctx_key = self.ctx_prefix
