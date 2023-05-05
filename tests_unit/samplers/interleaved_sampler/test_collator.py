@@ -2,6 +2,7 @@ import unittest
 
 import torch
 from torch.utils.data import RandomSampler, SequentialSampler, TensorDataset
+
 from kappadata.samplers.interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
 
 

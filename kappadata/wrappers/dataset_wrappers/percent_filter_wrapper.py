@@ -18,5 +18,5 @@ class PercentFilterWrapper(KDSubset):
         self.to_index = self.to_percent * len(dataset)
         self.to_index = np.ceil(self.to_index) if self.ceil_to_index else int(self.to_index)
 
-        indices = np.arange(self.from_index, self.to_index, dtype=np.int32)
+        indices = np.arange(self.from_index, self.to_index, dtype=np.int64)
         super().__init__(dataset=dataset, indices=indices)

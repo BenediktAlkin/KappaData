@@ -1,9 +1,11 @@
-import matplotlib.pyplot as plt
-import torch
-from kappadata.visualization.visualize_mae_schematic import visualize_mae_schematic
-from pathlib import Path
-from torchvision.datasets.folder import default_loader
 from argparse import ArgumentParser
+from pathlib import Path
+
+import torch
+from torchvision.datasets.folder import default_loader
+
+from kappadata.visualization.visualize_mae_schematic import visualize_mae_schematic
+
 
 def parse_args():
     parser = ArgumentParser()

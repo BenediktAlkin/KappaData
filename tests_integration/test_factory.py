@@ -1,6 +1,7 @@
 import unittest
 
-from kappadata import object_to_transform, KDComposeTransform, KDScheduledTransform, KDRandomHorizontalFlip
+from kappadata import object_to_transform
+from kappadata.transforms import KDComposeTransform, KDScheduledTransform, KDRandomHorizontalFlip
 
 
 class TestFactory(unittest.TestCase):

@@ -6,6 +6,7 @@ import numpy as np
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.factory import object_to_transform
 from kappadata.transforms import KDTransform, KDComposeTransform, KDStochasticTransform, KDIdentityTransform
+from .x_transform_wrapper import XTransformWrapper
 
 
 @dataclass
@@ -17,6 +18,10 @@ class KDMultiViewConfig:
 class KDMultiViewWrapper(KDWrapper):
     def __init__(self, dataset, configs, seed=None):
         super().__init__(dataset=dataset)
+        # if dataset is XTransformWrapper -> check that transform is deterministic (can only check KDTransforms)
+        if isinstance(dataset, XTransformWrapper):
+            assert dataset.transform.is_deterministic
+
         assert isinstance(configs, list)
         # copy to not alter the original list
         configs = deepcopy(configs)

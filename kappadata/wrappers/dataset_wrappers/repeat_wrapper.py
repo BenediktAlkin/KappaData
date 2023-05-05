@@ -19,5 +19,5 @@ class RepeatWrapper(KDSubset):
             assert repetitions > 0
 
         # repeat indices <repetitions> times in round-robin fashion (indices are like [0, 1, 2, 0, 1, 2])
-        indices = np.tile(np.arange(len(dataset), dtype=np.int32), self.repetitions)
+        indices = np.tile(np.arange(len(dataset), dtype=np.int64), self.repetitions)
         super().__init__(dataset=dataset, indices=indices)

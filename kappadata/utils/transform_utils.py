@@ -3,8 +3,7 @@ from functools import partial
 from torchvision.transforms import Compose
 from torchvision.transforms import Normalize
 
-from kappadata import KDScheduledTransform
-from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
+from kappadata.transforms import KDScheduledTransform, KDComposeTransform
 from kappadata.transforms.norm.base.kd_norm_base import KDNormBase
 from kappadata.wrappers.sample_wrappers import XTransformWrapper
 

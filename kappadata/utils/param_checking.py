@@ -14,3 +14,4 @@ def _ntuple(n):
 
 
 to_2tuple = _ntuple(2)
+to_4tuple = _ntuple(4)

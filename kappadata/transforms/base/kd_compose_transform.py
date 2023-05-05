@@ -8,6 +8,10 @@ class KDComposeTransform(KDTransform):
         super().__init__()
         self.transforms = [object_to_transform(transform) for transform in transforms]
 
+    @property
+    def is_deterministic(self):
+        return all(t.is_deterministic for t in self.transforms)
+
     def __call__(self, x, ctx=None):
         if ctx is None:
             ctx = {}

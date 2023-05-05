@@ -15,7 +15,7 @@ class SubsetWrapper(KDSubset):
                 end_index = min(end_index, len(dataset))
                 start_index = start_index or 0
                 assert start_index <= end_index
-                indices = np.arange(start_index, end_index, dtype=np.int32)
+                indices = np.arange(start_index, end_index, dtype=np.int64)
             elif start_percent is not None or end_percent is not None:
                 # create indices from start/end percent
                 assert start_percent is None or (isinstance(start_percent, (float, int)) and 0. <= start_percent <= 1.)
@@ -25,7 +25,7 @@ class SubsetWrapper(KDSubset):
                 assert start_percent <= end_percent
                 start_index = int(start_percent * len(dataset))
                 end_index = int(end_percent * len(dataset))
-                indices = np.arange(start_index, end_index, dtype=np.int32)
+                indices = np.arange(start_index, end_index, dtype=np.int64)
             else:
                 raise RuntimeError
         else:

@@ -8,6 +8,10 @@ class KDTransform:
         assert type(self).scale_strength == KDTransform.scale_strength
         assert type(self).worker_init_fn == KDTransform.worker_init_fn
 
+    @property
+    def is_deterministic(self):
+        return True
+
     def __call__(self, x, ctx=None):
         raise NotImplementedError
 

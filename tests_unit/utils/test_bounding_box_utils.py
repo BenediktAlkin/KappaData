@@ -1,5 +1,7 @@
 import unittest
+
 from kappadata.utils.bounding_box_utils import intersection_area_ijkl, intersection_area_ijhw
+
 
 class TestBoundingBoxUtils(unittest.TestCase):
     def _test_intersection_area_ijkl(self, expected, i0, j0, k0, l0, i1, j1, k1, l1):

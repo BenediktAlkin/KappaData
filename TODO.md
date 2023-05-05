@@ -1,6 +1,8 @@
 ##
 
 - test interleaved sampler eval loop
+-refactor to import submodules (e.g. from kappdata.transforms import ... instead of from kappadata import ...)
+
 - skip forward in interleaved sampler
 - port everything to use torch operations (much better asymptotic complexity for e.g. oversampling wrapper)
 - variable batch_size in interleaved sampler (batch_size per config)

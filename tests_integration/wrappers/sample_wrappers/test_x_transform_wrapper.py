@@ -2,7 +2,8 @@ import unittest
 
 import torch
 
-from kappadata import XTransformWrapper, KDRandomHorizontalFlip
+from kappadata.transforms import KDRandomHorizontalFlip
+from kappadata.wrappers.sample_wrappers.x_transform_wrapper import XTransformWrapper
 from tests_util.datasets import XDataset
 
 

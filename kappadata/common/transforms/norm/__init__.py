@@ -1,6 +1,6 @@
-from .kd_image_net_norm import KDImageNetNorm
-from .kd_cifar10_norm import KDCifar10Norm
 from .kd_cifar100_norm import KDCifar100Norm
+from .kd_cifar10_norm import KDCifar10Norm
+from .kd_image_net_norm import KDImageNetNorm
 
 
 def string_to_norm(name):
