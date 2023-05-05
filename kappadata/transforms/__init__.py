@@ -14,6 +14,7 @@ from .kd_bucketize import KDBucketize
 from .kd_color_jitter import KDColorJitter
 from .kd_gaussian_blur_pil import KDGaussianBlurPIL
 from .kd_gaussian_blur_tv import KDGaussianBlurTV
+from .kd_grayscale import KDGrayscale
 from .kd_rand_augment import KDRandAugment
 from .kd_rand_augment_custom import KDRandAugmentCustom
 from .kd_random_apply import KDRandomApply
@@ -28,7 +29,9 @@ from .kd_random_resized_crop import KDRandomResizedCrop
 from .kd_random_solarize import KDRandomSolarize
 from .kd_rearrange import KDRearrange
 from .kd_resize import KDResize
+from .kd_simple_random_crop import KDSimpleRandomCrop
 from .kd_solarize import KDSolarize
+from .kd_three_augment import KDThreeAugment
 # norm
 from .norm.kd_image_norm import KDImageNorm
 from .norm.kd_image_range_norm import KDImageRangeNorm

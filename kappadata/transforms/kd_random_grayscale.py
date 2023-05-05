@@ -14,5 +14,4 @@ class KDRandomGrayscale(KDRandomApplyBase):
     def forward(self, x, ctx):
         # if ctx is not None:
         #     ctx["random_grayscale"] = True
-        num_output_channels = F.get_image_num_channels(x)
-        return F.rgb_to_grayscale(x, num_output_channels=num_output_channels)
+        return F.rgb_to_grayscale(x, num_output_channels=F.get_image_num_channels(x))

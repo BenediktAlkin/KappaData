@@ -3,10 +3,8 @@ import unittest
 import torch
 from torchvision.transforms import Compose, Normalize
 
-from kappadata import KDRandomHorizontalFlip
+from kappadata.transforms import KDRandomHorizontalFlip, KDComposeTransform, KDImageRangeNorm
 from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
-from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
-from kappadata.transforms.norm.kd_image_range_norm import KDImageRangeNorm
 from kappadata.utils.transform_utils import (
     flatten_transform,
     get_denorm_transform,
