@@ -1,5 +1,6 @@
 ##
 
+- test interleaved sampler eval loop
 - skip forward in interleaved sampler
 - port everything to use torch operations (much better asymptotic complexity for e.g. oversampling wrapper)
 - variable batch_size in interleaved sampler (batch_size per config)

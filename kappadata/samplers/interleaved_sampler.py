@@ -165,6 +165,27 @@ class InterleavedSampler:
         )
 
     def __iter__(self):
+        if self.epochs == 0 or self.updates == 0 or self.samples == 0:
+            assert self.start_epoch == 0 and self.start_update == 0 and self.start_sample == 0
+            yield from self._eval_loop()
+        else:
+            yield from self._training_loop()
+
+    def _eval_loop(self):
+        for config_idx, config in enumerate(self.configs):
+            index_offset = self.index_offsets[config_idx]
+            sample_in_interleaved = 0
+            for interleaved_idx in config.sampler:
+                sample_in_interleaved += 1
+                if (
+                        sample_in_interleaved % self.batch_size == 0 or
+                        sample_in_interleaved == len(config.sampler)
+                ):
+                    yield True, index_offset + interleaved_idx
+                else:
+                    yield False, index_offset + interleaved_idx
+
+    def _training_loop(self):
         if self.drop_last:
             if len(self.main_sampler) < self.batch_size:
                 self.batch_size = len(self.main_sampler)
