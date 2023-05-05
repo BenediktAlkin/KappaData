@@ -1,10 +1,10 @@
 import unittest
 
-from kappadata.errors import UseModeWrapperException
-from kappadata.error_messages import getshape_instead_of_getdim
-from tests_util.datasets.index_dataset import IndexDataset
-from tests_util.datasets.class_dataset import ClassDataset
 from kappadata.datasets.kd_dataset import KDDataset
+from kappadata.error_messages import getshape_instead_of_getdim
+from kappadata.errors import UseModeWrapperException
+from tests_util.datasets.class_dataset import ClassDataset
+from tests_util.datasets.index_dataset import IndexDataset
 
 
 class TestKDDataset(unittest.TestCase):

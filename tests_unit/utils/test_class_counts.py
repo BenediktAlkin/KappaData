@@ -1,6 +1,6 @@
-import torch
-import numpy as np
 import unittest
+
+import torch
 
 from kappadata.utils.class_counts import get_class_counts_and_indices, get_class_counts
 from tests_util.datasets.class_dataset import ClassDataset

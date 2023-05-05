@@ -1,7 +1,10 @@
 import unittest
-import torch
-from kappadata.transforms import AddNoiseTransform
+
 import numpy as np
+import torch
+
+from kappadata.transforms import AddNoiseTransform
+
 
 class TestAddNoiseTransform(unittest.TestCase):
     def test_gauss(self):

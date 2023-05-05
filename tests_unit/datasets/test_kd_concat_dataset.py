@@ -2,8 +2,8 @@ import unittest
 
 from kappadata.datasets.kd_concat_dataset import KDConcatDataset
 from kappadata.errors import UseModeWrapperException
-from tests_util.datasets.index_dataset import IndexDataset
 from tests_util.datasets.class_dataset import ClassDataset
+from tests_util.datasets.index_dataset import IndexDataset
 
 
 class TestKDConcatDataset(unittest.TestCase):

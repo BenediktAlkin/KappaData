@@ -238,7 +238,6 @@ class TestInterleavedSamplerSampler(unittest.TestCase):
             ],
         )
 
-
     def test_random_enu2sequential(self):
         self._run(
             sampler=InterleavedSampler(
@@ -315,9 +314,6 @@ class TestInterleavedSamplerSampler(unittest.TestCase):
             ],
         )
 
-
-
-
     def test_sequential_droplast_nofullepoch(self):
         self._run(
             sampler=InterleavedSampler(
@@ -349,7 +345,6 @@ class TestInterleavedSamplerSampler(unittest.TestCase):
                 100, 101, 102, 103, 104,
             ],
         )
-
 
     def test_sequential_droplast_nointervalonsampleend(self):
         self._run(

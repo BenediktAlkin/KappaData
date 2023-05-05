@@ -1,10 +1,10 @@
 import logging
+from functools import partial
 
 from torch.utils.data import Dataset
 
-from kappadata.errors import UseModeWrapperException
 from kappadata.error_messages import getshape_instead_of_getdim
-from functools import partial
+from kappadata.errors import UseModeWrapperException
 
 
 class KDDataset(Dataset):

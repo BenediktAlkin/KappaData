@@ -1,9 +1,10 @@
-import matplotlib.pyplot as plt
-import torch
-from kappadata.visualization.visualize_jigsaw import visualize_jigsaw
-from pathlib import Path
-from torchvision.datasets.folder import default_loader
 from argparse import ArgumentParser
+from pathlib import Path
+
+from torchvision.datasets.folder import default_loader
+
+from kappadata.visualization.visualize_jigsaw import visualize_jigsaw
+
 
 def parse_args():
     parser = ArgumentParser()

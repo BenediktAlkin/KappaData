@@ -1,8 +1,7 @@
-from torchvision.transforms.functional import get_image_size, pad, crop
+from torchvision.transforms.functional import get_image_size, crop
 
-from kappadata.utils.param_checking import to_2tuple
-from .kd_random_crop import KDRandomCrop
 from kappadata.utils.bounding_box_utils import intersection_area_ijkl
+from .kd_random_crop import KDRandomCrop
 
 
 class KDTwoRandomCrop(KDRandomCrop):
@@ -18,11 +17,11 @@ class KDTwoRandomCrop(KDRandomCrop):
 
     def __call__(self, img, ctx=None):
         img = self._pad_image(img)
-        
+
         # make initial crop
         i0, j0, h0, w0 = self.get_params(img)
         crop0 = crop(img, i0, j0, h0, w0)
-        
+
         # make second crop
         out_of_tries = False
         k0 = i0 + h0

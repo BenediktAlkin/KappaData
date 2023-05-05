@@ -1,8 +1,8 @@
 import bisect
-from torch.utils.data import default_collate, DataLoader
 from dataclasses import dataclass
 
 from torch.utils.data import ConcatDataset, DistributedSampler
+from torch.utils.data import default_collate, DataLoader
 
 
 @dataclass
@@ -23,10 +23,12 @@ class InterleavedSamplerConfig:
             interval_strs.append(f"every_n_samples={self.every_n_samples}")
         return f"{type(self).__name__}({','.join(interval_strs)})"
 
+
 # can't be a local class as it is required to be pickleable
 # AttributeError: Can't pickle local object 'InterleavedSampler.__init__.<locals>._InterleavedConcatDataset'
 class _InterleavedConcatDataset(ConcatDataset):
     """ same as ConcatDataset but it returns the dataset index """
+
     def __getitem__(self, idx):
         if idx < 0:
             if -idx > len(self):
@@ -51,6 +53,7 @@ class _InterleavedCollator:
         assert all(dataset_idxs[0] == idx for idx in dataset_idxs)
         return self.collators[dataset_idxs[0]](data)
 
+
 # can't be a local class as it is required to be pickleable
 # AttributeError: Can't pickle local object 'InterleavedSampler.__init__.<locals>._InterleavedBatchSampler'
 class _InterleavedBatchSampler:
@@ -69,6 +72,7 @@ class _InterleavedBatchSampler:
 
     def __len__(self):
         raise NotImplementedError
+
 
 class InterleavedSampler:
     def __init__(
@@ -147,7 +151,6 @@ class InterleavedSampler:
         self.index_offsets = [len(_get_data_source(self.main_sampler))]
         for config in self.configs[:-1]:
             self.index_offsets.append(self.index_offsets[-1] + len(_get_data_source(config.sampler)))
-
 
         self.dataset = _InterleavedConcatDataset(
             [_get_data_source(self.main_sampler)] +

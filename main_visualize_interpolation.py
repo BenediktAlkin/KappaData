@@ -1,9 +1,10 @@
-import matplotlib.pyplot as plt
-import torch
-from pathlib import Path
-from torchvision.datasets.folder import default_loader
 from argparse import ArgumentParser
+from pathlib import Path
+
+from torchvision.datasets.folder import default_loader
+
 from kappadata.visualization.visualize_interpolation import visualize_interpolation
+
 
 def parse_args():
     parser = ArgumentParser()

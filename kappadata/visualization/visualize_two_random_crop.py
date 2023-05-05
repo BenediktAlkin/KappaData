@@ -1,12 +1,12 @@
 import torch
-from kappadata.transforms.kd_two_random_crop import KDTwoRandomCrop
 from torchvision.transforms.functional import to_tensor, to_pil_image
+
 
 def visualize_two_random_crop(img, transform):
     if not torch.is_tensor(img):
         img = to_tensor(img)
     assert img.ndim == 3
-    
+
     ctx = {}
     _ = transform(img, ctx=ctx)
     ctx = ctx["two_random_crop"]
