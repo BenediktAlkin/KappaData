@@ -18,6 +18,7 @@ with [pytorch](https://pytorch.org/)
     - [Cutmix](https://arxiv.org/abs/1905.04899)
     - label smoothing
     - ...
+- repeated augmentations
 
 # Modular datasets
 
