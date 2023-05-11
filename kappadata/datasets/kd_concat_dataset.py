@@ -7,6 +7,10 @@ from kappadata.errors import UseModeWrapperException
 
 
 class KDConcatDataset(ConcatDataset):
+    def __init__(self, *args, balanced_sampling=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.balanced_sampling = balanced_sampling
+
     def __getattr__(self, item):
         if item.startswith("getitem_"):
             # all methods starting with getitem_ are called with self.datasets[dataset_idx][sample_idx]
@@ -20,7 +24,11 @@ class KDConcatDataset(ConcatDataset):
         return getattr(self.datasets[0], item)
 
     def _call_getitem(self, item, idx, *args, **kwargs):
-        dataset_idx, sample_idx = self._to_concat_idx(idx)
+        if self.balanced_sampling:
+            dataset_idx = idx % len(self.datasets)
+            sample_idx = int(idx / len(self.datasets)) % len(self.datasets[dataset_idx])
+        else:
+            dataset_idx, sample_idx = self._to_concat_idx(idx)
         func = getattr(self.datasets[dataset_idx], item)
         return func(sample_idx, *args, **kwargs)
 
@@ -110,3 +118,7 @@ class KDConcatDataset(ConcatDataset):
 
     def __getitem__(self, idx):
         raise UseModeWrapperException
+
+    def __len__(self):
+        assert not self.balanced_sampling
+        return super().__len__()
