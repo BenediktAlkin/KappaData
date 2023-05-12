@@ -1,3 +1,4 @@
+from .kd_ade20k_norm import KDAde20kNorm
 from .kd_cifar100_norm import KDCifar100Norm
 from .kd_cifar10_norm import KDCifar10Norm
 from .kd_image_net_norm import KDImageNetNorm
