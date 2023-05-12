@@ -19,6 +19,26 @@ class TestKDMixCollator(unittest.TestCase):
             self.assertEqual(0., KDMixCollator())
         self.assertEqual(REQUIRES_MIXUP_P_OR_CUTMIX_P, str(ex.exception))
 
+    def test_binary(self):
+        ds = create_image_classification_dataset(size=16, seed=19521, channels=1, resolution=8, n_classes=2)
+        ds_mode = "x class"
+        ds = ModeWrapper(dataset=ds, mode=ds_mode, return_ctx=False)
+        # mixup
+        mix_collator = KDMixCollator(
+            mixup_alpha=1.,
+            mixup_p=1.,
+            apply_mode="sample",
+            lamb_mode="sample",
+            shuffle_mode="roll",
+            seed=3,
+            dataset_mode=ds_mode,
+            return_ctx=False,
+        )
+        dl = DataLoader(ds, batch_size=len(ds), collate_fn=mix_collator)
+        (_, y) = next(iter(dl))
+        self.assertEqual(1, y.ndim)
+
+
     def test_mixup(self):
         ds = create_image_classification_dataset(size=16, seed=19521, channels=1, resolution=8, n_classes=4)
         ds = OneHotWrapper(dataset=ds)

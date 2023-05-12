@@ -12,6 +12,67 @@ class TestInterleavedSamplerSampler(unittest.TestCase):
         actual = [i for (_, i) in sampler]
         self.assertEqual(expected, actual)
 
+    def test_eval_epochs0(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=SequentialSampler(list(range(10))),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=SequentialSampler(list(range(5))),
+                        every_n_epochs=1,
+                    ),
+                ],
+                batch_size=4,
+                drop_last=False,
+                epochs=0,
+            ),
+            expected=[
+                # configs[0]
+                10, 11, 12, 13, 14,
+            ],
+        )
+
+    def test_eval_updates0(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=SequentialSampler(list(range(10))),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=SequentialSampler(list(range(5))),
+                        every_n_epochs=1,
+                    ),
+                ],
+                batch_size=4,
+                drop_last=False,
+                updates=0,
+            ),
+            expected=[
+                # configs[0]
+                10, 11, 12, 13, 14,
+            ],
+        )
+
+    def test_eval_samples0(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=SequentialSampler(list(range(10))),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=SequentialSampler(list(range(5))),
+                        every_n_epochs=1,
+                    ),
+                ],
+                batch_size=4,
+                drop_last=False,
+                samples=0,
+            ),
+            expected=[
+                # configs[0]
+                10, 11, 12, 13, 14,
+            ],
+        )
+
+
     def test_sequential_nodroplast_ene1sequential(self):
         self._run(
             sampler=InterleavedSampler(
