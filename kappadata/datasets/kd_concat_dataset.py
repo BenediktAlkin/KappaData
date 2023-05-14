@@ -74,6 +74,13 @@ class KDConcatDataset(ConcatDataset):
         return self.datasets[0].root_dataset
 
     @property
+    def fused_operations(self):
+        if len(self.datasets) == 1:
+            return self.datasets[0].fused_operations
+        # warning/exception here might make sense
+        return self.datasets[0].fused_operations
+
+    @property
     def requires_propagate_ctx(self):
         return any(ds.requires_propagate_ctx for ds in self.datasets)
 

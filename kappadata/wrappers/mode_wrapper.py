@@ -13,7 +13,41 @@ class ModeWrapper(KDDataset):
 
         self._getitem_fns = []
         self.items = mode.split(" ")
-        for item in self.items:
+
+        # check duplicates in fused_operations
+        fused_operations = list(self.dataset.fused_operations)
+        flat_fused_operations = [op for fused_ops in fused_operations for op in fused_ops]
+        assert all(len(set(fused_ops)) == len(fused_ops) for fused_ops in fused_operations)
+        assert len(set(flat_fused_operations)) == len(flat_fused_operations)
+
+        # fuse ops
+        self.fused_items = []
+        self.fused_to_idxs = []
+        if len(self.dataset.fused_operations) > 0:
+            temp_items = list(self.items)
+            for i, item in enumerate(temp_items):
+                if item is None:
+                    continue
+                for fused_ops in self.dataset.fused_operations:
+                    if fused_ops[0] == item:
+                        # check if other ops are also included
+                        if all(op in temp_items for op in fused_ops[1:]):
+                            idxs = []
+                            for op in fused_ops:
+                                idx = temp_items.index(op)
+                                temp_items[idx] = None
+                                idxs.append(idx)
+                            self.fused_to_idxs.append(idxs)
+                            self.fused_items.append("".join(fused_ops))
+                            break
+                else:
+                    self.fused_to_idxs.append(i)
+                    self.fused_items.append(item)
+
+
+
+        # compose getitem functions
+        for item in self.fused_items:
             if item == "index":
                 self._getitem_fns.append(self._getitem_index)
             elif item.startswith("ctx."):
@@ -24,6 +58,7 @@ class ModeWrapper(KDDataset):
                 fn_name = f"getitem_{item}"
                 assert hasattr(self.dataset, fn_name), f"{type(self.dataset.root_dataset)} has no method getitem_{item}"
                 self._getitem_fns.append(getattr(self.dataset, fn_name))
+
 
     @staticmethod
     def has_item(mode, item):
@@ -64,6 +99,20 @@ class ModeWrapper(KDDataset):
         for getitem_fn in self._getitem_fns:
             item = getitem_fn(idx, ctx)
             items.append(item)
+
+        # unpack fused items into original order
+        if len(self.fused_to_idxs) > 0:
+            unpacked_items = [None for _ in range(len(self.items))]
+            for i, fused_idxs in enumerate(self.fused_to_idxs):
+                if isinstance(fused_idxs, list):
+                    # fused item
+                    for j, fused_idx in enumerate(fused_idxs):
+                        unpacked_items[fused_idx] = items[i][j]
+                else:
+                    # unfused item
+                    unpacked_items[fused_idxs] = items[i]
+            items = unpacked_items
+
         if len(items) == 1:
             # single item -> no tuple
             items = items[0]
@@ -81,6 +130,14 @@ class ModeWrapper(KDDataset):
     def root_dataset(self):
         # root_dataset is implemented in base class -> not handled in __getattr__
         return self.dataset.root_dataset
+
+    @property
+    def fused_operations(self):
+        raise RuntimeError("fused_operations should not be called from ModeWrapper")
+
+    @property
+    def requires_propagate_ctx(self):
+        raise RuntimeError("requires_propagate_ctx should not be called from ModeWrapper")
 
     def has_wrapper(self, wrapper):
         if self == wrapper:

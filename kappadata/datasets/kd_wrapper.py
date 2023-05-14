@@ -30,6 +30,10 @@ class KDWrapper(KDDataset):
         return self.dataset.root_dataset
 
     @property
+    def fused_operations(self):
+        return self.dataset.fused_operations
+
+    @property
     def requires_propagate_ctx(self):
         return self.dataset.requires_propagate_ctx
 
