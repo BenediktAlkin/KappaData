@@ -2,13 +2,13 @@ import numpy as np
 
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.factory import object_to_transform
+from kappadata.transforms import KDTransform
 from kappadata.transforms.semseg import (
     KDSemsegPad,
     KDSemsegRandomResize,
     KDSemsegRandomHorizontalFlip,
     KDSemsegRandomCrop,
 )
-from kappadata.transforms import KDTransform
 
 
 class SemsegTransformWrapper(KDWrapper):
@@ -34,7 +34,7 @@ class SemsegTransformWrapper(KDWrapper):
         if self.seed is not None:
             rng = np.random.default_rng(seed=self.seed + idx)
         else:
-            rng  = None
+            rng = None
         for transform in self.transforms:
             if isinstance(transform, self._SEMSEG_TRANSFORMS):
                 if rng is not None:

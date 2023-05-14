@@ -4,6 +4,7 @@ from torch.utils.data import DistributedSampler as TorchDistributedSampler
 
 class DistributedSampler(TorchDistributedSampler):
     """ torch.utils.data.DistributedSampler but with support for RepeatedAugmentation """
+
     def __init__(self, *args, num_repeats=1, **kwargs):
         super().__init__(*args, **kwargs)
         assert 1 <= num_repeats

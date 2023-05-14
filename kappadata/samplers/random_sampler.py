@@ -1,8 +1,10 @@
 import torch
 from torch.utils.data import RandomSampler as TorchRandomSampler
 
+
 class RandomSampler(TorchRandomSampler):
     """ torch.utils.data.RandomSampler but with support for RepeatedAugmentation """
+
     def __init__(self, *args, num_repeats=1, **kwargs):
         super().__init__(*args, **kwargs)
         assert 1 <= num_repeats

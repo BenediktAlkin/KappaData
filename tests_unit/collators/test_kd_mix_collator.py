@@ -38,7 +38,6 @@ class TestKDMixCollator(unittest.TestCase):
         (_, y) = next(iter(dl))
         self.assertEqual(1, y.ndim)
 
-
     def test_mixup(self):
         ds = create_image_classification_dataset(size=16, seed=19521, channels=1, resolution=8, n_classes=4)
         ds = OneHotWrapper(dataset=ds)

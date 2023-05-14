@@ -72,7 +72,6 @@ class TestInterleavedSamplerSampler(unittest.TestCase):
             ],
         )
 
-
     def test_sequential_nodroplast_ene1sequential(self):
         self._run(
             sampler=InterleavedSampler(

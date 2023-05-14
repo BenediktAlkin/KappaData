@@ -1,16 +1,14 @@
-import math
-
-import numpy as np
 import torch
 from torchvision.transforms import InterpolationMode
-from torchvision.transforms.functional import resize, get_image_size
+from torchvision.transforms.functional import resize
 
-from kappadata.utils.param_checking import to_2tuple
 from kappadata.transforms.base.kd_stochastic_transform import KDStochasticTransform
+from kappadata.utils.param_checking import to_2tuple
 
 
 class KDSemsegRandomResize(KDStochasticTransform):
     """ resize image and mask to base_size * ratio where ratio is randomly sampled """
+
     def __init__(self, base_size, ratio, interpolation="bilinear", **kwargs):
         super().__init__(**kwargs)
         self.base_size = to_2tuple(base_size)

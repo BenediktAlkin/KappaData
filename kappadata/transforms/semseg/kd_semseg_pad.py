@@ -1,8 +1,8 @@
-import torch
+from torchvision.transforms.functional import pad, get_image_size
 
 from kappadata.transforms.base.kd_transform import KDTransform
 from kappadata.utils.param_checking import to_2tuple
-from torchvision.transforms.functional import pad, get_image_size, to_tensor
+
 
 class KDSemsegPad(KDTransform):
     def __init__(self, size, **kwargs):

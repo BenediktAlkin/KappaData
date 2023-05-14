@@ -44,8 +44,6 @@ class ModeWrapper(KDDataset):
                     self.fused_to_idxs.append(i)
                     self.fused_items.append(item)
 
-
-
         # compose getitem functions
         items = self.fused_items if len(self.fused_items) > 0 else self.items
         for item in items:
@@ -59,7 +57,6 @@ class ModeWrapper(KDDataset):
                 fn_name = f"getitem_{item}"
                 assert hasattr(self.dataset, fn_name), f"{type(self.dataset.root_dataset)} has no method getitem_{item}"
                 self._getitem_fns.append(getattr(self.dataset, fn_name))
-
 
     @staticmethod
     def has_item(mode, item):

@@ -1,9 +1,7 @@
 import unittest
 
 import einops
-import numpy as np
 import torch
-from torchvision.transforms.functional import to_pil_image, to_tensor
 
 from kappadata.transforms.semseg.kd_semseg_pad import KDSemsegPad
 

@@ -1,6 +1,8 @@
 import unittest
+
+import torch
+
 from kappadata.transforms import (
-    KDComposeTransform,
     KDSemsegRandomHorizontalFlip,
     KDSemsegPad,
     KDSemsegRandomResize,
@@ -9,9 +11,7 @@ from kappadata.transforms import (
     KDImageRangeNorm,
 )
 from kappadata.wrappers import SemsegTransformWrapper, ModeWrapper
-import torch
 from tests_util.datasets.semseg_dataset import SemsegDataset
-
 
 
 class TestSemsegDataloading(unittest.TestCase):
