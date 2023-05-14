@@ -40,6 +40,10 @@ class KDDataset(Dataset):
         return self
 
     @property
+    def fused_operations(self):
+        return []
+
+    @property
     def requires_propagate_ctx(self):
         return False
 

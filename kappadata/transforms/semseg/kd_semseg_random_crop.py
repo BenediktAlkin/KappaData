@@ -36,8 +36,8 @@ class KDSemsegRandomCrop(KDStochasticTransform):
         return x, semseg
 
     def get_params(self, height, width):
-        top = int(self.rng.integers(height - self.size[0] + 1, size=(1,)))
-        left = int(self.rng.integers(width - self.size[1] + 1, size=(1,)))
+        top = int(self.rng.integers(max(0, height - self.size[0]) + 1, size=(1,)))
+        left = int(self.rng.integers(max(0, width - self.size[1]) + 1, size=(1,)))
         bot = top + self.size[0]
         right = left + self.size[1]
         return top, left, bot, right

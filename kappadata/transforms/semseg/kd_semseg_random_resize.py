@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import torch
 from torchvision.transforms import InterpolationMode
 from torchvision.transforms.functional import resize, get_image_size
 
@@ -20,7 +21,13 @@ class KDSemsegRandomResize(KDStochasticTransform):
         new_size = self.get_params()
         x, semseg = xsemseg
         x = resize(x, new_size, self.interpolation)
+        squeeze_semseg = False
+        if torch.is_tensor(semseg):
+            semseg = semseg.unsqueeze(0)
+            squeeze_semseg = True
         semseg = resize(semseg, new_size, InterpolationMode.NEAREST)
+        if squeeze_semseg:
+            semseg = semseg.squeeze(0)
         return x, semseg
 
     def get_params(self):
