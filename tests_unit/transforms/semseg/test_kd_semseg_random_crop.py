@@ -1,9 +1,11 @@
+import unittest
+
 import einops
 import numpy as np
-import unittest
-from kappadata.transforms.semseg.kd_semseg_random_crop import KDSemsegRandomCrop
 import torch
-from torchvision.transforms.functional import to_pil_image
+
+from kappadata.transforms.semseg.kd_semseg_random_crop import KDSemsegRandomCrop
+
 
 class TestKDSemsegRandomCrop(unittest.TestCase):
     def test_default(self):
