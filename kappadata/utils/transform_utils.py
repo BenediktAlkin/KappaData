@@ -4,7 +4,7 @@ from torchvision.transforms import Compose
 from torchvision.transforms import Normalize
 
 from kappadata.transforms import KDScheduledTransform, KDComposeTransform
-from kappadata.transforms.norm.base.kd_norm_base import KDNormBase
+from kappadata.transforms.norm.kd_norm_base import KDNormBase
 from kappadata.wrappers.sample_wrappers import XTransformWrapper
 
 

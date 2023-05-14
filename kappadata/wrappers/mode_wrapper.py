@@ -47,7 +47,8 @@ class ModeWrapper(KDDataset):
 
 
         # compose getitem functions
-        for item in self.fused_items:
+        items = self.fused_items if len(self.fused_items) > 0 else self.items
+        for item in items:
             if item == "index":
                 self._getitem_fns.append(self._getitem_index)
             elif item.startswith("ctx."):

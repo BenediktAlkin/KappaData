@@ -1,7 +1,7 @@
 import torch
 from torchvision.transforms.functional import to_tensor, normalize
 
-from .base.kd_norm_base import KDNormBase
+from .kd_norm_base import KDNormBase
 
 
 class KDImageRangeNorm(KDNormBase):
