@@ -5,7 +5,7 @@ from torchvision.transforms import InterpolationMode
 from torchvision.transforms.functional import resize, get_image_size
 
 from kappadata.utils.param_checking import to_2tuple
-from .base.kd_stochastic_transform import KDStochasticTransform
+from kappadata.transforms.base.kd_stochastic_transform import KDStochasticTransform
 
 
 class KDSemsegRandomResize(KDStochasticTransform):
