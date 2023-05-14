@@ -12,6 +12,13 @@ class KDTransform:
     def is_deterministic(self):
         return True
 
+    def set_rng(self, rng):
+        pass
+
+    @property
+    def is_kd_transform(self):
+        return True
+
     def __call__(self, x, ctx=None):
         raise NotImplementedError
 

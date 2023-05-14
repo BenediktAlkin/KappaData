@@ -9,7 +9,7 @@ class ModeWrapper(KDDataset):
         self.dataset = dataset
         self.mode = mode
         self.return_ctx = return_ctx
-        self.propagate_ctx = return_ctx
+        self.propagate_ctx = return_ctx or dataset.requires_propagate_ctx
 
         self._getitem_fns = []
         self.items = mode.split(" ")

@@ -39,6 +39,10 @@ class KDDataset(Dataset):
     def root_dataset(self):
         return self
 
+    @property
+    def requires_propagate_ctx(self):
+        return False
+
     @staticmethod
     def has_wrapper(wrapper):
         return False

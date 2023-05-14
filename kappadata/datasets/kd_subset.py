@@ -35,6 +35,10 @@ class KDSubset(Subset):
     def root_dataset(self):
         return self.dataset.root_dataset
 
+    @property
+    def requires_propagate_ctx(self):
+        return self.dataset.requires_propagate_ctx
+
     def has_wrapper(self, wrapper):
         if self == wrapper:
             return True

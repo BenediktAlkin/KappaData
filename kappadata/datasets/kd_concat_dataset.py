@@ -65,6 +65,10 @@ class KDConcatDataset(ConcatDataset):
         # warning/exception here might make sense
         return self.datasets[0].root_dataset
 
+    @property
+    def requires_propagate_ctx(self):
+        return any(ds.requires_propagate_ctx for ds in self.datasets)
+
     def has_wrapper(self, wrapper):
         if len(self.datasets) == 1:
             return self.datasets[0].has_wrapper(wrapper)

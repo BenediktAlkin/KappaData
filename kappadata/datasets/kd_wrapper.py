@@ -29,6 +29,10 @@ class KDWrapper(KDDataset):
         # KDDataset implements root_dataset -> __getitem__ doesn't trigger
         return self.dataset.root_dataset
 
+    @property
+    def requires_propagate_ctx(self):
+        return self.dataset.requires_propagate_ctx
+
     def has_wrapper(self, wrapper):
         if self == wrapper:
             return True
