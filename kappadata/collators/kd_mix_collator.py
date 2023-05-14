@@ -87,13 +87,19 @@ class KDMixCollator(KDSingleCollator):
     def collate(self, batch, dataset_mode, ctx=None):
         # extract properties from batch
         idx, x, y = None, None, None
+        is_binary_classification = False
         if ModeWrapper.has_item(mode=dataset_mode, item="index"):
             idx = ModeWrapper.get_item(mode=dataset_mode, item="index", batch=batch)
         if ModeWrapper.has_item(mode=dataset_mode, item="x"):
             x = ModeWrapper.get_item(mode=dataset_mode, item="x", batch=batch)
         if ModeWrapper.has_item(mode=dataset_mode, item="class"):
             y = ModeWrapper.get_item(mode=dataset_mode, item="class", batch=batch).type(torch.float32)
-            assert y.ndim == 2, "KDMixCollator expects classes to be in one-hot format"
+            # y has to be 2d tensor of in one-hot format (multi-class) or 1d tensor (binary-classification)
+            if y.ndim != 2:
+                assert y.ndim == 1 and 0. <= y.min() and y.max() <= 1., \
+                    "KDMixCollator expects classes to be in one-hot format"
+                y = y.unsqueeze(1)
+                is_binary_classification = True
         batch_size = len(x)
 
         # sample apply
@@ -178,6 +184,8 @@ class KDMixCollator(KDSingleCollator):
         if x is not None:
             batch = ModeWrapper.set_item(mode=dataset_mode, item="x", batch=batch, value=x)
         if y is not None:
+            if is_binary_classification:
+                y = y.squeeze(1)
             batch = ModeWrapper.set_item(mode=dataset_mode, item="class", batch=batch, value=y)
         return batch
 

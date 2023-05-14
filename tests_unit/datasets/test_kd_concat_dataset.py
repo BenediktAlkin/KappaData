@@ -79,3 +79,23 @@ class TestKDConcatDataset(unittest.TestCase):
         ds1 = ClassDataset(classes=[2, 3, 0, 1])
         ds = KDConcatDataset([ds0, ds1])
         self.assertEqual([0, 0, 1, 1, 0, 2, 3, 0, 1], ds.getall_class())
+
+    def test_balanced_sampling(self):
+        ds0 = ClassDataset(classes=[0, 1])
+        ds1 = ClassDataset(classes=[2, 3, 4, 5, 6, 7, 8])
+        ds = KDConcatDataset([ds0, ds1], balanced_sampling=True)
+        expected = [0, 2, 1, 3, 0, 4, 1, 5, 0, 6, 1, 7, 0, 8, 1, 2]
+        self.assertEqual(expected, [ds.getitem_class(i) for i in range(len(expected))])
+
+    def test_balanced_sampling_len(self):
+        ds0 = IndexDataset(size=3)
+        ds1 = IndexDataset(size=4)
+        ds = KDConcatDataset([ds0, ds1], balanced_sampling=True)
+        with self.assertRaises(AssertionError):
+            len(ds)
+
+    def test_len(self):
+        ds0 = IndexDataset(size=3)
+        ds1 = IndexDataset(size=4)
+        ds = KDConcatDataset([ds0, ds1])
+        self.assertEqual(7, len(ds))
