@@ -69,20 +69,27 @@ def main(root, repeat):
 
     temp_dir = Path("temp/ADE20K")
     temp_dir.mkdir(exist_ok=True, parents=True)
-    img.save(temp_dir / f"original.jpg")
-    to_pil_image((mask + 1).byte(), mode="L").save(temp_dir / f"original.png")
     for i in range(repeat):
         print(i)
         for t in ds.transforms:
             if isinstance(t, KDStochasticTransform):
                 t.set_rng(np.random.default_rng(i + 39824))
-        x, semseg = ds[0]
+
+        if i == 0:
+            # load unaugmented image
+            x = ds.dataset.getitem_x(0)
+            semseg = ds.dataset.getitem_semseg(0)
+        else:
+            x, semseg = ds[0]
         if torch.is_tensor(x):
             x = to_pil_image(x)
         x.save(temp_dir / f"{fname}_{i}.jpg")
         semseg += 1
-        semseg = hash_tensor_entries(semseg) % 255
-        to_pil_image(semseg.byte(), mode="L").save(temp_dir / f"{fname}_{i}.png")
+        semseg_r = hash_tensor_entries(semseg, shuffle_primes_seed=0) % 255
+        semseg_g = hash_tensor_entries(semseg, shuffle_primes_seed=1) % 255
+        semseg_b = hash_tensor_entries(semseg, shuffle_primes_seed=2) % 255
+        semseg = torch.stack([semseg_r, semseg_g, semseg_b])
+        to_pil_image(semseg / 255).save(temp_dir / f"{fname}_{i}.png")
 
 
 if __name__ == "__main__":
