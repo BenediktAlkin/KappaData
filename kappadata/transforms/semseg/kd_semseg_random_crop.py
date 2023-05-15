@@ -1,4 +1,4 @@
-from torchvision.transforms.functional import get_image_size
+from torchvision.transforms.functional import get_image_size, crop
 
 from kappadata.transforms.base.kd_stochastic_transform import KDStochasticTransform
 from kappadata.utils.param_checking import to_2tuple
@@ -15,24 +15,24 @@ class KDSemsegRandomCrop(KDStochasticTransform):
         x, semseg = xsemseg
         width, height = get_image_size(x)
 
-        top, left, bot, right = self.get_params(height=height, width=width)
-        crop = semseg[top:bot, left:right]
+        top, left, crop_height, crop_width = self.get_params(height=height, width=width)
+        semseg_crop = crop(semseg, top, left, crop_height, crop_width)
         if self.max_category_ratio < 1.:
             for _ in range(10):
-                labels, counts = crop.unique(return_counts=True)
+                labels, counts = semseg_crop.unique(return_counts=True)
                 counts = counts[labels != self.ignore_index]
                 if len(counts) > 1 and counts.max() / counts.sum() < self.max_category_ratio:
                     break
-                top, left, bot, right = self.get_params(height=height, width=width)
-                crop = semseg[top:bot, left:right]
+                top, left, crop_height, crop_width = self.get_params(height=height, width=width)
+                semseg_crop = crop(semseg, top, left, crop_height, crop_width)
 
-        x = x[:, top:bot, left:right]
-        semseg = crop
+        x = crop(x, top, left, crop_height, crop_width)
+        semseg = semseg_crop
         return x, semseg
 
     def get_params(self, height, width):
         top = int(self.rng.integers(max(0, height - self.size[0]) + 1, size=(1,)))
         left = int(self.rng.integers(max(0, width - self.size[1]) + 1, size=(1,)))
-        bot = top + self.size[0]
-        right = left + self.size[1]
-        return top, left, bot, right
+        crop_height = min(height, self.size[0])
+        crop_width = min(width, self.size[1])
+        return top, left, crop_height, crop_width
