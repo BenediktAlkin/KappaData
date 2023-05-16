@@ -28,6 +28,12 @@ class SemsegTransformWrapper(KDWrapper):
     def fused_operations(self):
         return super().fused_operations + [["x", "semseg"]]
 
+    def getitem_x(self, idx, ctx=None):
+        return self.getitem_xsemseg(idx, ctx=ctx)[0]
+
+    def getitem_semseg(self, idx, ctx=None):
+        return self.getitem_xsemseg(idx, ctx=ctx)[1]
+
     def getitem_xsemseg(self, idx, ctx=None):
         x = self.dataset.getitem_x(idx, ctx=ctx)
         semseg = self.dataset.getitem_semseg(idx, ctx=ctx)
