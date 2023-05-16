@@ -8,3 +8,4 @@ joblib
 pyfakefs
 timm
 kappaschedules
+tqdm
