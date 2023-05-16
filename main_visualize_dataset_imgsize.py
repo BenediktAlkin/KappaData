@@ -38,8 +38,9 @@ def main(root):
     bucket_size = 30
     height_data, width_data, area_data = visualize_dataset_imgsize(
         dataset,
-        num_workers=0,
+        cutoff=0.05,
         bucket_size=bucket_size,
+        num_workers=0,
         device="cuda" if torch.cuda.is_available() else "cpu",
     )
     for name, data in [("height", height_data), ("width", width_data)]:
