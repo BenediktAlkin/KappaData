@@ -8,6 +8,7 @@ from kappadata.transforms.semseg import (
     KDSemsegRandomResize,
     KDSemsegRandomHorizontalFlip,
     KDSemsegRandomCrop,
+    KDSemsegResize,
 )
 
 
@@ -17,6 +18,7 @@ class SemsegTransformWrapper(KDWrapper):
         KDSemsegRandomResize,
         KDSemsegRandomHorizontalFlip,
         KDSemsegRandomCrop,
+        KDSemsegResize,
     )
 
     def __init__(self, dataset, transforms, seed=None):
