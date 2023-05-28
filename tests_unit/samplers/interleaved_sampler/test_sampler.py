@@ -434,3 +434,33 @@ class TestInterleavedSamplerSampler(unittest.TestCase):
                 12, 13, 14, 15,
             ],
         )
+
+    def test_sequential_droplastbatchsize(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=SequentialSampler(list(range(15))),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=SequentialSampler(list(range(5))),
+                        every_n_samples=6,
+                    ),
+                ],
+                batch_size=4,
+                drop_last=True,
+                samples=16,
+                drop_last_batch_size=8
+            ),
+            expected=[
+                # main
+                0, 1, 2, 3,
+                4, 5, 6, 7,
+                # config[0]
+                15, 16, 17, 18, 19,
+                # main
+                0, 1, 2, 3,
+                # config[0]
+                15, 16, 17, 18, 19,
+                # main
+                4, 5, 6, 7,
+            ],
+        )
