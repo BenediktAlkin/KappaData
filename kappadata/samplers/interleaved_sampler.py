@@ -90,10 +90,16 @@ class InterleavedSampler:
             start_epoch=None,
             start_update=None,
             start_sample=None,
+            # batch_size used for dropping last batch
+            drop_last_batch_size=None,
     ):
         super().__init__()
         assert isinstance(batch_size, int) and 0 < batch_size
         assert batch_size <= len(main_sampler)
+        if drop_last_batch_size is not None:
+            assert drop_last and drop_last_batch_size % batch_size == 0
+            assert isinstance(drop_last_batch_size, int) and batch_size <= drop_last_batch_size
+            assert drop_last_batch_size <= len(main_sampler)
         assert epochs is None or (isinstance(epochs, int) and 0 <= epochs)
         assert updates is None or (isinstance(updates, int) and 0 <= updates)
         assert samples is None or (isinstance(samples, int) and 0 <= samples)
@@ -140,6 +146,7 @@ class InterleavedSampler:
         self.start_epoch = start_epoch
         self.start_update = start_update
         self.start_sample = start_sample
+        self.drop_last_batch_size = drop_last_batch_size
 
         def _get_data_source(sampler):
             if hasattr(sampler, "data_source"):
@@ -206,9 +213,17 @@ class InterleavedSampler:
 
     def _training_loop(self):
         if self.drop_last:
-            if len(self.main_sampler) < self.batch_size:
-                self.batch_size = len(self.main_sampler)
-            samples_per_epoch = len(self.main_sampler) // self.batch_size * self.batch_size
+            if self.drop_last_batch_size is not None:
+                if len(self.main_sampler) < self.drop_last_batch_size:
+                    factor = self.drop_last_batch_size // self.batch_size
+                    self.drop_last_batch_size = len(self.main_sampler) - len(self.main_sampler) % factor
+                    self.batch_size = self.drop_last_batch_size // factor
+                batch_size = self.drop_last_batch_size
+            else:
+                if len(self.main_sampler) < self.batch_size:
+                    self.batch_size = len(self.main_sampler)
+                batch_size = self.batch_size
+            samples_per_epoch = len(self.main_sampler) // batch_size * batch_size
         else:
             samples_per_epoch = len(self.main_sampler)
 
