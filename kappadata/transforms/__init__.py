@@ -4,6 +4,7 @@ from .image_pos_embed_grid import ImagePosEmbedGrid
 from .image_pos_embed_sincos import ImagePosEmbedSincos
 from .kd_bucketize import KDBucketize
 from .kd_color_jitter import KDColorJitter
+from .kd_columnwise_norm import KDColumnwiseNorm
 from .kd_gaussian_blur_pil import KDGaussianBlurPIL
 from .kd_gaussian_blur_tv import KDGaussianBlurTV
 from .kd_grayscale import KDGrayscale
