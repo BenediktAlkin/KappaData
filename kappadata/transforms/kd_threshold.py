@@ -29,7 +29,7 @@ class KDThreshold(KDStochasticTransform):
 
     def __call__(self, x, ctx=None):
         magnitude = self.magnitude_sampler.sample(self.rng)
-        if mode == "zeros":
+        if self.mode == "zeros":
             x[x < magnitude] = 0
         else:
             raise NotImplementedError
