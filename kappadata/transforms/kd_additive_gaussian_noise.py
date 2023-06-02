@@ -4,17 +4,20 @@ from kappadata.utils.magnitude_sampler import MagnitudeSampler
 from .base.kd_stochastic_transform import KDStochasticTransform
 
 
-class AddNoiseTransform(KDStochasticTransform):
+class KDAdditiveGaussianNoise(KDStochasticTransform):
     def __init__(
             self,
+            std: float,
             magnitude: float = 1.,
             magnitude_std: float = float("inf"),
             magnitude_min: float = 0.,
             magnitude_max: float = 1.,
-            distribution: str = "gaussian",
+            clip_min: float = None,
+            clip_max: float = None,
             **kwargs,
     ):
         super().__init__(**kwargs)
+        self.std = std
         self.magnitude_sampler = MagnitudeSampler(
             magnitude=magnitude,
             magnitude_std=magnitude_std,
@@ -22,21 +25,21 @@ class AddNoiseTransform(KDStochasticTransform):
             magnitude_max=magnitude_max,
         )
         self.ctx_key = f"{self.ctx_prefix}.magnitude"
-        if distribution in ["normal", "gauss", "gaussian"]:
-            self._generate_noise = self._gauss_noise
-        else:
-            raise NotImplementedError
-        self.distribution = distribution
+        self.clip_min = clip_min
+        self.clip_max = clip_max
 
     def _gauss_noise(self, x, magnitude):
-        return torch.from_numpy(self.rng.normal(scale=magnitude, size=x.shape)).float()
+        return
 
     def _scale_strength(self, factor):
         self.magnitude_sampler.scale_strength(factor)
 
     def __call__(self, x, ctx=None):
         magnitude = self.magnitude_sampler.sample(self.rng)
-        noise = self._generate_noise(x=x, magnitude=magnitude)
+        noise = torch.from_numpy(self.rng.normal(scale=magnitude * self.std, size=x.shape)).float()
         if ctx is not None:
             ctx[self.ctx_key] = magnitude
-        return x + noise
+        x = x + noise
+        if self.clip_min is not None or self.clip_max is not None:
+            x = torch.clamp(x, self.clip_min, self.clip_max)
+        return x

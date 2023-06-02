@@ -1,4 +1,4 @@
-from .add_noise_transform import AddNoiseTransform
+from .kd_additive_gaussian_noise import KDAdditiveGaussianNoise
 from .base import *
 from .image_pos_embed_grid import ImagePosEmbedGrid
 from .image_pos_embed_sincos import ImagePosEmbedSincos
@@ -25,6 +25,7 @@ from .kd_resize import KDResize
 from .kd_simple_random_crop import KDSimpleRandomCrop
 from .kd_solarize import KDSolarize
 from .kd_three_augment import KDThreeAugment
+from .kd_threshold import KDThreshold
 from .norm import *
 from .patchify_image import PatchifyImage
 from .patchwise_norm import PatchwiseNorm
