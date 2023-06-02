@@ -14,7 +14,7 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             KDMultiViewWrapper(
                 dataset=XTransformWrapper(
                     dataset=XDataset(x=torch.randn(10, generator=torch.Generator().manual_seed(5))),
-                    transform=KDAdditiveGaussianNoise(),
+                    transform=KDAdditiveGaussianNoise(std=1.),
                 ),
                 configs=[2],
             )
@@ -24,7 +24,7 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             KDMultiViewWrapper(
                 dataset=XTransformWrapper(
                     dataset=XDataset(x=torch.randn(10, generator=torch.Generator().manual_seed(5))),
-                    transform=KDComposeTransform([KDAdditiveGaussianNoise()]),
+                    transform=KDComposeTransform([KDAdditiveGaussianNoise(std=1.)]),
                 ),
                 configs=[2],
             )
@@ -34,7 +34,7 @@ class TestKDMultiViewWrapper(unittest.TestCase):
             KDMultiViewWrapper(
                 dataset=XTransformWrapper(
                     dataset=XDataset(x=torch.randn(10, generator=torch.Generator().manual_seed(5))),
-                    transform=KDComposeTransform([KDIdentityTransform(), KDAdditiveGaussianNoise()]),
+                    transform=KDComposeTransform([KDIdentityTransform(), KDAdditiveGaussianNoise(std=1.)]),
                 ),
                 configs=[2],
             )
