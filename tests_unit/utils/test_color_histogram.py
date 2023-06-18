@@ -16,3 +16,8 @@ class TestColorHistogram(unittest.TestCase):
         img = torch.tensor([31.99, 32, 223.99, 224, 255])
         counts = color_histogram(img.reshape(1, 1, 1, len(img)), bins=8, density=False)
         self.assertEqual([1, 1, 0, 0, 0, 0, 1, 2], counts.squeeze().tolist())
+
+    def test_batchwise(self):
+        img = torch.rand(4, 3, 16, 16)
+        counts = color_histogram(img, bins=32, density=False)
+        self.assertEqual((4, 3, 32), counts.shape)

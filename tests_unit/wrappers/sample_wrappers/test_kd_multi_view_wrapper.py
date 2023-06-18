@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from kappadata.transforms import AddNoiseTransform, KDIdentityTransform, KDComposeTransform
+from kappadata.transforms import KDAdditiveGaussianNoise, KDIdentityTransform, KDComposeTransform
 from kappadata.wrappers.sample_wrappers.kd_multi_view_wrapper import KDMultiViewWrapper
 from tests_util.datasets.x_dataset import XDataset
 
@@ -62,7 +62,7 @@ class TestKDMultiViewWrapper(unittest.TestCase):
         data = torch.randn(10, generator=torch.Generator().manual_seed(5))
         ds = KDMultiViewWrapper(
             dataset=XDataset(x=data),
-            configs=[AddNoiseTransform(magnitude=0.5), AddNoiseTransform(magnitude=0.2)],
+            configs=[KDAdditiveGaussianNoise(std=0.5), KDAdditiveGaussianNoise(std=0.2)],
             seed=3,
         )
         for i in range(len(ds)):
