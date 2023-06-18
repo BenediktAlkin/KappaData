@@ -3,7 +3,6 @@ import unittest
 import numpy as np
 import torch
 
-from kappadata.transforms import AddNoiseTransform
 from kappadata.wrappers.sample_wrappers import XRepeatWrapper
 from tests_util.datasets.x_dataset import XDataset
 
