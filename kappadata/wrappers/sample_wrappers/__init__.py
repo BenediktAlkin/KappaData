@@ -5,5 +5,6 @@ from .one_hot_wrapper import OneHotWrapper
 from .semseg_transform_wrapper import SemsegTransformWrapper
 from .source_transform_wrapper import SourceTransformWrapper
 from .target_transform_wrapper import TargetTransformWrapper
+from .x_repeat_wrapper import XRepeatWrapper
 from .x_transform_wrapper import XTransformWrapper
 from .y_transform_wrapper import YTransformWrapper
