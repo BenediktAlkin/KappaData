@@ -9,6 +9,7 @@ from .kd_columnwise_norm import KDColumnwiseNorm
 from .kd_gaussian_blur_pil import KDGaussianBlurPIL
 from .kd_gaussian_blur_tv import KDGaussianBlurTV
 from .kd_grayscale import KDGrayscale
+from .kd_minsize import KDMinsize
 from .kd_rand_augment import KDRandAugment
 from .kd_rand_augment_custom import KDRandAugmentCustom
 from .kd_random_apply import KDRandomApply
