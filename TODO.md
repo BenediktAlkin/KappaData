@@ -1,5 +1,7 @@
 ##
 
+- copy folder tests: `copy_folder_from_global_to_local("~/Documents/data/coco", "~/Documents/data_local/coco", relative_path="val2017", log_fn=print)`
+
 - refactor to import submodules (e.g. from kappdata.transforms import ... instead of from kappadata import ...)
 
 - skip forward in interleaved sampler
