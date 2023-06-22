@@ -1,6 +1,7 @@
 import torch
 from torchvision.transforms import Resize
-from torchvision.transforms.functional import InterpolationMode, get_dimensions
+from torchvision.transforms.functional import InterpolationMode
+from kappadata.utils.image_utils import get_dimensions
 
 from .base import KDTransform
 
@@ -18,11 +19,11 @@ class KDMinsize(KDTransform):
         self.resize = Resize(interpolation=InterpolationMode(interpolation), **kwargs)
 
     def __call__(self, x, ctx=None):
-        _, image_height, image_width = get_dimensions(x)
+        _, h, w = get_dimensions(x)
         if isinstance(self.resize.size, int):
-            if image_height >= self.resize.size and image_width >= self.resize.size:
+            if h >= self.resize.size and w >= self.resize.size:
                 return x
         elif len(self.resize.size) == 2:
-            if image_height >= self.resize.size[0] and image_width >= self.resize.size[1]:
+            if h >= self.resize.size[0] and w >= self.resize.size[1]:
                 return x
         return self.resize(x)
