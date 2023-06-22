@@ -8,8 +8,7 @@ import joblib
 
 from kappadata.utils.logging import log
 
-CopyImageFolderResult = namedtuple("CopyImageFolderResult", "was_copied was_deleted was_zip was_zip_classwise")
-
+CopyFolderResult = namedtuple("CopyFolderResult", "was_copied was_deleted was_zip")
 
 def _check_src_path(src_path):
     if src_path.exists() and src_path.is_dir():
@@ -18,8 +17,13 @@ def _check_src_path(src_path):
         return True
     return False
 
-
-def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path=None, num_workers=0, log_fn=None):
+def copy_folder_from_global_to_local(
+        global_path,
+        local_path,
+        remove_zip_root_folder=True,
+        relative_path=None,
+        log_fn=None,
+):
     if not isinstance(global_path, Path):
         global_path = Path(global_path).expanduser()
     if not isinstance(local_path, Path):
@@ -45,11 +49,10 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
             if end_copy_file.exists():
                 # already automatically copied -> do nothing
                 log(log_fn, f"dataset was already automatically copied '{dst_path}'")
-                return CopyImageFolderResult(
+                return CopyFolderResult(
                     was_copied=False,
                     was_deleted=False,
                     was_zip=False,
-                    was_zip_classwise=False,
                 )
             else:
                 # incomplete copy -> delete and copy again
@@ -59,7 +62,7 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
                 dst_path.mkdir()
         else:
             log(log_fn, f"using manually copied dataset '{dst_path}'")
-            return CopyImageFolderResult(was_copied=False, was_deleted=False, was_zip=False, was_zip_classwise=False)
+            return CopyFolderResult(was_copied=False, was_deleted=False, was_zip=False)
     else:
         dst_path.mkdir(parents=True)
 
@@ -69,25 +72,17 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
 
     # copy
     was_zip = False
-    was_zip_classwise = False
     if src_path.exists() and src_path.is_dir():
-        # check if subfolders are zips (allow files such as a README inside the folder)
-        items = os.listdir(src_path)
-        zips = [item for item in items if item.endswith(".zip")]
-        if len(zips) > 0 and len(zips) >= len(items) // 2:
-            # extract all zip folders into dst (e.g. imagenet1k/train/n01558993.zip
-            was_zip_classwise = True
-            log(log_fn, f"extracting {len(zips)} zips from '{src_path}' to '{dst_path}' using {num_workers} workers")
-            unzip_imagefolder_classwise(src=src_path, dst=dst_path, num_workers=num_workers)
-        else:
-            # copy folders which contain the raw files (not zipped or anything)
-            log(log_fn, f"copying folders of '{src_path}' to '{dst_path}'")
-            # copy folder (dirs_exist_ok=True because dst_path is created for start_copy_file)
-            shutil.copytree(src_path, dst_path, dirs_exist_ok=True)
+        # copy folders which contain the raw files (not zipped or anything)
+        log(log_fn, f"copying folders of '{src_path}' to '{dst_path}'")
+        # copy folder (dirs_exist_ok=True because dst_path is created for start_copy_file)
+        shutil.copytree(src_path, dst_path, dirs_exist_ok=True)
     elif src_path.with_suffix(".zip").exists():
         log(log_fn, f"extracting '{src_path.with_suffix('.zip')}' to '{dst_path}'")
         # extract zip
         was_zip = True
+        if remove_zip_root_folder:
+            dst_path = dst_path.parent
         with zipfile.ZipFile(src_path.with_suffix(".zip")) as f:
             f.extractall(dst_path)
     else:
@@ -98,55 +93,8 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
         f.write("this file indicates that the copying the dataset automatically was successful")
 
     log(log_fn, "finished copying data from global to local")
-    return CopyImageFolderResult(
+    return CopyFolderResult(
         was_copied=True,
         was_deleted=was_deleted,
         was_zip=was_zip,
-        was_zip_classwise=was_zip_classwise,
     )
-
-
-def create_zipped_imagefolder_classwise(src, dst):
-    src_path = Path(src).expanduser()
-    assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
-    dst_path = Path(dst).expanduser()
-    dst_path.mkdir(exist_ok=True, parents=True)
-
-    for item in os.listdir(src_path):
-        src_uri = src_path / item
-        if not src_uri.is_dir():
-            continue
-        shutil.make_archive(
-            base_name=dst_path / item,
-            format="zip",
-            root_dir=src_uri,
-        )
-
-
-def _unzip(src, dst):
-    with zipfile.ZipFile(src) as f:
-        f.extractall(dst)
-
-
-def unzip_imagefolder_classwise(src, dst, num_workers=0):
-    src_path = Path(src).expanduser()
-    assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
-    dst_path = Path(dst).expanduser()
-    dst_path.mkdir(exist_ok=True, parents=True)
-
-    # compose jobs
-    jobargs = []
-    for item in os.listdir(src_path):
-        assert item.endswith(".zip")
-        dst_uri = (dst_path / item).with_suffix("")
-        src_uri = src_path / item
-        jobargs.append((src_uri, dst_uri))
-
-    # run jobs
-    if num_workers <= 1:
-        for src, dst in jobargs:
-            _unzip(src, dst)
-    else:
-        jobs = [joblib.delayed(_unzip)(src, dst) for src, dst in jobargs]
-        pool = joblib.Parallel(n_jobs=num_workers)
-        pool(jobs)
