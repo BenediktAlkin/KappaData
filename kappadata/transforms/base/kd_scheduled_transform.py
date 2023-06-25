@@ -1,5 +1,6 @@
 from kappaschedules import LinearIncreasingSchedule, object_to_schedule
 
+import torch
 from kappadata.factory import object_to_transform
 from .kd_transform import KDTransform
 
@@ -59,10 +60,10 @@ class KDScheduledTransform(KDTransform):
             raise NotImplementedError
 
     def __call__(self, x, ctx=None):
-        # ideally this would be checked here, but this prohibits and call to the dataset outside the DataLoader loop
-        # right now it is up to the user to make sure that worker_init_fn is called
-        # assert self.n_batches is not None, "call KDScheduledTransform.worker_init_fn before applying the transform"
-
+        # make sure that worker_init_fn was called
+        if torch.utils.data.get_worker_info() is not None:
+            assert self.n_batches is not None, "call KDScheduledTransform.worker_init_fn before applying the transform"
+        # scale_strength when called in worker process
         if self.n_batches is not None:
             # caulculate progress
             batch_idx = self.sample_counter // self.batch_size * self.num_workers + self.rank

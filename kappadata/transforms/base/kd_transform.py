@@ -24,8 +24,8 @@ class KDTransform:
 
     def worker_init_fn(self, rank, **kwargs):
         # if num_workers == 0 -> get_worker_info() is None
-        # if num_workers the worker_init_fn can be called manually  although this is not recommended
-        # e.g. the counter of  a scheduled transform will be a global object and therefore no longer be correct
+        # if num_workers the worker_init_fn can be called manually although this is not recommended
+        # e.g. the counter of a scheduled transform will be a global object and therefore no longer be correct
         info = get_worker_info()
         if info is None:
             num_workers = 1

@@ -176,6 +176,7 @@ class InterleavedSampler:
             num_workers: int = 0,
             pin_memory: bool = False,
             prefetch_factor: int = None,
+            worker_init_fn = None,
     ) -> DataLoader:
         # the default value of prefetch_factor changed from 2 to None in pytorch 2.0 -> pass via optional kwarg
         kwargs = {}
@@ -187,6 +188,7 @@ class InterleavedSampler:
             collate_fn=self.collator,
             num_workers=num_workers,
             pin_memory=pin_memory,
+            worker_init_fn=worker_init_fn,
             **kwargs,
         )
 
