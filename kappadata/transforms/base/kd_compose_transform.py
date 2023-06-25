@@ -8,6 +8,11 @@ class KDComposeTransform(KDTransform):
         super().__init__()
         self.transforms = [object_to_transform(transform) for transform in transforms]
 
+    def _worker_init_fn(self, rank, num_workers, **kwargs):
+        for t in self.transforms:
+            # noinspection PyProtectedMember
+            t._worker_init_fn(rank, num_workers, **kwargs)
+
     @property
     def is_deterministic(self):
         return all(t.is_deterministic for t in self.transforms)

@@ -23,7 +23,8 @@ class KDScheduledTransform(KDTransform):
             rank,
             num_workers,
             batch_size=None,
-            dataset_length=None,
+            dataset_len=None,
+            world_size=None,
             drop_last=None,
             epochs=None,
             updates=None,
@@ -39,12 +40,14 @@ class KDScheduledTransform(KDTransform):
         if epochs is not None:
             assert updates is None and samples is None
             assert drop_last is not None
-            assert dataset_length is not None
+            assert dataset_len is not None
+            assert world_size is not None
             assert isinstance(epochs, int) and epochs >= 0
+            dataset_len //= world_size
             if drop_last:
-                batches_per_epoch = dataset_length // batch_size
+                batches_per_epoch = dataset_len // batch_size
             else:
-                batches_per_epoch = (dataset_length + batch_size - 1) // batch_size
+                batches_per_epoch = (dataset_len + batch_size - 1) // batch_size
             self.n_batches = epochs * batches_per_epoch
         elif updates is not None:
             assert samples is None

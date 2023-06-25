@@ -41,6 +41,10 @@ class _InterleavedConcatDataset(ConcatDataset):
             sample_idx = idx - self.cumulative_sizes[dataset_idx - 1]
         return dataset_idx, self.datasets[dataset_idx][sample_idx]
 
+    def worker_init_fn(self, rank, **kwargs):
+        for dataset in self.datasets:
+            dataset.worker_init_fn(rank, dataset_len=len(dataset), **kwargs)
+
 
 # can't be a local class as it is required to be pickleable
 # AttributeError: Can't pickle local object 'InterleavedSampler.__init__.<locals>._InterleavedCollator'
