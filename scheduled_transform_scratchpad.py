@@ -3,6 +3,10 @@
 #  I think the best way to solve this is to calculate the rank that loads the first batch and pass it via init_workers_fn
 #  and have a global counter run in KDScheduledTransform
 # TODO test with different number of workers
+
+# TODO i think a valid approach would be to construct a map "rank_on_dataset_switch" that maps sample_indices to the
+#  initial rank and have a KDScheduledTransform global sample counter check on every iteration if the current value
+#  of the sample counter is in the map -> if yes assign the "rank_on_dataset_switch" to a local variable
 import unittest
 from functools import partial
 
