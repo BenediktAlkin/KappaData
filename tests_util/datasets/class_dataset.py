@@ -10,7 +10,8 @@ class ClassDataset(KDDataset):
             assert len(class_names) == self.getdim_class()
             self._class_names = class_names
 
-    def getitem_class(self, idx, _=None):
+    # noinspection PyUnusedLocal
+    def getitem_class(self, idx, ctx=None):
         return self.classes[idx]
 
     def getshape_class(self):

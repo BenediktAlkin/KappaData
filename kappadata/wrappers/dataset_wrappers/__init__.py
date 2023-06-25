@@ -1,5 +1,6 @@
 from .class_filter_wrapper import ClassFilterWrapper
 from .oversampling_wrapper import OversamplingWrapper
+from .overwrite_classes_wrapper import OverwriteClassesWrapper
 from .percent_filter_wrapper import PercentFilterWrapper
 from .repeat_wrapper import RepeatWrapper
 from .shuffle_wrapper import ShuffleWrapper
