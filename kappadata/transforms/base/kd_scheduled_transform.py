@@ -63,19 +63,19 @@ class KDScheduledTransform(KDTransform):
             raise NotImplementedError
 
     def __call__(self, x, ctx=None):
-        # make sure that worker_init_fn was called
-        if torch.utils.data.get_worker_info() is not None:
-            assert self.n_batches is not None, "call KDScheduledTransform.worker_init_fn before applying the transform"
-        # scale_strength when called in worker process
-        if self.n_batches is not None:
-            # caulculate progress
-            batch_idx = self.sample_counter // self.batch_size * self.num_workers + self.rank
-            strength = self.schedule.get_value(batch_idx, self.n_batches)
-            self.sample_counter += 1
+        # make sure that worker_init_fn was called and that this method is only called from dataloader processes
+        # I don't think it is possible to support this to be called outside of the dataloader process
+        assert torch.utils.data.get_worker_info() is not None
+        assert self.n_batches is not None
+        # caulculate progress
+        batch_idx = self.sample_counter // self.batch_size * self.num_workers + self.rank
+        strength = self.schedule.get_value(batch_idx % self.n_batches, self.n_batches)
+        print(f"rank={self.rank} sample_counter={self.sample_counter} batch_idx={batch_idx} strength={strength}")
+        self.sample_counter += 1
 
-            # scale
-            self.transform.scale_strength(strength)
+        # scale
+        self.transform.scale_strength(strength)
 
-            if ctx is not None:
-                ctx[self.ctx_key] = strength
+        if ctx is not None:
+            ctx[self.ctx_key] = strength
         return self.transform(x, ctx=ctx)

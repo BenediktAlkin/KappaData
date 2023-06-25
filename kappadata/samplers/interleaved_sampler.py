@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 from torch.utils.data import ConcatDataset, DistributedSampler
 from torch.utils.data import default_collate, DataLoader
+from functools import partial
+import torch.distributed as dist
 
 
 @dataclass
@@ -180,19 +182,32 @@ class InterleavedSampler:
             num_workers: int = 0,
             pin_memory: bool = False,
             prefetch_factor: int = None,
-            worker_init_fn = None,
     ) -> DataLoader:
         # the default value of prefetch_factor changed from 2 to None in pytorch 2.0 -> pass via optional kwarg
         kwargs = {}
         if num_workers > 0 and prefetch_factor is not None:
             kwargs["prefetch_factor"] = prefetch_factor
+        # get world size
+        # TODO these snippets should be a seperate library as they are commonly used
+        if dist.is_available() and dist.is_initialized():
+            world_size = dist.get_world_size()
+        else:
+            world_size = 1
         return DataLoader(
             dataset=self.dataset,
             batch_sampler=self.batch_sampler,
             collate_fn=self.collator,
             num_workers=num_workers,
             pin_memory=pin_memory,
-            worker_init_fn=worker_init_fn,
+            worker_init_fn=partial(
+                self.dataset.worker_init_fn,
+                batch_size=self.batch_size,
+                world_size=world_size,
+                drop_last=self.drop_last,
+                epochs=self.epochs,
+                updates=self.updates,
+                samples=self.samples,
+            ),
             **kwargs,
         )
 
