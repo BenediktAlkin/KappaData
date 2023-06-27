@@ -15,6 +15,23 @@ class TestLabelSmoothingWrapper(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: LabelSmoothingWrapper(dataset=None, smoothing=1.))
         _ = LabelSmoothingWrapper(dataset=ClassDataset(classes=list(range(2))), smoothing=0.5)
 
+    def test_getitem_class_semisupvervised(self):
+        ds = LabelSmoothingWrapper(dataset=ClassDataset(classes=[0, -1, 1, -1, 2, 3, -1]), smoothing=.1)
+        expected = [
+            [0.925, 0.025, 0.025, 0.025],
+            [-1, -1, -1, -1],
+            [0.025, 0.925, 0.025, 0.025],
+            [-1, -1, -1, -1],
+            [0.025, 0.025, 0.925, 0.025],
+            [0.025, 0.025, 0.025, 0.925],
+            [-1, -1, -1, -1],
+            [-1, -1, -1, -1],
+        ]
+        for i in range(len(ds)):
+            # use allclose because of floating point precision errors
+            self.assertTrue(torch.allclose(torch.tensor(expected[i]), ds.getitem_class(i)))
+
+
     def test_getitem_class_automatic(self):
         smoothing = .1
         ds = create_class_dataset(size=100, n_classes=10, seed=42)
