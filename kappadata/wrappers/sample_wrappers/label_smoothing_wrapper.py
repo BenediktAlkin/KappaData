@@ -16,7 +16,7 @@ class LabelSmoothingWrapper(KDWrapper):
 
         # can't smooth missing label in semi-supervised
         if y == -1:
-            return torch.full(size=(n_classes,), fill_value=-1)
+            return torch.full(size=(n_classes,), fill_value=-1.)
 
         off_value = self.smoothing / n_classes
         on_value = 1. - self.smoothing + off_value

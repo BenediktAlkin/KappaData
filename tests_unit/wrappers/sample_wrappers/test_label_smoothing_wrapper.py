@@ -15,6 +15,10 @@ class TestLabelSmoothingWrapper(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: LabelSmoothingWrapper(dataset=None, smoothing=1.))
         _ = LabelSmoothingWrapper(dataset=ClassDataset(classes=list(range(2))), smoothing=0.5)
 
+    def test_getitem_class_semisupervised_float(self):
+        ds = LabelSmoothingWrapper(dataset=ClassDataset(classes=[0, -1, 1, 2, 3]), smoothing=.1)
+        self.assertEqual(torch.float32, ds.getitem_class(1).dtype)
+
     def test_getitem_class_semisupvervised(self):
         ds = LabelSmoothingWrapper(dataset=ClassDataset(classes=[0, -1, 1, -1, 2, 3, -1]), smoothing=.1)
         expected = [
