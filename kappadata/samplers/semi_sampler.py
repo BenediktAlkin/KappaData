@@ -38,7 +38,12 @@ class SemiSampler:
         assert len(self.labeled_idxs) > 0 and len(self.unlabeled_idxs) > 0
 
     def __len__(self):
-        return (len(self.labeled_idxs) + len(self.unlabeled_idxs)) // self.world_size
+        # one epoch is when all labeled samples are returned once -> pad with number of unlabeled samples
+        num_chunks = len(self.labeled_idxs) // self.num_labeled
+        length = num_chunks * (self.num_labeled + self.num_unlabeled)
+        # cutoff trailing samples for distributed
+        length //= self.world_size
+        return length
 
     def set_epoch(self, epoch):
         self.epoch = epoch
