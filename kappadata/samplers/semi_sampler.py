@@ -37,6 +37,10 @@ class SemiSampler:
         self.unlabeled_idxs = is_unlabeled.nonzero().squeeze(1).tolist()
         assert len(self.labeled_idxs) > 0 and len(self.unlabeled_idxs) > 0
 
+    @property
+    def effective_length(self):
+        return len(self)
+
     def __len__(self):
         # one epoch is when all labeled samples are returned once -> pad with number of unlabeled samples
         num_chunks = len(self.labeled_idxs) // self.num_labeled

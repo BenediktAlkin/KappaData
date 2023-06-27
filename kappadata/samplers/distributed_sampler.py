@@ -10,6 +10,10 @@ class DistributedSampler(TorchDistributedSampler):
         assert 1 <= num_repeats
         self.num_repeats = num_repeats
 
+    @property
+    def effective_length(self):
+        return len(self.dataset)
+
     def __iter__(self):
         if self.num_repeats == 1:
             yield from super().__iter__()
