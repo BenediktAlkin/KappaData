@@ -1,6 +1,6 @@
 import torch
 from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
-from kappadata.utils.distributed import get_rank
+from kappadata.utils.distributed import get_rank, get_world_size
 
 class SemiSampler:
     """
@@ -17,7 +17,7 @@ class SemiSampler:
     distributed sampling is implemented by simply shuffling with a different seed per device
     """
 
-    def __init__(self, dataset, num_labeled=1, num_unlabeled=1, rank=None, seed=0):
+    def __init__(self, dataset, num_labeled=1, num_unlabeled=1, rank=None, world_size=None, seed=0):
         super().__init__()
         assert 1 <= num_labeled
         assert 1 <= num_unlabeled
@@ -25,6 +25,7 @@ class SemiSampler:
         self.num_labeled = num_labeled
         self.num_unlabeled = num_unlabeled
         self.rank = rank or get_rank()
+        self.world_size = world_size or get_world_size()
         self.epoch = 0
         self.seed = seed
 
@@ -35,7 +36,7 @@ class SemiSampler:
         assert len(self.labeled_idxs) > 0 and len(self.unlabeled_idxs) > 0
 
     def __len__(self):
-        return len(self.labeled_idxs) + len(self.unlabeled_idxs)
+        return (len(self.labeled_idxs) + len(self.unlabeled_idxs)) // self.world_size
 
     def set_epoch(self, epoch):
         self.epoch = epoch
@@ -52,7 +53,7 @@ class SemiSampler:
                 yield from torch.randperm(len(idxs), generator=generator).tolist()
         labeled_iterator = _iterator(self.labeled_idxs)
         unlabeled_iterator = _iterator(self.unlabeled_idxs)
-        for i in range(len(self.labeled_idxs) + len(self.unlabeled_idxs)):
+        for i in range(len(self)):
             if i % (self.num_labeled + self.num_unlabeled) < self.num_labeled:
                 yield self.labeled_idxs[next(labeled_iterator)]
             else:

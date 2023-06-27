@@ -12,7 +12,7 @@ class TestSemiSampler(unittest.TestCase):
         cls = [ds.getitem_class(idx) for idx in sampler]
         self.assertEqual([3, -1, 0, -1, 1, -1], cls)
 
-    def test_1x1_worldsize2(self):
+    def test_1x1_worldsize2_fulllen(self):
         ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])
         sampler0 = SemiSampler(dataset=ds, seed=9243, rank=0)
         sampler1 = SemiSampler(dataset=ds, seed=9243, rank=1)
@@ -34,6 +34,14 @@ class TestSemiSampler(unittest.TestCase):
         cls11 = [ds.getitem_class(idx) for idx in sampler1]
         self.assertEqual([1, -1, 0, -1, 3, -1], cls01)
         self.assertEqual([3, -1, 1, -1, 2, -1], cls11)
+
+    def test_1x1_worldsize2_truncatedlen(self):
+        ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3, 1])
+        sampler = SemiSampler(dataset=ds, seed=9243, rank=0, world_size=2)
+        idx = list(sampler)
+        cls = [ds.getitem_class(idx) for idx in sampler]
+        self.assertEqual([0, 1, 5], idx)
+        self.assertEqual([0, -1, 3], cls)
 
     def test_1x2(self):
         ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])
