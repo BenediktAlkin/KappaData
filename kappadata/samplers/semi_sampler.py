@@ -31,6 +31,9 @@ class SemiSampler:
         self.unlabeled_idxs = is_unlabeled.nonzero().squeeze(1).tolist()
         assert len(self.labeled_idxs) > 0 and len(self.unlabeled_idxs) > 0
 
+    def __len__(self):
+        return len(self.labeled_idxs) + len(self.unlabeled_idxs)
+
     def __iter__(self):
         if self.generator is None and self.shuffle:
             seed = int(torch.empty((), dtype=torch.int64).random_().item())
