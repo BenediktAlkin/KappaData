@@ -14,7 +14,9 @@ class SemiSampler:
         each batch has num_labeled / (num_labeled + num_unlabeled) labeled samples
         each batch has num_unlabeled / (num_labeled + num_unlabeled) unlabeled samples
 
-    distributed sampling is implemented by simply shuffling with a different seed per device
+    distributed sampling is implemented via:
+    - shuffling with a different seed per device
+    - dividing total length by world size (same as DistributedSampler with drop_last=True)
     """
 
     def __init__(self, dataset, num_labeled=1, num_unlabeled=1, rank=None, world_size=None, seed=0):
