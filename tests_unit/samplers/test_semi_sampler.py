@@ -8,20 +8,14 @@ from tests_util.datasets.class_dataset import ClassDataset
 class TestSemiSampler(unittest.TestCase):
     def test_1x1(self):
         ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])
-        sampler = SemiSampler(dataset=ds, seed=9243, length_mode="all")
+        sampler = SemiSampler(dataset=ds, seed=9243)
         cls = [ds.getitem_class(idx) for idx in sampler]
         self.assertEqual([3, -1, 0, -1, 1, -1], cls)
 
-    def test_1x1_labeledlen(self):
-        ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])
-        sampler = SemiSampler(dataset=ds, seed=9243, length_mode="labeled")
-        cls = [ds.getitem_class(idx) for idx in sampler]
-        self.assertEqual([3, -1, 0, -1, 1, -1, 2, -1, 1, -1, 3, -1], cls)
-
     def test_1x1_worldsize2_fulllen(self):
         ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])
-        sampler0 = SemiSampler(dataset=ds, seed=9243, rank=0, length_mode="all")
-        sampler1 = SemiSampler(dataset=ds, seed=9243, rank=1, length_mode="all")
+        sampler0 = SemiSampler(dataset=ds, seed=9243, rank=0)
+        sampler1 = SemiSampler(dataset=ds, seed=9243, rank=1)
         idx00 = list(sampler0)
         idx01 = list(sampler1)
         self.assertEqual([5, 3, 0, 1, 2, 1], idx00)
@@ -43,7 +37,7 @@ class TestSemiSampler(unittest.TestCase):
 
     def test_1x1_worldsize2_truncatedlen(self):
         ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3, 1])
-        sampler = SemiSampler(dataset=ds, seed=9243, rank=0, world_size=2, length_mode="all")
+        sampler = SemiSampler(dataset=ds, seed=9243, rank=0, world_size=2)
         idx = list(sampler)
         cls = [ds.getitem_class(idx) for idx in sampler]
         self.assertEqual([0, 1, 5], idx)
@@ -56,7 +50,6 @@ class TestSemiSampler(unittest.TestCase):
             num_labeled=1,
             num_unlabeled=2,
             seed=9243,
-            length_mode="all",
         )
         cls = [ds.getitem_class(idx) for idx in sampler]
         self.assertEqual([3, -1, -1, 0, -1, -1], cls)
@@ -68,7 +61,6 @@ class TestSemiSampler(unittest.TestCase):
             num_labeled=1,
             num_unlabeled=4,
             seed=9243,
-            length_mode="all",
         )
         cls = [ds.getitem_class(idx) for idx in sampler]
         self.assertEqual([1, -1, -1, -1, -1, 3, -1, -1, -1, -1], cls)

@@ -19,16 +19,7 @@ class SemiSampler:
     - dividing total length by world size (same as DistributedSampler with drop_last=True)
     """
 
-    def __init__(
-            self,
-            dataset,
-            num_labeled=1,
-            num_unlabeled=1,
-            rank=None,
-            world_size=None,
-            seed=0,
-            length_mode="labeled",
-    ):
+    def __init__(self, dataset, num_labeled=1, num_unlabeled=1, rank=None, world_size=None, seed=0):
         super().__init__()
         assert 1 <= num_labeled
         assert 1 <= num_unlabeled
@@ -39,7 +30,6 @@ class SemiSampler:
         self.world_size = world_size or get_world_size()
         self.epoch = 0
         self.seed = seed
-        self.length_mode = length_mode
 
         self.classes = getall_class_as_tensor(dataset)
         is_unlabeled = self.classes == -1
@@ -48,15 +38,7 @@ class SemiSampler:
         assert len(self.labeled_idxs) > 0 and len(self.unlabeled_idxs) > 0
 
     def __len__(self):
-        ds_len = (len(self.labeled_idxs) + len(self.unlabeled_idxs)) // self.world_size
-        if self.length_mode == "labeled":
-            # return the length until ds_len labeled samples are sampled
-            return int(ds_len * (self.num_unlabeled + self.num_labeled))
-        elif self.length_mode == "all":
-            # return the length until ds_len samples (labeled or unlabeled) are sampled
-            return ds_len
-        else:
-            raise NotImplementedError
+        return (len(self.labeled_idxs) + len(self.unlabeled_idxs)) // self.world_size
 
     def set_epoch(self, epoch):
         self.epoch = epoch
