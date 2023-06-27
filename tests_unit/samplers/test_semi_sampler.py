@@ -12,12 +12,18 @@ class TestSemiSampler(unittest.TestCase):
         cls = [ds.getitem_class(idx) for idx in sampler]
         self.assertEqual([3, -1, 0, -1, 2, -1], cls)
 
+    def test_1x1_noshuffle(self):
+        ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])
+        sampler = SemiSampler(dataset=ds, shuffle=False)
+        cls = [ds.getitem_class(idx) for idx in sampler]
+        self.assertEqual([0, -1, 1, -1, 2, -1], cls)
+
     def test_1x2(self):
         ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])
         sampler = SemiSampler(
             dataset=ds,
-            n_labeled=1,
-            n_unlabeled=2,
+            num_labeled=1,
+            num_unlabeled=2,
             generator=torch.Generator().manual_seed(9243),
         )
         cls = [ds.getitem_class(idx) for idx in sampler]
@@ -27,8 +33,8 @@ class TestSemiSampler(unittest.TestCase):
         ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3, 4, 5, -1, 6])
         sampler = SemiSampler(
             dataset=ds,
-            n_labeled=1,
-            n_unlabeled=4,
+            num_labeled=1,
+            num_unlabeled=4,
             generator=torch.Generator().manual_seed(9243),
         )
         cls = [ds.getitem_class(idx) for idx in sampler]
