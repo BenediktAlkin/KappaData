@@ -240,7 +240,7 @@ class InterleavedSampler:
         sample_at_last_update = 0
         while True:
             sample_in_epoch = 0
-            if isinstance(self.main_sampler, DistributedSampler):
+            if hasattr(self.main_sampler, "set_epoch"):
                 self.main_sampler.set_epoch(epoch)
             for main_idx in self.main_sampler:
                 sample += 1

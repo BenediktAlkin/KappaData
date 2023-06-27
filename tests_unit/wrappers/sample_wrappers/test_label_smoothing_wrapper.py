@@ -23,13 +23,13 @@ class TestLabelSmoothingWrapper(unittest.TestCase):
         ds = LabelSmoothingWrapper(dataset=ClassDataset(classes=[0, -1, 1, -1, 2, 3, -1]), smoothing=.1)
         expected = [
             [0.925, 0.025, 0.025, 0.025],
-            [-1, -1, -1, -1],
+            [-1., -1., -1., -1.],
             [0.025, 0.925, 0.025, 0.025],
-            [-1, -1, -1, -1],
+            [-1., -1., -1., -1.],
             [0.025, 0.025, 0.925, 0.025],
             [0.025, 0.025, 0.025, 0.925],
-            [-1, -1, -1, -1],
-            [-1, -1, -1, -1],
+            [-1., -1., -1., -1.],
+            [-1., -1., -1., -1.],
         ]
         for i in range(len(ds)):
             # use allclose because of floating point precision errors

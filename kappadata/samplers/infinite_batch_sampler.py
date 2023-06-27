@@ -31,7 +31,7 @@ class InfiniteBatchSampler(BatchSampler):
         updates = 0
         samples = 0
         while True:
-            if isinstance(self.sampler, DistributedSampler):
+            if hasattr(self.sampler, "set_epoch"):
                 self.sampler.set_epoch(epochs)
             for batch in super().__iter__():
                 updates += 1

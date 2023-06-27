@@ -1,6 +1,6 @@
 import torch
 from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
-
+from kappadata.utils.distributed import get_rank
 
 class SemiSampler:
     """
@@ -13,17 +13,20 @@ class SemiSampler:
     if batch_size % (num_labeled + num_unlabeled) == 0:
         each batch has num_labeled / (num_labeled + num_unlabeled) labeled samples
         each batch has num_unlabeled / (num_labeled + num_unlabeled) unlabeled samples
+
+    distributed sampling is implemented by simply shuffling with a different seed per device
     """
 
-    def __init__(self, dataset, num_labeled=1, num_unlabeled=1, shuffle=True, generator=None):
+    def __init__(self, dataset, num_labeled=1, num_unlabeled=1, rank=None, seed=0):
         super().__init__()
         assert 1 <= num_labeled
         assert 1 <= num_unlabeled
         self.dataset = dataset
         self.num_labeled = num_labeled
         self.num_unlabeled = num_unlabeled
-        self.shuffle = shuffle
-        self.generator = generator
+        self.rank = rank or get_rank()
+        self.epoch = 0
+        self.seed = seed
 
         self.classes = getall_class_as_tensor(dataset)
         is_unlabeled = self.classes == -1
@@ -34,20 +37,19 @@ class SemiSampler:
     def __len__(self):
         return len(self.labeled_idxs) + len(self.unlabeled_idxs)
 
+    def set_epoch(self, epoch):
+        self.epoch = epoch
+
     def __iter__(self):
-        if self.generator is None and self.shuffle:
-            seed = int(torch.empty((), dtype=torch.int64).random_().item())
-            generator = torch.Generator()
-            generator.manual_seed(seed)
-        else:
-            generator = self.generator
+        # generate random numbers to avoid self.seed + self.epoch + self.rank
+        # (epoch 0 of rank 1 would have same seed as epoch 1 of rank 0)
+        rank_seed = torch.empty((), dtype=torch.int32).random_(generator=torch.Generator().manual_seed(self.rank))
+        epoch_seed = torch.empty((), dtype=torch.int32).random_(generator=torch.Generator().manual_seed(self.epoch))
+        generator = torch.Generator().manual_seed(self.seed + rank_seed.item() + epoch_seed.item())
 
         def _iterator(idxs):
             while True:
-                if self.shuffle:
-                    yield from torch.randperm(len(idxs), generator=generator).tolist()
-                else:
-                    yield from range(len(idxs))
+                yield from torch.randperm(len(idxs), generator=generator).tolist()
         labeled_iterator = _iterator(self.labeled_idxs)
         unlabeled_iterator = _iterator(self.unlabeled_idxs)
         for i in range(len(self.labeled_idxs) + len(self.unlabeled_idxs)):
