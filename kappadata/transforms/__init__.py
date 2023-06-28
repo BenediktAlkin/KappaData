@@ -36,3 +36,5 @@ from .patchwise_shuffle import PatchwiseShuffle
 from .save_state_to_context_transform import SaveStateToContextTransform
 from .semseg import *
 from .unpatchify_image import UnpatchifyImage
+from .kd_random_additive_gaussian_noise import KDRandomAdditiveGaussianNoise
+from .kd_random_threshold import KDRandomThreshold
