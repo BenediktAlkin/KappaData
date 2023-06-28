@@ -6,6 +6,22 @@ from kappadata.samplers.semi_sampler import SemiSampler
 from tests_util.datasets.class_dataset import ClassDataset
 
 class TestSemiSampler(unittest.TestCase):
+    def test_len(self):
+        ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])
+        sampler = SemiSampler(dataset=ds, num_labeled=1, num_unlabeled=2)
+        self.assertEqual(12, len(sampler))
+        self.assertEqual(12, sampler.effective_length)
+        sampler = SemiSampler(dataset=ds, num_labeled=1, num_unlabeled=2, world_size=2)
+        self.assertEqual(6, len(sampler))
+        self.assertEqual(12, sampler.effective_length)
+        sampler = SemiSampler(dataset=ds, num_labeled=1, num_unlabeled=2, world_size=4)
+        self.assertEqual(3, len(sampler))
+        self.assertEqual(12, sampler.effective_length)
+        sampler = SemiSampler(dataset=ds, num_labeled=1, num_unlabeled=5, world_size=4)
+        self.assertEqual(6, len(sampler))
+        self.assertEqual(24, sampler.effective_length)
+
+
     def test_1x1(self):
         ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])
         sampler = SemiSampler(dataset=ds, seed=9243)
