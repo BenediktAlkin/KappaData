@@ -39,13 +39,13 @@ class SemiSampler:
 
     @property
     def effective_length(self):
-        return len(self)
+        return len(self.classes)
 
     def __len__(self):
         # one epoch is when all labeled samples are returned once -> pad with number of unlabeled samples
         num_chunks = len(self.labeled_idxs) // self.num_labeled
         length = num_chunks * (self.num_labeled + self.num_unlabeled)
-        # cutoff trailing samples for distributed
+        # adjust to length-per-device and cutoff trailing samples for distributed
         length //= self.world_size
         return length
 
