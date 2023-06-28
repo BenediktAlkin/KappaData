@@ -39,7 +39,8 @@ class SemiSampler:
 
     @property
     def effective_length(self):
-        return len(self.classes)
+        # one epoch is when all labeled samples are returned once
+        return len(self.labeled_idxs)
 
     def __len__(self):
         # one epoch is when all labeled samples are returned once -> pad with number of unlabeled samples
