@@ -12,7 +12,7 @@ class TestLabelSmoothingWrapper(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: LabelSmoothingWrapper(dataset=None, smoothing="a"))
         self.assertRaises(AssertionError, lambda: LabelSmoothingWrapper(dataset=None, smoothing=None))
         self.assertRaises(AssertionError, lambda: LabelSmoothingWrapper(dataset=None, smoothing=-0.1))
-        self.assertRaises(AssertionError, lambda: LabelSmoothingWrapper(dataset=None, smoothing=1.))
+        self.assertRaises(AssertionError, lambda: LabelSmoothingWrapper(dataset=None, smoothing=1.01))
         _ = LabelSmoothingWrapper(dataset=ClassDataset(classes=list(range(2))), smoothing=0.5)
 
     def test_getitem_class_semisupervised_float(self):
@@ -35,19 +35,20 @@ class TestLabelSmoothingWrapper(unittest.TestCase):
             # use allclose because of floating point precision errors
             self.assertTrue(torch.allclose(torch.tensor(expected[i]), ds.getitem_class(i)))
 
+    def test_getitem_class_nosmooth(self):
+        ds = LabelSmoothingWrapper(dataset=ClassDataset(classes=[0, 1, 1, 0, 0]), smoothing=.0)
+        labels = [ds.getitem_class(i) for i in range(len(ds))]
+        self.assertEqual([0, 1, 1, 0, 0], labels)
+
+    def test_getitem_class_maxsmooth(self):
+        ds = LabelSmoothingWrapper(dataset=ClassDataset(classes=[0, 1, 2, 0, 3]), smoothing=1.0)
+        for i in range(len(ds)):
+            self.assertEqual([0.25, 0.25, 0.25, 0.25], ds.getitem_class(i).tolist())
+
     def test_getitem_class_binary(self):
         ds = LabelSmoothingWrapper(dataset=ClassDataset(classes=[0, 1, 1, 0, 0]), smoothing=.1)
-        expected = [
-            [0.95, 0.05],
-            [0.05, 0.95],
-            [0.05, 0.95],
-            [0.95, 0.05],
-            [0.95, 0.05],
-        ]
-        for i in range(len(ds)):
-            # use allclose because of floating point precision errors
-            self.assertTrue(torch.allclose(torch.tensor(expected[i]), ds.getitem_class(i)))
-
+        actual = [ds.getitem_class(i) for i in range(len(ds))]
+        self.assertEqual([0.05, 0.95, 0.95, 0.05, 0.05], actual)
 
     def test_getitem_class_automatic(self):
         smoothing = .1

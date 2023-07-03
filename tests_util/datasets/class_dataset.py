@@ -16,6 +16,8 @@ class ClassDataset(KDDataset):
 
     def getshape_class(self):
         n_classes = self._n_classes or max(self.classes) + 1
+        if n_classes == 2:
+            n_classes = 1
         return n_classes,
 
     @property
