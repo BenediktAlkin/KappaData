@@ -12,7 +12,7 @@ class LabelSmoothingWrapper(KDWrapper):
     def getitem_class(self, idx, ctx=None):
         y = self.dataset.getitem_class(idx, ctx)
         assert isinstance(y, int) or (torch.is_tensor(y) and y.ndim == 0)
-        n_classes = self.dataset.getdim_class()
+        n_classes = max(2, self.dataset.getdim_class())
 
         # can't smooth missing label in semi-supervised
         if y == -1:

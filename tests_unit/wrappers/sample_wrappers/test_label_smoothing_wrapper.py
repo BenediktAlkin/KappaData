@@ -35,6 +35,19 @@ class TestLabelSmoothingWrapper(unittest.TestCase):
             # use allclose because of floating point precision errors
             self.assertTrue(torch.allclose(torch.tensor(expected[i]), ds.getitem_class(i)))
 
+    def test_getitem_class_binary(self):
+        ds = LabelSmoothingWrapper(dataset=ClassDataset(classes=[0, 1, 1, 0, 0]), smoothing=.1)
+        expected = [
+            [0.95, 0.05],
+            [0.05, 0.95],
+            [0.05, 0.95],
+            [0.95, 0.05],
+            [0.95, 0.05],
+        ]
+        for i in range(len(ds)):
+            # use allclose because of floating point precision errors
+            self.assertTrue(torch.allclose(torch.tensor(expected[i]), ds.getitem_class(i)))
+
 
     def test_getitem_class_automatic(self):
         smoothing = .1
