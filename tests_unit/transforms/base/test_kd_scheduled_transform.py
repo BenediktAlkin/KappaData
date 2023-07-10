@@ -10,6 +10,7 @@ from tests_util.transforms.strength_transform import StrengthTransform
 @dataclass
 class WorkerInfoMock:
     num_workers: int
+    seed: int
 
 
 class TestKDScheduledTransform(unittest.TestCase):
@@ -20,7 +21,7 @@ class TestKDScheduledTransform(unittest.TestCase):
         worker1 = KDScheduledTransform(transform=StrengthTransform(strength=10.))
         with patch(
                 target="kappadata.transforms.base.kd_transform.get_worker_info",
-                new=lambda: WorkerInfoMock(num_workers=2),
+                new=lambda: WorkerInfoMock(num_workers=2, seed=1293),
         ):
             worker0.worker_init_fn(rank=0, batch_size=batch_size, updates=updates)
             worker1.worker_init_fn(rank=1, batch_size=batch_size, updates=updates)
@@ -41,7 +42,7 @@ class TestKDScheduledTransform(unittest.TestCase):
         worker1 = KDScheduledTransform(transform=StrengthTransform(strength=10.))
         with patch(
                 target="kappadata.transforms.base.kd_transform.get_worker_info",
-                new=lambda: WorkerInfoMock(num_workers=2),
+                new=lambda: WorkerInfoMock(num_workers=2, seed=1293),
         ):
             worker0.worker_init_fn(rank=0, batch_size=batch_size, updates=updates)
             worker1.worker_init_fn(rank=1, batch_size=batch_size, updates=updates)
