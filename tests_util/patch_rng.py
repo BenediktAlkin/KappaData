@@ -18,7 +18,7 @@ class patch_rng:
             elif fn_name == "numpy.random.rand":
                 ctx_manager = patch("numpy.random.rand", rng.random)
             elif fn_name == "numpy.random.randint":
-                ctx_manager = patch("numpy.random.randint", lambda a, b, size: rng.integers(a, b, size=size))
+                ctx_manager = patch("numpy.random.randint", lambda a, b=None, size=None: rng.integers(a, b, size=size))
             elif fn_name == "random.gauss":
                 ctx_manager = patch("random.gauss", lambda mu, sigma: rng.normal(mu, sigma))
             elif fn_name == "random.randint":
