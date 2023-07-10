@@ -17,7 +17,7 @@ from tests_util.datasets.x_dataset import XDataset
 class TestPopulateContext(unittest.TestCase):
     def _test(self, ctx_key, transform, expected_skip_counts, ctx_is_empty_fn=None):
         ctx_is_empty_fn = ctx_is_empty_fn or (lambda ctx_item: ctx_item == -1)
-        transform.rng = np.random.default_rng(seed=5)
+        transform.set_rng(np.random.default_rng(seed=5))
         ds = XDataset(x=torch.randn(10, 3, 4, 4), transform=KDComposeTransform([ToPILImage(), transform, ToTensor()]))
         loader = DataLoader(ModeWrapper(dataset=ds, mode="x", return_ctx=True), batch_size=len(ds))
         for expected_skip_count in expected_skip_counts:

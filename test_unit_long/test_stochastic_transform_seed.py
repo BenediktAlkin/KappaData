@@ -53,16 +53,16 @@ class TestStochasticTransformSeed(unittest.TestCase):
             dataloader = DataLoader(dataset, batch_size=2, num_workers=2, worker_init_fn=dataset.worker_init_fn)
             values = torch.concat([x for x in dataloader])
             expected = [
-                0.7769574528852247,
-                0.6413399201175735,
-                0.6528946343441658,
-                0.2668958984056612,
-                0.3520944933037099,
-                0.46693979902613325,
-                0.9319926092440057,
-                0.8229667001843889,
-                0.31564052947560894,
-                0.20301340820491776,
+                0.05265565657170268,
+                0.5856545413116812,
+                0.5245641455144165,
+                0.9032732387757539,
+                0.7345538141574777,
+                0.9076975596537473,
+                0.2264209460224459,
+                0.9893990449288441,
+                0.7417763462601573,
+                0.7998301927398731,
             ]
             self.assertEqual(expected, values.tolist())
 

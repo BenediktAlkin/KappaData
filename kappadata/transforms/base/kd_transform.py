@@ -31,7 +31,6 @@ class KDTransform:
             num_workers = 1
         else:
             num_workers = info.num_workers
-        self.set_rng(np.random.default_rng(seed=info.seed))
         self._worker_init_fn(rank, num_workers, **kwargs)
 
     def _worker_init_fn(self, rank, num_workers, **kwargs):
