@@ -10,8 +10,8 @@ class KDComposeTransform(KDTransform):
 
     def _worker_init_fn(self, rank, num_workers, **kwargs):
         for t in self.transforms:
-            # noinspection PyProtectedMember
-            t._worker_init_fn(rank, num_workers, **kwargs)
+            if isinstance(t, KDTransform):
+                t._worker_init_fn(rank, num_workers, **kwargs)
 
     @property
     def is_deterministic(self):
