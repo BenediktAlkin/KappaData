@@ -125,6 +125,11 @@ class ModeWrapper(KDDataset):
         return len(self.dataset)
 
     @property
+    def collators(self):
+        assert self._collators is None, "register collators on root datset"
+        return self.dataset.collators
+
+    @property
     def root_dataset(self):
         # root_dataset is implemented in base class -> not handled in __getattr__
         return self.dataset.root_dataset

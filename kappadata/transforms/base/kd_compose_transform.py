@@ -49,7 +49,7 @@ class KDComposeTransform(KDTransform):
 
     def set_rng(self, rng):
         for t in self.transforms:
-            if isinstance(t, KDStochasticTransform):
+            if isinstance(t, KDTransform):
                 t.set_rng(rng)
         return self
 

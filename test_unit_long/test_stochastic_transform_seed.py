@@ -1,18 +1,16 @@
 import numpy as np
 import unittest
-from kappadata.transforms import KDStochasticTransform
 from tests_util.datasets.x_dataset import XDataset
+from tests_util.collators import AddRandomSequenceCollator
+from tests_util.transforms import ReplaceWithRandomTransform, AddRandomTransform
 from torch.utils.data import DataLoader
 from kappadata.wrappers import ModeWrapper, XTransformWrapper
+from kappadata.collators import KDComposeCollator
 import torch
 
 class TestStochasticTransformSeed(unittest.TestCase):
-    class _TestTransform(KDStochasticTransform):
-        def __call__(self, x, ctx=None):
-            return self.rng.random()
-
     def test_single_worker_noseed(self):
-        dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=self._TestTransform())
+        dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=ReplaceWithRandomTransform())
         dataset = ModeWrapper(dataset, mode="x")
         values = torch.concat([x for x in DataLoader(dataset, batch_size=2)])
         self.assertEqual(values.unique().numel(), values.numel())
@@ -20,7 +18,7 @@ class TestStochasticTransformSeed(unittest.TestCase):
     def test_single_worker_globalseed(self):
         for _ in range(2):
             np.random.seed(0)
-            dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=self._TestTransform())
+            dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=ReplaceWithRandomTransform())
             dataset = ModeWrapper(dataset, mode="x")
             values = torch.concat([x for x in DataLoader(dataset, batch_size=2)])
             expected = [
@@ -38,7 +36,7 @@ class TestStochasticTransformSeed(unittest.TestCase):
             self.assertEqual(expected, values.tolist())
 
     def test_two_worker_noseed(self):
-        dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=self._TestTransform())
+        dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=ReplaceWithRandomTransform())
         dataset = ModeWrapper(dataset, mode="x")
         dataloader = DataLoader(dataset, batch_size=2, num_workers=2, worker_init_fn=dataset.worker_init_fn)
         values = torch.concat([x for x in dataloader])
@@ -48,29 +46,73 @@ class TestStochasticTransformSeed(unittest.TestCase):
     def test_two_worker_globalseed(self):
         for _ in range(2):
             torch.manual_seed(0)
-            dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=self._TestTransform())
+            dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=ReplaceWithRandomTransform())
             dataset = ModeWrapper(dataset, mode="x")
             dataloader = DataLoader(dataset, batch_size=2, num_workers=2, worker_init_fn=dataset.worker_init_fn)
             values = torch.concat([x for x in dataloader])
             expected = [
-                0.7769574528852247,
-                0.6413399201175735,
-                0.6528946343441658,
-                0.2668958984056612,
-                0.3520944933037099,
-                0.46693979902613325,
-                0.9319926092440057,
-                0.8229667001843889,
-                0.31564052947560894,
-                0.20301340820491776,
+                0.05265565657170268,
+                0.5856545413116812,
+                0.5245641455144165,
+                0.9032732387757539,
+                0.7345538141574777,
+                0.9076975596537473,
+                0.2264209460224459,
+                0.9893990449288441,
+                0.7417763462601573,
+                0.7998301927398731,
             ]
             self.assertEqual(expected, values.tolist())
 
     def test_is_num_worker_independent_with_seed(self):
-        dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=self._TestTransform(), seed=0)
+        dataset = XTransformWrapper(dataset=XDataset(torch.arange(10)), transform=ReplaceWithRandomTransform(), seed=0)
         dataset = ModeWrapper(dataset, mode="x")
         dataloader0 = DataLoader(dataset, batch_size=2)
         dataloader1 = DataLoader(dataset, batch_size=2, num_workers=2, worker_init_fn=dataset.worker_init_fn)
         values0 = torch.concat([x for x in dataloader0])
         values1 = torch.concat([x for x in dataloader1])
         self.assertEqual(values0.tolist(), values1.tolist())
+
+    def test_nested_xtransformwrapper(self):
+        dataset = XDataset(torch.arange(10))
+        dataset = XTransformWrapper(dataset=dataset, transform=ReplaceWithRandomTransform())
+        dataset = XTransformWrapper(dataset=dataset, transform=AddRandomTransform())
+        dataset = ModeWrapper(dataset, mode="x")
+        values = torch.concat([
+            torch.concat(x)
+            for x in DataLoader(dataset, batch_size=2, worker_init_fn=dataset.worker_init_fn)
+        ])
+        self.assertEqual(values.unique().numel(), values.numel())
+
+    def test_xtransformwrapper_collated(self):
+        dataset = XDataset(torch.arange(10), collators=[AddRandomSequenceCollator(dataset_mode="x", return_ctx=False)])
+        dataset = XTransformWrapper(dataset=dataset, transform=ReplaceWithRandomTransform())
+        dataset = ModeWrapper(dataset, mode="x")
+        values = torch.concat([
+            x
+            for x in DataLoader(
+                dataset=dataset,
+                batch_size=2,
+                worker_init_fn=dataset.worker_init_fn,
+                collate_fn=dataset.collators[0],
+            )
+        ])
+        self.assertEqual(values.unique().numel(), values.numel())
+
+    def test_xtransformwrapper_composecollated(self):
+        for num_collators in [1, 2]:
+            collators = [AddRandomSequenceCollator() for _ in range(num_collators)]
+            dataset = XDataset(torch.arange(10), collators=collators)
+            dataset = XTransformWrapper(dataset=dataset, transform=ReplaceWithRandomTransform())
+            dataset = ModeWrapper(dataset, mode="x")
+            values = torch.concat([
+                x
+                for x in DataLoader(
+                    dataset=dataset,
+                    batch_size=2,
+                    worker_init_fn=dataset.worker_init_fn,
+                    collate_fn=KDComposeCollator(dataset.collators, dataset_mode="x", return_ctx=False),
+                )
+            ])
+            self.assertEqual(values.unique().numel(), values.numel())
+

@@ -67,6 +67,10 @@ class KDConcatDataset(ConcatDataset):
             dataset.dispose()
 
     @property
+    def collators(self):
+        return []
+
+    @property
     def root_dataset(self):
         if len(self.datasets) == 1:
             return self.datasets[0].root_dataset

@@ -29,7 +29,10 @@ class patch_rng:
             elif fn_name == "random.random":
                 ctx_manager = patch("random.random", rng.random)
             elif fn_name == "random.uniform":
-                ctx_manager = patch("random.uniform", lambda low, high: rng.uniform(low, high))
+                # random.uniform works when low > max
+                ctx_manager = patch("random.uniform", lambda low, high: rng.uniform(min(low, high), max(low, high)))
+            elif fn_name == "random.shuffle":
+                ctx_manager = patch("random.shuffle", rng.shuffle)
             elif fn_name == "torch.rand":
                 ctx_manager = patch("torch.rand", lambda _: torch.tensor(rng.random(), dtype=torch.float64))
             elif fn_name == "torch.randint":

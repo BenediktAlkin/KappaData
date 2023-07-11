@@ -2,8 +2,8 @@ from kappadata.datasets.kd_dataset import KDDataset
 
 
 class XDataset(KDDataset):
-    def __init__(self, x, transform=None):
-        super().__init__()
+    def __init__(self, x, transform=None, **kwargs):
+        super().__init__(**kwargs)
         self.x = x
         self.transform = transform
 

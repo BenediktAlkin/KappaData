@@ -25,6 +25,11 @@ class KDWrapper(KDDataset):
         self.dataset.dispose()
 
     @property
+    def collators(self):
+        assert self._collators is None, "register collators on root datset"
+        return self.dataset.collators
+
+    @property
     def root_dataset(self):
         # KDDataset implements root_dataset -> __getitem__ doesn't trigger
         return self.dataset.root_dataset

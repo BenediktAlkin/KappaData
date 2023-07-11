@@ -1,5 +1,6 @@
 from torch.utils.data import get_worker_info
 import numpy as np
+from kappadata.utils.random import get_rng_from_global
 
 class KDTransform:
     def __init__(self, ctx_prefix: str = None):
@@ -31,7 +32,9 @@ class KDTransform:
             num_workers = 1
         else:
             num_workers = info.num_workers
-        self.set_rng(np.random.default_rng(seed=info.seed))
+        # problem: since rngs are initialized in the __init__ methods they are copied when workers are spawned
+        # solution: overwrite the rng when workers are spawned
+        self.set_rng(get_rng_from_global())
         self._worker_init_fn(rank, num_workers, **kwargs)
 
     def _worker_init_fn(self, rank, num_workers, **kwargs):

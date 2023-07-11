@@ -1,10 +1,17 @@
 from torch.utils.data import default_collate
-
+import numpy as np
+from kappadata.utils.random import get_rng_from_global
 
 class KDCollatorBase:
     def __init__(self, dataset_mode: str, return_ctx: bool):
         self.dataset_mode = dataset_mode
         self.return_ctx = return_ctx
+
+    def set_rng(self, rng):
+        raise NotImplementedError
+
+    def worker_init_fn(self, *_, **__):
+        self.set_rng(get_rng_from_global())
 
     def __call__(self, batch):
         raise NotImplementedError

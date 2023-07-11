@@ -13,6 +13,11 @@ class KDComposeCollator(KDCollatorBase):
         self.collators = collators
         assert all(c.default_collate_mode in [None, "before", "after"] for c in collators)
 
+    def set_rng(self, rng):
+        for collator in self.collators:
+            collator.set_rng(rng)
+        return self
+
     def __call__(self, batch):
         return self._call_impl(
             batch=batch,

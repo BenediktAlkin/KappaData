@@ -1,6 +1,7 @@
 import unittest
 
 import torch
+import numpy as np
 from torch.utils.data import DataLoader
 
 from kappadata.collators.kd_mix_collator import KDMixCollator
@@ -30,10 +31,9 @@ class TestKDMixCollator(unittest.TestCase):
             apply_mode="sample",
             lamb_mode="sample",
             shuffle_mode="roll",
-            seed=3,
             dataset_mode=ds_mode,
             return_ctx=False,
-        )
+        ).set_rng(np.random.default_rng(seed=3))
         dl = DataLoader(ds, batch_size=len(ds), collate_fn=mix_collator)
         (_, y) = next(iter(dl))
         self.assertEqual(1, y.ndim)
@@ -51,10 +51,9 @@ class TestKDMixCollator(unittest.TestCase):
             apply_mode="sample",
             lamb_mode="sample",
             shuffle_mode="roll",
-            seed=3,
             dataset_mode=ds_mode,
             return_ctx=True,
-        )
+        ).set_rng(np.random.default_rng(seed=3))
         dl = DataLoader(ds, batch_size=len(ds), collate_fn=mix_collator)
         (x, y), ctx = next(iter(dl))
         lamb = ctx["lambda"]

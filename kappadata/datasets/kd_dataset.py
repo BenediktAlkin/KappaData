@@ -5,12 +5,14 @@ from torch.utils.data import Dataset
 
 from kappadata.error_messages import getshape_instead_of_getdim
 from kappadata.errors import UseModeWrapperException
+from kappadata.utils.random import get_rng_from_global
 
 
 class KDDataset(Dataset):
-    def __init__(self):
+    def __init__(self, collators=None):
         super().__init__()
         self.logger = logging.getLogger(type(self).__name__)
+        self._collators = collators
 
         # getdim_... is an alias -> should be defined via getshape_...
         getdim_names = [name for name in dir(self) if name.startswith("getdim_")]
@@ -34,6 +36,10 @@ class KDDataset(Dataset):
     def dispose(self):
         """ release resources occupied by dataset (e.g. filehandles) """
         pass
+
+    @property
+    def collators(self):
+        return self._collators or []
 
     @property
     def root_dataset(self):
@@ -74,7 +80,10 @@ class KDDataset(Dataset):
         return []
 
     def worker_init_fn(self, rank, **kwargs):
-        pass
+        if self.collators is not None:
+            rng = get_rng_from_global()
+            for collator in self.collators:
+                collator.set_rng(rng)
 
     def __getitem__(self, idx):
         raise UseModeWrapperException

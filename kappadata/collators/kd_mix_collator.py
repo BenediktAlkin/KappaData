@@ -29,7 +29,6 @@ class KDMixCollator(KDSingleCollator):
             apply_mode: str = "batch",
             lamb_mode: str = "batch",
             shuffle_mode: str = "flip",
-            seed: int = None,
             **kwargs,
     ):
         super().__init__(**kwargs)
@@ -73,8 +72,6 @@ class KDMixCollator(KDSingleCollator):
         self.apply_mode = apply_mode
         self.lamb_mode = lamb_mode
         self.shuffle_mode = shuffle_mode
-        self.seed = seed
-        self.rng = np.random.default_rng(seed=seed)
 
     @property
     def default_collate_mode(self) -> str:

@@ -32,6 +32,10 @@ class KDSubset(Subset):
         self.dispose()
 
     @property
+    def collators(self):
+        return self.dataset.collators
+
+    @property
     def root_dataset(self):
         return self.dataset.root_dataset
 

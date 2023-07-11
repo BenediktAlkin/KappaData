@@ -7,9 +7,9 @@ class ShuffleWrapper(KDSubset):
     def __init__(self, dataset, seed=None):
         self.seed = seed
         if seed is not None:
-            self.rng = np.random.default_rng(seed=seed)
+            rng = np.random.default_rng(seed=seed)
         else:
-            self.rng = np.random
+            rng = np.random
         indices = np.arange(len(dataset), dtype=np.int64)
-        self.rng.shuffle(indices)
+        rng.shuffle(indices)
         super().__init__(dataset=dataset, indices=indices)

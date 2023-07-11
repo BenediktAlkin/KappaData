@@ -1,3 +1,4 @@
+import numpy as np
 import unittest
 from unittest.mock import patch
 
@@ -26,10 +27,13 @@ class TestMixupEqualsTimm(unittest.TestCase):
                 apply_mode=mode,
                 lamb_mode=mode,
                 shuffle_mode="flip",
-                seed=seed,
                 dataset_mode="x class",
                 return_ctx=False,
             )
+            rng = np.random.default_rng(seed=seed)
+            # consume one rng state as the KDMixCollator ctor calls get_rng_from_global()
+            rng.integers(5)
+            collator.set_rng(rng)
             kd_loader = DataLoader(ModeWrapper(mixup_ds, mode="x class"), batch_size=batch_size, collate_fn=collator)
 
             timm_mixup = Mixup(
@@ -42,6 +46,7 @@ class TestMixupEqualsTimm(unittest.TestCase):
                 num_classes=ds.getdim_class(),
             )
             raw_loader = DataLoader(ModeWrapper(ds, mode="x class"), batch_size=batch_size)
+
             for i, ((raw_x, raw_y), (kd_x, kd_y)) in enumerate(zip(raw_loader, kd_loader)):
                 timm_x, timm_y = timm_mixup(raw_x, raw_y)
                 self.assertEqual(timm_x.shape, kd_x.shape)
