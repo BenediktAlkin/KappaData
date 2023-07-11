@@ -38,10 +38,8 @@ class KDDinoMaskCollator(KDSingleCollator):
         x = ModeWrapper.get_item(mode=dataset_mode, item="x", batch=batch)
         if isinstance(x, list):
             batch_size = len(x[0])
-            was_list = True
         else:
             batch_size = len(x)
-            was_list = False
         # apply mask to only a subset of the full batch
         num_masked_samples = int(batch_size * self.num_views * self.mask_prob)
         # actual mask ratios are sampled within "bin-ranges"
@@ -58,8 +56,6 @@ class KDDinoMaskCollator(KDSingleCollator):
             self._generate_mask(masks[i], num_masked_patches_total)
         self.rng.shuffle(masks)
         mask = torch.stack(masks)
-        if was_list:
-            mask = mask.chunk(self.num_views)
         ctx["mask"] = mask
         return batch
 
