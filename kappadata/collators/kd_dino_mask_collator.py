@@ -4,6 +4,7 @@ from torch.utils.data import default_collate
 import numpy as np
 from .base import KDSingleCollator
 from kappadata.utils.param_checking import to_2tuple
+from kappadata.wrappers import ModeWrapper
 
 class KDDinoMaskCollator(KDSingleCollator):
     def __init__(
@@ -11,6 +12,7 @@ class KDDinoMaskCollator(KDSingleCollator):
             mask_ratio,
             mask_prob,
             mask_size,
+            num_views=2,
             min_num_patches=4,
             min_aspect=0.3,
             max_aspect=None,
@@ -19,6 +21,7 @@ class KDDinoMaskCollator(KDSingleCollator):
         super().__init__(**kwargs)
         self.mask_ratio = to_2tuple(mask_ratio)
         self.mask_prob = mask_prob
+        self.num_views = num_views
         self.height, self.width = to_2tuple(mask_size)
         self.num_patches = self.height * self.width
         self.min_num_patches = min_num_patches
@@ -30,9 +33,17 @@ class KDDinoMaskCollator(KDSingleCollator):
         return "before"
 
     def collate(self, batch, dataset_mode, ctx=None):
-        batch_size = len(batch)
+        if ctx is None:
+            return batch
+        x = ModeWrapper.get_item(mode=dataset_mode, item="x", batch=batch)
+        if isinstance(x, list):
+            batch_size = len(x[0])
+            was_list = True
+        else:
+            batch_size = len(x)
+            was_list = False
         # apply mask to only a subset of the full batch
-        num_masked_samples = int(batch_size * self.mask_prob)
+        num_masked_samples = int(batch_size * self.num_views * self.mask_prob)
         # actual mask ratios are sampled within "bin-ranges"
         # i think this was done to have an approximately equal number of masked patches per batch
         # example:
@@ -41,13 +52,16 @@ class KDDinoMaskCollator(KDSingleCollator):
         mask_ratio_min, mask_ratio_max = self.mask_ratio
         probs = torch.linspace(mask_ratio_min, mask_ratio_max, num_masked_samples + 1)
 
-        masks = [torch.zeros(self.height, self.width, dtype=torch.bool) for _ in range(batch_size)]
+        masks = [torch.zeros(self.height, self.width, dtype=torch.bool) for _ in range(batch_size * self.num_views)]
         for i in range(num_masked_samples):
             num_masked_patches_total = int(self.rng.uniform(probs[i], probs[i + 1]) * self.num_patches)
             self._generate_mask(masks[i], num_masked_patches_total)
         self.rng.shuffle(masks)
         mask = torch.stack(masks)
-        return mask
+        if was_list:
+            mask = mask.chunk(self.num_views)
+        ctx["mask"] = mask
+        return batch
 
     def _generate_mask(self, mask, num_masked_patches_total):
         num_masked_patches = 0
@@ -86,8 +100,6 @@ class KDDinoMaskCollator(KDSingleCollator):
             num_unmasked_patches_in_block = h * w - mask[top:bot, left:right].sum()
             if num_unmasked_patches_in_block == 0:
                 continue
-            # TODO this check is probably unnecessary but it is present in DINOv2
-            assert num_unmasked_patches_in_block > 0
 
             # resample if masking out the block would result in more masked patches than defined
             if num_unmasked_patches_in_block > num_remaining_patches_to_mask:

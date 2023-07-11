@@ -21,27 +21,39 @@ class TestKDDinoMaskCollator(unittest.TestCase):
             mask_ratio=(0.1, 0.5),
             mask_prob=0.5,
             mask_size=global_size // patch_size,
-            dataset_mode="x",
-            return_ctx=False,
+            num_views=2,
+            dataset_mode="index x",
+            return_ctx=True,
         )
         mask_collator.rng = np.random.default_rng(seed=seed)
-        for i in range(100):
-            kd_result = mask_collator(list(range(batch_size * 2)))
-
-            collator_input = [
-                [
-                    dict(
-                        global_crops=[
-                            torch.full(size=(1, global_size, global_size), fill_value=i)
-                            for i in range(num_global_views)
-                        ],
-                        global_crops_teacher=[torch.zeros(1, global_size, global_size) for _ in range(num_global_views)],
-                        local_crops=[torch.zeros(1, local_size, local_size) for _ in range(num_local_views)],
-                        offsets=(),
-                    )
-                ]
-                for _ in range(batch_size)
+        mask_collator_input = [
+            (
+                (
+                    i,
+                    [
+                        torch.full(size=(1, global_size, global_size), fill_value=j)
+                        for j in range(num_global_views)
+                    ],
+                ),
+                {},
+            ) for i in range(batch_size)
+        ]
+        collator_input = [
+            [
+                dict(
+                    global_crops=[
+                        torch.full(size=(1, global_size, global_size), fill_value=i)
+                        for i in range(num_global_views)
+                    ],
+                    global_crops_teacher=[torch.zeros(1, global_size, global_size) for _ in range(num_global_views)],
+                    local_crops=[torch.zeros(1, local_size, local_size) for _ in range(num_local_views)],
+                    offsets=(),
+                )
             ]
+            for _ in range(batch_size)
+        ]
+        for i in range(100):
+            _, ctx = mask_collator(mask_collator_input)
             result = collate_data_and_cast(
                 samples_list=collator_input,
                 mask_ratio_tuple=(0.1, 0.5),
@@ -52,5 +64,5 @@ class TestKDDinoMaskCollator(unittest.TestCase):
                     max_num_patches=0.5 * global_size // patch_size * global_size // patch_size,
                 ),
             )
-            self.assertTrue(torch.all(result["collated_masks"] == kd_result.flatten(start_dim=1)), str(i))
+            self.assertTrue(torch.all(result["collated_masks"] == torch.concat(ctx["mask"]).flatten(start_dim=1)))
 
