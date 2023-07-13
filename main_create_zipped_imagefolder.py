@@ -16,6 +16,9 @@ def parse_args():
 
 
 def main(src, dst, classwise):
+    print(f"src={src}")
+    print(f"dst={dst}")
+    print(f"classwise={classwise}")
     if classwise:
         create_zipped_imagefolder_classwise(src=src, dst=dst)
     else:
