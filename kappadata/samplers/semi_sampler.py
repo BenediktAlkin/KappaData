@@ -19,7 +19,16 @@ class SemiSampler:
     - dividing total length by world size (same as DistributedSampler with drop_last=True)
     """
 
-    def __init__(self, dataset, num_labeled=1, num_unlabeled=1, rank=None, world_size=None, seed=0):
+    def __init__(
+            self,
+            dataset,
+            num_labeled=1,
+            num_unlabeled=1,
+            rank=None,
+            world_size=None,
+            seed=0,
+            length_mode="unlabeled",
+    ):
         super().__init__()
         assert 1 <= num_labeled
         assert 1 <= num_unlabeled
@@ -30,6 +39,8 @@ class SemiSampler:
         self.world_size = world_size or get_world_size()
         self.epoch = 0
         self.seed = seed
+        assert length_mode in ["labeled", "unlabeled", "all"]
+        self.length_mode = length_mode
 
         self.classes = getall_class_as_tensor(dataset)
         is_unlabeled = self.classes == -1
@@ -39,8 +50,17 @@ class SemiSampler:
 
     @property
     def effective_length(self):
-        # one epoch is when all labeled samples are returned once -> pad with number of unlabeled samples
-        num_chunks = len(self.labeled_idxs) // self.num_labeled
+        if self.length_mode == "labeled":
+            # one epoch is when all labeled samples are returned once -> pad with number of unlabeled samples
+            num_chunks = len(self.labeled_idxs) // self.num_labeled
+        elif self.length_mode == "unlabeled":
+            # one epoch is when all unlabeled samples are returned once (e.g. SemiViT)
+            num_chunks = len(self.unlabeled_idxs) // self.num_unlabeled
+        elif self.length_mode == "all":
+            # one epoch is when the number of samples that are returned once
+            num_chunks = (len(self.labeled_idxs) + len(self.unlabeled_idxs)) // (self.num_labeled + self.num_unlabeled)
+        else:
+            raise NotImplementedError
         length = num_chunks * (self.num_labeled + self.num_unlabeled)
         return length
 
