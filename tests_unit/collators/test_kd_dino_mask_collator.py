@@ -64,5 +64,5 @@ class TestKDDinoMaskCollator(unittest.TestCase):
                     max_num_patches=0.5 * global_size // patch_size * global_size // patch_size,
                 ),
             )
-            self.assertTrue(torch.all(result["collated_masks"] == torch.concat(ctx["mask"]).flatten(start_dim=1)))
+            self.assertTrue(torch.all(result["collated_masks"] == ctx["mask"].flatten(start_dim=1)))
 
