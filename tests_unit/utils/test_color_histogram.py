@@ -21,3 +21,8 @@ class TestColorHistogram(unittest.TestCase):
         img = torch.rand(4, 3, 16, 16)
         counts = color_histogram(img, bins=32, density=False)
         self.assertEqual((4, 3, 32), counts.shape)
+
+    def test_batchwise_chunked(self):
+        img = torch.rand(4, 3, 16, 16)
+        counts = color_histogram(img, bins=32, density=False, batch_size=2)
+        self.assertEqual((4, 3, 32), counts.shape)
