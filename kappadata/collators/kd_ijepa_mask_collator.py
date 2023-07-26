@@ -75,33 +75,33 @@ class KDIjepaMaskCollator(KDSingleCollator):
         )
 
         # generate masks
-        masks_predictor, masks_encoder = [], []
+        predictor_masks, encoder_masks = [], []
         min_keep_pred = min_keep_enc = self.seqlen_h * self.seqlen_w
         for _ in range(batch_size):
             # predictor masks
-            masks_pred, masks_pred_complement = [], []
+            pred_masks, pred_masks_complement = [], []
             for _ in range(self.num_pred_masks):
                 mask, mask_complement = self._sample_block_mask(predictor_size)
-                masks_pred.append(mask)
-                masks_pred_complement.append(mask_complement)
+                pred_masks.append(mask)
+                pred_masks_complement.append(mask_complement)
                 min_keep_pred = min(min_keep_pred, len(mask))
-            masks_predictor.append(masks_pred)
+            predictor_masks.append(pred_masks)
             # encoder masks
-            masks_enc = []
+            enc_masks = []
             for _ in range(self.num_enc_masks):
-                mask = self._sample_block_mask_constrained(encoder_size, acceptable_regions=masks_pred_complement)
-                masks_enc.append(mask)
+                mask = self._sample_block_mask_constrained(encoder_size, acceptable_regions=pred_masks_complement)
+                enc_masks.append(mask)
                 min_keep_enc = min(min_keep_enc, len(mask))
-            masks_encoder.append(masks_enc)
+            encoder_masks.append(enc_masks)
 
         # collate masks
-        masks_predictor = [[mask[:min_keep_pred] for mask in masks] for masks in masks_predictor]
-        masks_predictor = torch.utils.data.default_collate(masks_predictor)
-        masks_encoder = [[mask[:min_keep_enc] for mask in masks] for masks in masks_encoder]
-        masks_encoder = torch.utils.data.default_collate(masks_encoder)
+        predictor_masks = [[mask[:min_keep_pred] for mask in masks] for masks in predictor_masks]
+        predictor_masks = torch.utils.data.default_collate(predictor_masks)
+        encoder_masks = [[mask[:min_keep_enc] for mask in masks] for masks in encoder_masks]
+        encoder_masks = torch.utils.data.default_collate(encoder_masks)
 
-        ctx["masks_encoder"] = masks_encoder
-        ctx["masks_predictor"] = masks_predictor
+        ctx["encoder_masks"] = torch.concat(encoder_masks)
+        ctx["predictor_masks"] = torch.concat(predictor_masks)
         return batch
 
     def step(self):
