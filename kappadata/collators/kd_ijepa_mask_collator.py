@@ -102,7 +102,7 @@ class KDIjepaMaskCollator(KDSingleCollator):
 
         ctx["masks_encoder"] = masks_encoder
         ctx["masks_predictor"] = masks_predictor
-        return batch, masks_encoder, masks_predictor
+        return batch
 
     def step(self):
         i = self._itr_counter
