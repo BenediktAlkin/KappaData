@@ -3,5 +3,5 @@ from kappadata.wrappers.sample_wrappers.kd_multi_view_wrapper import KDMultiView
 
 
 class ByolMultiViewWrapper(KDMultiViewWrapper):
-    def __init__(self, dataset):
-        super().__init__(dataset=dataset, configs=[BYOLTransform0(), BYOLTransform1()])
+    def __init__(self, dataset, **kwargs):
+        super().__init__(dataset=dataset, configs=[BYOLTransform0(), BYOLTransform1()], **kwargs)
