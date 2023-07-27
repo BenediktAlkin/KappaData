@@ -1,12 +1,17 @@
-import numpy as np
 import unittest
-from tests_util.datasets.x_dataset import XDataset
-from tests_util.collators import AddRandomSequenceCollator
-from tests_util.transforms import ReplaceWithRandomTransform, AddRandomTransform
-from torch.utils.data import DataLoader
-from kappadata.wrappers import ModeWrapper, XTransformWrapper
-from kappadata.collators import KDComposeCollator
+
+import numpy as np
 import torch
+from torch.utils.data import DataLoader
+from torchvision.transforms.functional import to_pil_image
+
+from kappadata.collators import KDComposeCollator
+from kappadata.common.wrappers import ByolMultiViewWrapper
+from kappadata.wrappers import ModeWrapper, XTransformWrapper
+from tests_util.collators import AddRandomSequenceCollator
+from tests_util.datasets.x_dataset import XDataset
+from tests_util.transforms import ReplaceWithRandomTransform, AddRandomTransform
+
 
 class TestStochasticTransformSeed(unittest.TestCase):
     def test_single_worker_noseed(self):
@@ -41,7 +46,6 @@ class TestStochasticTransformSeed(unittest.TestCase):
         dataloader = DataLoader(dataset, batch_size=2, num_workers=2, worker_init_fn=dataset.worker_init_fn)
         values = torch.concat([x for x in dataloader])
         self.assertEqual(values.unique().numel(), values.numel())
-
 
     def test_two_worker_globalseed(self):
         for _ in range(2):
@@ -148,3 +152,17 @@ class TestStochasticTransformSeed(unittest.TestCase):
             ])
             self.assertEqual(values.unique().numel(), values.numel())
 
+    def test_deterministic_byolaug(self):
+        x = [to_pil_image(xx) for xx in torch.randn(20, 3, 32, 32, generator=torch.Generator().manual_seed(39))]
+        dataset = XDataset(x=x)
+        dataset = ByolMultiViewWrapper(dataset=dataset, seed=0)
+        dataset = ModeWrapper(dataset=dataset, mode="x")
+
+        iter0_workers0 = torch.concat([torch.stack(x, dim=1) for x in DataLoader(dataset, batch_size=4)])
+        iter1_workers0 = torch.concat([torch.stack(x, dim=1) for x in DataLoader(dataset, batch_size=2)])
+        self.assertTrue(torch.all(iter0_workers0 == iter1_workers0))
+
+        iter0_workers2 = torch.concat([torch.stack(x, dim=1) for x in DataLoader(dataset, batch_size=4, num_workers=2)])
+        self.assertTrue(torch.all(iter0_workers0 == iter0_workers2))
+        iter1_workers2 = torch.concat([torch.stack(x, dim=1) for x in DataLoader(dataset, batch_size=2, num_workers=2)])
+        self.assertTrue(torch.all(iter0_workers0 == iter1_workers2))
