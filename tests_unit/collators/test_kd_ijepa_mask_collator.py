@@ -51,7 +51,9 @@ class TestKDIjepaMaskCollator(unittest.TestCase):
         for i in range(100):
             _, ctx = kd_mask_collator(kd_input)
             _, og_masks_encoder, og_masks_predictor = og_mask_collator(og_input)
-            for kd_mask_encoder, og_mask_encoder in zip(ctx["masks_encoder"], og_masks_encoder):
+            for j, og_mask_encoder in enumerate(og_masks_encoder):
+                kd_mask_encoder = ctx["encoder_masks"][j * batch_size : (j + 1) * batch_size]
                 self.assertTrue(torch.all(kd_mask_encoder == og_mask_encoder))
-            for kd_mask_predictor, og_mask_predictor in zip(ctx["masks_predictor"], og_masks_predictor):
+            for j, og_mask_predictor in enumerate(og_masks_predictor):
+                kd_mask_predictor = ctx["predictor_masks"][j * batch_size : (j + 1) * batch_size]
                 self.assertTrue(torch.all(kd_mask_predictor == og_mask_predictor))
