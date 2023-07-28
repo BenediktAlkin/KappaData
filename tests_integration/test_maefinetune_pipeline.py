@@ -26,7 +26,7 @@ from kappadata.utils.random import get_rng_from_global
 
 
 class TestMaeFinetunePipeline(unittest.TestCase):
-    def _run(self, images, classes, seed):
+    def _run(self, images, classes, seed, resolution):
         batch_size = 4
         smoothing = 0.1
         mixup_alpha = 0.8
@@ -35,7 +35,6 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         cutmix_p = 0.5
         mode = "batch"
         kd_dataset = ClassificationDataset(x=images, classes=classes)
-        resolution = to_tensor(images[0]).shape[1]
 
         # create timm pipeline
         timm_transform = create_transform(
@@ -157,13 +156,21 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         ]
         classes = torch.randint(0, 10, size=(len(images),), generator=torch.Generator().manual_seed(905))
         with self.get_patch_rng() as prng:
-            self._run(images=images, classes=classes, seed=prng.seed)
+            self._run(images=images, classes=classes, seed=prng.seed, resolution=32)
 
     def test_imagenet(self):
+        rng = torch.Generator().manual_seed(513)
         images = [
-            to_pil_image(x)
-            for x in torch.rand(100, 3, 224, 224, generator=torch.Generator().manual_seed(513))
+            to_pil_image(
+                torch.rand(
+                    3,
+                    torch.randint(10, 500, size=(1,), generator=rng),
+                    torch.randint(10, 500, size=(1,), generator=rng),
+                    generator=rng,
+                ),
+            )
+            for _ in range(100)
         ]
         classes = torch.randint(0, 1000, size=(len(images),), generator=torch.Generator().manual_seed(905))
         with self.get_patch_rng() as prng:
-            self._run(images=images, classes=classes, seed=prng.seed)
+            self._run(images=images, classes=classes, seed=prng.seed, resolution=224)
