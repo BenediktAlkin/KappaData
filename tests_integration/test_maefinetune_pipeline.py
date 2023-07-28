@@ -38,7 +38,7 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         "numpy.random.randint",
     ])
     def _run(self, images, classes, seed):
-        batch_size = 4
+        batch_size = 2
         smoothing = 0.1
         mixup_alpha = 0.8
         cutmix_alpha = 1.0
@@ -63,7 +63,6 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         # TODO start
         timm_transform.transforms.pop(5)  # RandomErase
         timm_transform.transforms.pop(2)  # RandAug
-        timm_transform.transforms.pop(1)  # HorizontalFlip
         timm_transform.transforms.pop(0)  # RandomResizedCrop
         # TODO end
         timm_dataset = ClassificationDatasetTorch(x=images, classes=classes, transform=timm_transform)
@@ -80,7 +79,7 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         # create KD pipeline
         kd_transform = KDComposeTransform([
             # KDRandomResizedCrop(size=32, interpolation="bicubic"),
-            # KDRandomHorizontalFlip(),
+            KDRandomHorizontalFlip(),
             # KDRandAugment(
             #     num_ops=2,
             #     magnitude=9,
@@ -91,6 +90,7 @@ class TestMaeFinetunePipeline(unittest.TestCase):
             KDImageNetNorm(),
             # KDRandomErasing(p=0.25, mode="pixelwise", max_count=1),
         ])
+
         kd_dataset = XTransformWrapper(dataset=kd_dataset, transform=kd_transform)
         kd_dataset = LabelSmoothingWrapper(dataset=kd_dataset, smoothing=0.1)
         kd_dataset = ModeWrapper(dataset=kd_dataset, mode="x class", return_ctx=True)
@@ -109,8 +109,9 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         kd_rng = np.random.default_rng(seed=seed)
         kd_transform.set_rng(kd_rng)
         kd_collator.set_rng(kd_rng)
-        # collators sample a seed from global numpy generator -> progress rng by one
-        kd_rng.integers(np.iinfo(np.int32).max)
+        # transforms/collators sample a seed from global numpy generator -> progress rng
+        kd_rng.integers(np.iinfo(np.int32).max)  # KDRandomHorizontalFlip
+        kd_rng.integers(np.iinfo(np.int32).max)  # KDMixCollator
 
         # patch _params_per_batch as KDMixCollator converts lambda to tensor which has precision errors
         def patch_params_per_batch(self_mixup):
