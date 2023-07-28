@@ -63,7 +63,7 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         # TODO start
         timm_transform.transforms.pop(5)  # RandomErase
         timm_transform.transforms.pop(2)  # RandAug
-        timm_transform.transforms.pop(0)  # RandomResizedCrop
+        #timm_transform.transforms.pop(0)  # RandomResizedCrop
         # TODO end
         timm_dataset = ClassificationDatasetTorch(x=images, classes=classes, transform=timm_transform)
         timm_mixup = Mixup(
@@ -78,7 +78,7 @@ class TestMaeFinetunePipeline(unittest.TestCase):
 
         # create KD pipeline
         kd_transform = KDComposeTransform([
-            # KDRandomResizedCrop(size=32, interpolation="bicubic"),
+            KDRandomResizedCrop(size=32, interpolation="bicubic"),
             KDRandomHorizontalFlip(),
             # KDRandAugment(
             #     num_ops=2,
@@ -110,6 +110,7 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         kd_transform.set_rng(kd_rng)
         kd_collator.set_rng(kd_rng)
         # transforms/collators sample a seed from global numpy generator -> progress rng
+        kd_rng.integers(np.iinfo(np.int32).max)  # KDRandomResizedCrop
         kd_rng.integers(np.iinfo(np.int32).max)  # KDRandomHorizontalFlip
         kd_rng.integers(np.iinfo(np.int32).max)  # KDMixCollator
 
