@@ -5,7 +5,7 @@ from unittest.mock import patch
 import numpy as np
 import torch
 from timm.data import create_transform, IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from torchvision.transforms.functional import to_pil_image
+from torchvision.transforms.functional import to_pil_image, to_tensor
 
 from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
@@ -46,10 +46,11 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         cutmix_p = 0.5
         mode = "batch"
         kd_dataset = ClassificationDataset(x=images, classes=classes)
+        resolution = to_tensor(images[0]).shape[1]
 
         # create timm pipeline
         timm_transform = create_transform(
-            input_size=32,
+            input_size=resolution,
             is_training=True,
             color_jitter=None,
             auto_augment="rand-m9-mstd0.5-inc1",
@@ -73,7 +74,7 @@ class TestMaeFinetunePipeline(unittest.TestCase):
 
         # create KD pipeline
         kd_transform = KDComposeTransform([
-            KDRandomResizedCrop(size=32, interpolation="bicubic"),
+            KDRandomResizedCrop(size=resolution, interpolation="bicubic"),
             KDRandomHorizontalFlip(),
             KDRandAugment(
                 num_ops=2,
@@ -128,6 +129,9 @@ class TestMaeFinetunePipeline(unittest.TestCase):
             self.assertTrue(torch.all(timm_y == kd_y), str(i))
 
     def test(self):
-        images = [to_pil_image(x) for x in torch.rand(100, 3, 32, 32, generator=torch.Generator().manual_seed(513))]
+        images = [
+            to_pil_image(x)
+            for x in torch.rand(100, 3, 224, 224, generator=torch.Generator().manual_seed(513))
+        ]
         classes = torch.randint(0, 10, size=(len(images),), generator=torch.Generator().manual_seed(905))
         self._run(images=images, classes=classes)
