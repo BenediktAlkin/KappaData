@@ -38,7 +38,7 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         "numpy.random.randint",
     ])
     def _run(self, images, classes, seed):
-        batch_size = 2
+        batch_size = 4
         smoothing = 0.1
         mixup_alpha = 0.8
         cutmix_alpha = 1.0
@@ -60,11 +60,6 @@ class TestMaeFinetunePipeline(unittest.TestCase):
             mean=IMAGENET_DEFAULT_MEAN,
             std=IMAGENET_DEFAULT_STD,
         )
-        # TODO start
-        timm_transform.transforms.pop(5)  # RandomErase
-        timm_transform.transforms.pop(2)  # RandAug
-        #timm_transform.transforms.pop(0)  # RandomResizedCrop
-        # TODO end
         timm_dataset = ClassificationDatasetTorch(x=images, classes=classes, transform=timm_transform)
         timm_mixup = Mixup(
             mixup_alpha=mixup_alpha,
@@ -80,15 +75,15 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         kd_transform = KDComposeTransform([
             KDRandomResizedCrop(size=32, interpolation="bicubic"),
             KDRandomHorizontalFlip(),
-            # KDRandAugment(
-            #     num_ops=2,
-            #     magnitude=9,
-            #     magnitude_std=0.5,
-            #     fill_color=[124, 116, 104],
-            #     interpolation="bicubic",
-            # ),
+            KDRandAugment(
+                num_ops=2,
+                magnitude=9,
+                magnitude_std=0.5,
+                fill_color=[124, 116, 104],
+                interpolation="bicubic",
+            ),
             KDImageNetNorm(),
-            # KDRandomErasing(p=0.25, mode="pixelwise", max_count=1),
+            KDRandomErasing(p=0.25, mode="pixelwise", max_count=1),
         ])
 
         kd_dataset = XTransformWrapper(dataset=kd_dataset, transform=kd_transform)
@@ -112,6 +107,8 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         # transforms/collators sample a seed from global numpy generator -> progress rng
         kd_rng.integers(np.iinfo(np.int32).max)  # KDRandomResizedCrop
         kd_rng.integers(np.iinfo(np.int32).max)  # KDRandomHorizontalFlip
+        kd_rng.integers(np.iinfo(np.int32).max)  # KDRandAugment
+        kd_rng.integers(np.iinfo(np.int32).max)  # KDRandomErasing
         kd_rng.integers(np.iinfo(np.int32).max)  # KDMixCollator
 
         # patch _params_per_batch as KDMixCollator converts lambda to tensor which has precision errors
