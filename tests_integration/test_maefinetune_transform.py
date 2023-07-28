@@ -1,9 +1,11 @@
 import unittest
 
+import PIL
 import numpy as np
 import torch
 from timm.data import create_transform, IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from torchvision.transforms.functional import to_pil_image
+from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
 
 from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
@@ -11,6 +13,7 @@ from kappadata.transforms.kd_rand_augment import KDRandAugment
 from kappadata.transforms.kd_random_erasing import KDRandomErasing
 from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
+from kappadata.transforms.kd_resize import KDResize
 from tests_util.patch_rng import patch_rng
 
 
@@ -63,3 +66,36 @@ class TestMaeFinetuneTransform(unittest.TestCase):
     def test(self):
         images = torch.rand(100, 3, 32, 32, generator=torch.Generator().manual_seed(513))
         self._run(images)
+        
+    def test_train_transform(self):
+        rng = torch.Generator().manual_seed(513)
+        images = [
+            to_pil_image(
+                torch.rand(
+                    3,
+                    torch.randint(10, 500, size=(1,), generator=rng),
+                    torch.randint(10, 500, size=(1,), generator=rng),
+                    generator=rng,
+                ),
+            )
+            for _ in range(10)
+        ]
+
+        # create transforms
+        mae_transform = Compose([
+            Resize(256, interpolation=PIL.Image.BICUBIC),
+            CenterCrop(224),
+            ToTensor(),
+            Normalize(mean=IMAGENET_DEFAULT_MEAN, std=IMAGENET_DEFAULT_STD),
+        ])
+        kd_transform = KDComposeTransform([
+            KDResize(256, interpolation="bicubic"),
+            CenterCrop(224),
+            KDImageNetNorm(),
+        ])
+
+        # apply transforms
+        for img in images:
+            self.assertTrue(torch.all(mae_transform(img) == kd_transform(img)))
+
+
