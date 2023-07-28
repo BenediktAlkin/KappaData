@@ -7,7 +7,7 @@ class KDRandomApplyBase(KDStochasticTransform):
         self.p = p
 
     def __call__(self, x, ctx=None):
-        apply = self.rng.uniform() < self.p
+        apply = self.rng.random() < self.p
         if apply:
             return self.forward(x, ctx)
         if ctx is not None:

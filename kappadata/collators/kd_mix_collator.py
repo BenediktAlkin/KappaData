@@ -124,7 +124,7 @@ class KDMixCollator(KDSingleCollator):
                 else:
                     # bbox = torch.full(size=(4,), fill_value=-1)
                     x_lamb = lamb.view(-1, *[1] * (x.ndim - 1))
-                    x.mul_(x_lamb).add_(x2.mul_((1. - x_lamb)))
+                    x.mul_(x_lamb).add_(x2.mul_(1. - x_lamb))
             # apply y
             if y is not None:
                 y2, permutation = self.shuffle(item=y, permutation=permutation)
