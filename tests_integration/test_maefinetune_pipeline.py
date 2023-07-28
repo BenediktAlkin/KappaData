@@ -15,6 +15,7 @@ from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFli
 from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
 from tests_util.patch_rng import patch_rng
 from timm.data import Mixup
+from timm.data.mixup import cutmix_bbox_and_lam
 from kappadata.wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
 from kappadata.collators.kd_mix_collator import KDMixCollator
 from tests_util.datasets.classification_dataset_torch import ClassificationDatasetTorch
@@ -25,18 +26,6 @@ from kappadata.utils.random import get_rng_from_global
 
 
 class TestMaeFinetunePipeline(unittest.TestCase):
-    @patch_rng(fn_names=[
-        "random.uniform",
-        "random.randint",
-        "torch.rand",
-        "random.random",
-        "random.gauss",
-        "numpy.random.choice",
-        "torch.Tensor.normal_",
-        "numpy.random.rand",
-        "numpy.random.beta",
-        "numpy.random.randint",
-    ])
     def _run(self, images, classes, seed):
         batch_size = 4
         smoothing = 0.1
@@ -112,11 +101,28 @@ class TestMaeFinetunePipeline(unittest.TestCase):
         kd_rng.integers(np.iinfo(np.int32).max)  # KDRandomErasing
         kd_rng.integers(np.iinfo(np.int32).max)  # KDMixCollator
 
+        # remember original methods that are patched
+        timm_mixup.og_params_per_batch = timm_mixup._params_per_batch
+        og_cutmix_bbox_and_lamb = cutmix_bbox_and_lam
+
         # patch _params_per_batch as KDMixCollator converts lambda to tensor which has precision errors
         def patch_params_per_batch(self_mixup):
             lam, use_cutmix = self_mixup.og_params_per_batch()
             return torch.tensor(lam), use_cutmix
-        timm_mixup.og_params_per_batch = timm_mixup._params_per_batch
+
+        # patch mix_batch as KDMixCollator calculates lambda correction of CutMix as tensor -> precision errors
+        def patch_cutmix_bbox_and_lam(img_shape, lam, ratio_minmax=None, correct_lam=True, count=None):
+            (yl, yu, xl, xu), lam = og_cutmix_bbox_and_lamb(
+                img_shape,
+                lam,
+                ratio_minmax=None,
+                correct_lam=False,
+                count=count,
+            )
+            if correct_lam or ratio_minmax is not None:
+                bbox_area = (yu - yl) * (xu - xl)
+                lam = 1. - torch.tensor(bbox_area) / float(img_shape[-2] * img_shape[-1])
+            return (yl, yu, xl, xu), lam
 
         # create dataloaders
         timm_dataloader = DataLoader(timm_dataset, batch_size=batch_size)
@@ -124,14 +130,40 @@ class TestMaeFinetunePipeline(unittest.TestCase):
 
         for i, ((timm_x, timm_y), ((kd_x, kd_y), _)) in enumerate(zip(timm_dataloader, kd_dataloader)):
             with patch("timm.data.Mixup._params_per_batch", patch_params_per_batch):
-                timm_x, timm_y = timm_mixup(timm_x, timm_y)
+                with patch("timm.data.mixup.cutmix_bbox_and_lam", patch_cutmix_bbox_and_lam):
+                    timm_x, timm_y = timm_mixup(timm_x, timm_y)
             self.assertTrue(torch.all(timm_x == kd_x), str(i))
             self.assertTrue(torch.all(timm_y == kd_y), str(i))
 
-    def test(self):
+    @staticmethod
+    def get_patch_rng():
+        return patch_rng(fn_names=[
+            "random.uniform",
+            "random.randint",
+            "torch.rand",
+            "random.random",
+            "random.gauss",
+            "numpy.random.choice",
+            "torch.Tensor.normal_",
+            "numpy.random.rand",
+            "numpy.random.beta",
+            "numpy.random.randint",
+        ])
+
+    def test_cifar10(self):
+        images = [
+            to_pil_image(x)
+            for x in torch.rand(100, 3, 32, 32, generator=torch.Generator().manual_seed(513))
+        ]
+        classes = torch.randint(0, 10, size=(len(images),), generator=torch.Generator().manual_seed(905))
+        with self.get_patch_rng() as prng:
+            self._run(images=images, classes=classes, seed=prng.seed)
+
+    def test_imagenet(self):
         images = [
             to_pil_image(x)
             for x in torch.rand(100, 3, 224, 224, generator=torch.Generator().manual_seed(513))
         ]
-        classes = torch.randint(0, 10, size=(len(images),), generator=torch.Generator().manual_seed(905))
-        self._run(images=images, classes=classes)
+        classes = torch.randint(0, 1000, size=(len(images),), generator=torch.Generator().manual_seed(905))
+        with self.get_patch_rng() as prng:
+            self._run(images=images, classes=classes, seed=prng.seed)
