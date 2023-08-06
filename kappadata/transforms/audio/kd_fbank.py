@@ -1,4 +1,5 @@
 import einops
+import torchaudio
 from torch.nn.functional import pad
 
 from kappadata.transforms.base.kd_transform import KDTransform
