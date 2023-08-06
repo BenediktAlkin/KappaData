@@ -1,4 +1,3 @@
-import torch
 import numpy as np
 
 PRIMES = [
@@ -53,6 +52,7 @@ PRIMES = [
     610031,
     716953,
 ]
+
 
 def hash_tensor_entries(tensor, num_primes=None, shuffle_primes_seed=None):
     if num_primes is None:

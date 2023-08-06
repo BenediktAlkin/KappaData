@@ -1,12 +1,9 @@
-import math
-
-import numpy as np
 import torch
 from torchvision.transforms import InterpolationMode
-from torchvision.transforms.functional import resize, get_image_size
+from torchvision.transforms.functional import resize
 
-from kappadata.utils.param_checking import to_2tuple
 from kappadata.transforms.base.kd_transform import KDTransform
+from kappadata.utils.param_checking import to_2tuple
 
 
 class KDSemsegResize(KDTransform):

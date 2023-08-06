@@ -1,7 +1,7 @@
 import unittest
 
-import torch
 import numpy as np
+import torch
 from torch.utils.data import DataLoader
 
 from kappadata.collators.kd_mix_collator import KDMixCollator

@@ -1,18 +1,19 @@
-import torch
-import random
 import math
+import random
+
 import numpy as np
+import torch
 
 
 class MaskingGenerator:
     def __init__(
-        self,
-        input_size,
-        num_masking_patches=None,
-        min_num_patches=4,
-        max_num_patches=None,
-        min_aspect=0.3,
-        max_aspect=None,
+            self,
+            input_size,
+            num_masking_patches=None,
+            min_num_patches=4,
+            max_num_patches=None,
+            min_aspect=0.3,
+            max_aspect=None,
     ):
         if not isinstance(input_size, tuple):
             input_size = (input_size,) * 2

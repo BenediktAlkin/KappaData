@@ -1,33 +1,32 @@
+import os
 from argparse import ArgumentParser
 from pathlib import Path
 
-from torchvision.datasets.folder import default_loader
-
-from kappadata.visualization.visualize_jigsaw import visualize_jigsaw
-import torch
 import numpy as np
+import torch
 from PIL import Image
-import os
-from kappadata.utils.hash_utils import hash_tensor_entries
+from torchvision.datasets.folder import default_loader
+from torchvision.transforms.functional import to_pil_image
 
+from kappadata.datasets import KDDataset
 from kappadata.transforms import (
     KDSemsegRandomHorizontalFlip,
     KDSemsegPad,
     KDSemsegRandomResize,
     KDSemsegRandomCrop,
     KDColorJitter,
-    KDImageRangeNorm,
     KDStochasticTransform,
 )
+from kappadata.utils.hash_utils import hash_tensor_entries
 from kappadata.wrappers import SemsegTransformWrapper, ModeWrapper
-from kappadata.datasets import KDDataset
-from torchvision.transforms.functional import to_pil_image
+
 
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--root", required=True, type=str)
     parser.add_argument("--repeat", default=100, type=int)
     return vars(parser.parse_args())
+
 
 class SemsegDataset(KDDataset):
     def __init__(self, x, semseg):
@@ -45,6 +44,7 @@ class SemsegDataset(KDDataset):
 
     def __len__(self):
         return len(self.x)
+
 
 def main(root, repeat):
     root = Path(root).expanduser()

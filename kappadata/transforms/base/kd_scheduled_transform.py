@@ -1,6 +1,6 @@
+import torch
 from kappaschedules import LinearIncreasingSchedule, object_to_schedule
 
-import torch
 from kappadata.factory import object_to_transform
 from .kd_transform import KDTransform
 

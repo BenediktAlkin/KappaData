@@ -2,9 +2,10 @@
 
 - collators cant be used as part of deterministically augmented dataset
 
-- copy folder tests: `copy_folder_from_global_to_local("~/Documents/data/coco", "~/Documents/data_local/coco", relative_path="val2017", log_fn=print)`
+- copy folder
+  tests: `copy_folder_from_global_to_local("~/Documents/data/coco", "~/Documents/data_local/coco", relative_path="val2017", log_fn=print)`
 
-- worker_init_fn for collator + call it (to initialize rng per worker process) 
+- worker_init_fn for collator + call it (to initialize rng per worker process)
 - refactor to import submodules (e.g. from kappdata.transforms import ... instead of from kappadata import ...)
 
 - skip forward in interleaved sampler

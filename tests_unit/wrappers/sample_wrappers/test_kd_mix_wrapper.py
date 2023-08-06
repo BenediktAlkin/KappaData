@@ -2,10 +2,10 @@ import unittest
 
 import torch
 
-from kappadata.wrappers.sample_wrappers.kd_mix_wrapper import KDMixWrapper
-from tests_util.datasets import create_class_dataset
-from tests_util.datasets.classification_dataset import ClassificationDataset
 from kappadata.wrappers.mode_wrapper import ModeWrapper
+from kappadata.wrappers.sample_wrappers.kd_mix_wrapper import KDMixWrapper
+from tests_util.datasets.classification_dataset import ClassificationDataset
+
 
 class TestKDMixWrapper(unittest.TestCase):
     def test_ctor_arg_checks(self):

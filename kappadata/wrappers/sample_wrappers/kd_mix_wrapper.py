@@ -1,9 +1,10 @@
-import torch
 import numpy as np
+import torch
 
 from kappadata.datasets.kd_wrapper import KDWrapper
-from kappadata.utils.one_hot import to_one_hot_vector
 from kappadata.error_messages import REQUIRES_MIXUP_P_OR_CUTMIX_P
+from kappadata.utils.one_hot import to_one_hot_vector
+
 
 class KDMixWrapper(KDWrapper):
     def __init__(self, dataset, mixup_p=None, cutmix_p=None, mixup_alpha=None, cutmix_alpha=None, seed=None, **kwargs):

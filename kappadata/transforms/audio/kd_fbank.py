@@ -1,8 +1,8 @@
 import einops
-import torch
+from torch.nn.functional import pad
 
 from kappadata.transforms.base.kd_transform import KDTransform
-from torch.nn.functional import pad
+
 
 class KDFbank(KDTransform):
     def __init__(self, target_length, htk_compat=False, num_mel_bins=23, window_type="povey", **kwargs):

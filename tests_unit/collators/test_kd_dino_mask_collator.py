@@ -1,12 +1,12 @@
-import torch
 import unittest
 
-from kappadata.collators.kd_dino_mask_collator import KDDinoMaskCollator
-import random
-import math
 import numpy as np
+import torch
+
+from kappadata.collators.kd_dino_mask_collator import KDDinoMaskCollator
 from tests_external_sources.dinov2 import MaskingGenerator, collate_data_and_cast
 from tests_util.patch_rng import patch_rng
+
 
 class TestKDDinoMaskCollator(unittest.TestCase):
     @patch_rng(fn_names=["random.uniform", "random.shuffle", "random.randint"])
@@ -65,4 +65,3 @@ class TestKDDinoMaskCollator(unittest.TestCase):
                 ),
             )
             self.assertTrue(torch.all(result["collated_masks"] == ctx["mask"].flatten(start_dim=1)))
-

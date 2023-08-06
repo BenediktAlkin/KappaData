@@ -1,6 +1,9 @@
 import unittest
+
 import torch
+
 from kappadata.transforms.kd_columnwise_norm import KDColumnwiseNorm
+
 
 class TestKDColumnwiseRangeNorm(unittest.TestCase):
     def test_range(self):

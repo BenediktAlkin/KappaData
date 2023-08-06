@@ -1,5 +1,4 @@
 from kappadata.factory import object_to_transform
-from .kd_stochastic_transform import KDStochasticTransform
 from .kd_transform import KDTransform
 
 

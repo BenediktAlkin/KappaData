@@ -1,6 +1,7 @@
 from torch.utils.data import get_worker_info
-import numpy as np
+
 from kappadata.utils.random import get_rng_from_global
+
 
 class KDTransform:
     def __init__(self, ctx_prefix: str = None):

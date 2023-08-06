@@ -1,25 +1,25 @@
 import math
-
 from multiprocessing import Value
 
 import torch
 
+
 class MaskCollator:
     def __init__(
-        self,
-        input_size=(224, 224),
-        patch_size=16,
-        enc_mask_scale=(0.85, 1.0),
-        pred_mask_scale=(0.15, 0.2),
-        aspect_ratio=(0.75, 1.5),
-        nenc=1,
-        npred=4,
-        min_keep=10,
-        allow_overlap=False,
+            self,
+            input_size=(224, 224),
+            patch_size=16,
+            enc_mask_scale=(0.85, 1.0),
+            pred_mask_scale=(0.15, 0.2),
+            aspect_ratio=(0.75, 1.5),
+            nenc=1,
+            npred=4,
+            min_keep=10,
+            allow_overlap=False,
     ):
         super(MaskCollator, self).__init__()
         if not isinstance(input_size, tuple):
-            input_size = (input_size, ) * 2
+            input_size = (input_size,) * 2
         self.patch_size = patch_size
         self.height, self.width = input_size[0] // patch_size, input_size[1] // patch_size
         self.enc_mask_scale = enc_mask_scale
@@ -65,6 +65,7 @@ class MaskCollator:
             N = max(int(len(acceptable_regions) - tries_), 0)
             for k in range(N):
                 mask_ *= acceptable_regions[k]
+
         # --
         # -- Loop to sample masks until we find a valid one
         tries = 0
@@ -76,7 +77,7 @@ class MaskCollator:
             top = torch.randint(0, self.height - h, (1,))
             left = torch.randint(0, self.width - w, (1,))
             mask = torch.zeros((self.height, self.width), dtype=torch.int32)
-            mask[top:top+h, left:left+w] = 1
+            mask[top:top + h, left:left + w] = 1
             # -- Constrain mask to a set of acceptable regions
             if acceptable_regions is not None:
                 constrain_mask(mask, tries)
@@ -91,7 +92,7 @@ class MaskCollator:
         mask = mask.squeeze()
         # --
         mask_complement = torch.ones((self.height, self.width), dtype=torch.int32)
-        mask_complement[top:top+h, left:left+w] = 0
+        mask_complement[top:top + h, left:left + w] = 0
         # --
         return mask, mask_complement
 

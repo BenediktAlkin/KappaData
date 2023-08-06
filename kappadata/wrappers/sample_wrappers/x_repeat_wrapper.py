@@ -1,5 +1,4 @@
 from kappadata.datasets.kd_wrapper import KDWrapper
-from kappadata.utils.one_hot import to_one_hot_vector
 
 
 class XRepeatWrapper(KDWrapper):

@@ -1,6 +1,5 @@
-from .kd_collator_base import KDCollatorBase
-import numpy as np
 from kappadata.utils.random import get_rng_from_global
+from .kd_collator_base import KDCollatorBase
 
 
 class KDSingleCollator(KDCollatorBase):

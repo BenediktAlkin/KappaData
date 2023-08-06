@@ -1,9 +1,8 @@
 import unittest
 
-import torch
-
 from kappadata.samplers.semi_sampler import SemiSampler
 from tests_util.datasets.class_dataset import ClassDataset
+
 
 class TestSemiSampler(unittest.TestCase):
     def test_len(self):
@@ -20,14 +19,13 @@ class TestSemiSampler(unittest.TestCase):
         sampler = SemiSampler(dataset=ds, num_labeled=1, num_unlabeled=5, world_size=4, length_mode="labeled")
         self.assertEqual(6, len(sampler))
         self.assertEqual(24, sampler.effective_length)
-        
+
         sampler = SemiSampler(dataset=ds, num_labeled=1, num_unlabeled=2, length_mode="unlabeled")
         self.assertEqual(3, len(sampler))
         self.assertEqual(3, sampler.effective_length)
         sampler = SemiSampler(dataset=ds, num_labeled=1, num_unlabeled=2, length_mode="all")
         self.assertEqual(6, len(sampler))
         self.assertEqual(6, sampler.effective_length)
-
 
     def test_1x1(self):
         ds = ClassDataset(classes=[0, -1, 1, -1, 2, 3])

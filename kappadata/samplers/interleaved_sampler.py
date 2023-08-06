@@ -1,7 +1,7 @@
 import bisect
 from dataclasses import dataclass
 
-from torch.utils.data import ConcatDataset, DistributedSampler
+from torch.utils.data import ConcatDataset
 from torch.utils.data import default_collate, DataLoader
 
 

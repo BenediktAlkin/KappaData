@@ -2,6 +2,7 @@ import torch
 
 from torch.utils.data import Dataset
 
+
 class XDatasetTorch(Dataset):
     def __init__(self, x, transform=None, **kwargs):
         super().__init__(**kwargs)

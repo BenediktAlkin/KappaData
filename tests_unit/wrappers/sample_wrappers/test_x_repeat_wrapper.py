@@ -1,6 +1,5 @@
 import unittest
 
-import numpy as np
 import torch
 
 from kappadata.wrappers.sample_wrappers import XRepeatWrapper

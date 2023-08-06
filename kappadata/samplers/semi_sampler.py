@@ -1,6 +1,8 @@
 import torch
-from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
+
 from kappadata.utils.distributed import get_rank, get_world_size
+from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
+
 
 class SemiSampler:
     """
@@ -81,6 +83,7 @@ class SemiSampler:
         def _iterator(idxs):
             while True:
                 yield from torch.randperm(len(idxs), generator=generator).tolist()
+
         labeled_iterator = _iterator(self.labeled_idxs)
         unlabeled_iterator = _iterator(self.unlabeled_idxs)
         for i in range(len(self)):
@@ -88,4 +91,3 @@ class SemiSampler:
                 yield self.labeled_idxs[next(labeled_iterator)]
             else:
                 yield self.unlabeled_idxs[next(unlabeled_iterator)]
-

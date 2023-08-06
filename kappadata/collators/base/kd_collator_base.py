@@ -1,6 +1,7 @@
 from torch.utils.data import default_collate
-import numpy as np
+
 from kappadata.utils.random import get_rng_from_global
+
 
 class KDCollatorBase:
     def __init__(self, dataset_mode: str, return_ctx: bool):

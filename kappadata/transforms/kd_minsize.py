@@ -1,8 +1,7 @@
-import torch
 from torchvision.transforms import Resize
 from torchvision.transforms.functional import InterpolationMode
-from kappadata.utils.image_utils import get_dimensions
 
+from kappadata.utils.image_utils import get_dimensions
 from .base import KDTransform
 
 

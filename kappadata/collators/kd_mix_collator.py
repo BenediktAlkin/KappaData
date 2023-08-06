@@ -1,4 +1,3 @@
-import numpy as np
 import torch
 
 from kappadata.collators.base.kd_single_collator import KDSingleCollator

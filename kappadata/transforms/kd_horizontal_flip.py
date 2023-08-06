@@ -1,4 +1,3 @@
-import torch
 from torchvision.transforms.functional import hflip
 
 from .base.kd_transform import KDTransform

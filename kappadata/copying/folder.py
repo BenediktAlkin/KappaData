@@ -1,14 +1,12 @@
-import os
 import shutil
 import zipfile
 from collections import namedtuple
 from pathlib import Path
 
-import joblib
-
 from kappadata.utils.logging import log
 
 CopyFolderResult = namedtuple("CopyFolderResult", "was_copied was_deleted was_zip")
+
 
 def _check_src_path(src_path):
     if src_path.exists() and src_path.is_dir():
@@ -16,6 +14,7 @@ def _check_src_path(src_path):
     if src_path.with_suffix(".zip").exists():
         return True
     return False
+
 
 def copy_folder_from_global_to_local(
         global_path,

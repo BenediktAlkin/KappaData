@@ -1,7 +1,7 @@
-import numpy as np
 import unittest
 from unittest.mock import patch
 
+import numpy as np
 import torch
 from timm.data.mixup import Mixup
 from torch.utils.data import DataLoader

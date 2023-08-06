@@ -1,7 +1,10 @@
 import unittest
+
 import torch
 from torchvision.transforms.functional import to_pil_image
+
 from kappadata.utils.image_utils import get_dimensions
+
 
 class TestImageUtils(unittest.TestCase):
     def test_pil_eqals_torch_rgb(self):

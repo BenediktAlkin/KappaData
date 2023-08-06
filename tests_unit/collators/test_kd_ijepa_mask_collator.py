@@ -1,12 +1,12 @@
-import torch
 import unittest
 
-from kappadata.collators.kd_ijepa_mask_collator import KDIjepaMaskCollator
-import random
-import math
 import numpy as np
+import torch
+
+from kappadata.collators.kd_ijepa_mask_collator import KDIjepaMaskCollator
 from tests_external_sources.ijepa import MaskCollator
 from tests_util.patch_rng import patch_rng
+
 
 class TestKDIjepaMaskCollator(unittest.TestCase):
     @patch_rng(fn_names=["torch.randint"])
@@ -52,8 +52,8 @@ class TestKDIjepaMaskCollator(unittest.TestCase):
             _, ctx = kd_mask_collator(kd_input)
             _, og_masks_encoder, og_masks_predictor = og_mask_collator(og_input)
             for j, og_mask_encoder in enumerate(og_masks_encoder):
-                kd_mask_encoder = ctx["encoder_masks"][j * batch_size : (j + 1) * batch_size]
+                kd_mask_encoder = ctx["encoder_masks"][j * batch_size: (j + 1) * batch_size]
                 self.assertTrue(torch.all(kd_mask_encoder == og_mask_encoder))
             for j, og_mask_predictor in enumerate(og_masks_predictor):
-                kd_mask_predictor = ctx["predictor_masks"][j * batch_size : (j + 1) * batch_size]
+                kd_mask_predictor = ctx["predictor_masks"][j * batch_size: (j + 1) * batch_size]
                 self.assertTrue(torch.all(kd_mask_predictor == og_mask_predictor))

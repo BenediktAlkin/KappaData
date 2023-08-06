@@ -4,8 +4,8 @@ import PIL
 import numpy as np
 import torch
 from timm.data import create_transform, IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from torchvision.transforms.functional import to_pil_image
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
+from torchvision.transforms.functional import to_pil_image
 
 from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
@@ -66,7 +66,7 @@ class TestMaeFinetuneTransform(unittest.TestCase):
     def test(self):
         images = torch.rand(100, 3, 32, 32, generator=torch.Generator().manual_seed(513))
         self._run(images)
-        
+
     def test_train_transform(self):
         rng = torch.Generator().manual_seed(513)
         images = [
@@ -97,5 +97,3 @@ class TestMaeFinetuneTransform(unittest.TestCase):
         # apply transforms
         for img in images:
             self.assertTrue(torch.all(mae_transform(img) == kd_transform(img)))
-
-

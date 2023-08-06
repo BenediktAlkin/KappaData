@@ -2,6 +2,7 @@ import torch
 
 from torch.utils.data import Dataset
 
+
 class ClassificationDatasetTorch(Dataset):
     def __init__(self, x, classes, transform=None):
         super().__init__()

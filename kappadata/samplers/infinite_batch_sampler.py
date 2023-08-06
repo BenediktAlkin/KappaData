@@ -1,4 +1,3 @@
-from torch.utils.data import DistributedSampler
 from torch.utils.data.sampler import BatchSampler
 
 

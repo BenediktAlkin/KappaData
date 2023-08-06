@@ -1,10 +1,11 @@
-import unittest
+from pathlib import Path
+
+import torch
+from pyfakefs.fake_filesystem_unittest import TestCase
 
 from kappadata.wrappers.dataset_wrappers.overwrite_classes_wrapper import OverwriteClassesWrapper
 from tests_util.datasets.class_dataset import ClassDataset
-from pyfakefs.fake_filesystem_unittest import TestCase
-import torch
-from pathlib import Path
+
 
 class TestOverwriteClassesWrapper(TestCase):
     def test_object(self):

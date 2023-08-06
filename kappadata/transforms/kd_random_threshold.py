@@ -1,8 +1,6 @@
-import torch
-
 from .base.kd_random_apply_base import KDRandomApplyBase
-from .base.kd_stochastic_transform import KDStochasticTransform
 from .kd_threshold import KDThreshold
+
 
 class KDRandomThreshold(KDRandomApplyBase):
     def __init__(

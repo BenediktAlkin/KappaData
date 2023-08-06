@@ -3,7 +3,7 @@ import unittest
 import torch
 
 from kappadata.transforms import KDMinsize
-from torchvision.transforms.functional import to_pil_image
+
 
 class TestKDRearrange(unittest.TestCase):
     def test_1d(self):

@@ -1,8 +1,9 @@
-import numpy as np
+from pathlib import Path
+
 import torch
 
 from kappadata.datasets.kd_wrapper import KDWrapper
-from pathlib import Path
+
 
 class OverwriteClassesWrapper(KDWrapper):
     def __init__(self, dataset, uri=None, classes=None, **kwargs):

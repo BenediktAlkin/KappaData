@@ -9,7 +9,6 @@ from .kd_spc1_norm import KDSpc1Norm
 from .kd_spc2_norm import KDSpc2Norm
 
 
-
 def string_to_norm(name):
     assert isinstance(name, str)
     name = name.lower().replace("_")

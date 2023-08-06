@@ -1,28 +1,27 @@
-from torch.utils.data import DataLoader
 import unittest
 from unittest.mock import patch
 
 import numpy as np
 import torch
+from timm.data import Mixup
 from timm.data import create_transform, IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from torchvision.transforms.functional import to_pil_image, to_tensor
+from timm.data.mixup import cutmix_bbox_and_lam
+from torch.utils.data import DataLoader
+from torchvision.transforms.functional import to_pil_image
 
+from kappadata.collators.kd_mix_collator import KDMixCollator
 from kappadata.common.transforms.norm.kd_image_net_norm import KDImageNetNorm
 from kappadata.transforms.base.kd_compose_transform import KDComposeTransform
 from kappadata.transforms.kd_rand_augment import KDRandAugment
 from kappadata.transforms.kd_random_erasing import KDRandomErasing
 from kappadata.transforms.kd_random_horizontal_flip import KDRandomHorizontalFlip
 from kappadata.transforms.kd_random_resized_crop import KDRandomResizedCrop
-from tests_util.patch_rng import patch_rng
-from timm.data import Mixup
-from timm.data.mixup import cutmix_bbox_and_lam
-from kappadata.wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
-from kappadata.collators.kd_mix_collator import KDMixCollator
-from tests_util.datasets.classification_dataset_torch import ClassificationDatasetTorch
-from tests_util.datasets.classification_dataset import ClassificationDataset
 from kappadata.wrappers import ModeWrapper
 from kappadata.wrappers.sample_wrappers import XTransformWrapper
-from kappadata.utils.random import get_rng_from_global
+from kappadata.wrappers.sample_wrappers.label_smoothing_wrapper import LabelSmoothingWrapper
+from tests_util.datasets.classification_dataset import ClassificationDataset
+from tests_util.datasets.classification_dataset_torch import ClassificationDatasetTorch
+from tests_util.patch_rng import patch_rng
 
 
 class TestMaeFinetunePipeline(unittest.TestCase):
