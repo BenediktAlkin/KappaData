@@ -1,3 +1,4 @@
+import torch
 from kappadata.transforms.base.kd_stochastic_transform import KDStochasticTransform
 
 
@@ -11,13 +12,13 @@ class KDSpecAugment(KDStochasticTransform):
     def __call__(self, x, ctx=None):
         assert x.ndim == 3
         if self.frequency_masking is not None:
-            self._mask_along_axis(
+            x = self._mask_along_axis(
                 specgram=x,
                 mask_param=self.frequency_masking,
                 axis=1,
             )
         if self.time_masking is not None:
-            self._mask_along_axis(
+            x = self._mask_along_axis(
                 specgram=x,
                 mask_param=self.time_masking,
                 axis=2,
