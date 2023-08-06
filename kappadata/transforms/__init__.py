@@ -1,3 +1,4 @@
+from .audio import *
 from .base import *
 from .image_pos_embed_grid import ImagePosEmbedGrid
 from .image_pos_embed_sincos import ImagePosEmbedSincos
