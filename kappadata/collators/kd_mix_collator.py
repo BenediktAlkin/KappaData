@@ -34,10 +34,6 @@ class KDMixCollator(KDSingleCollator):
         super().__init__(**kwargs)
         # check probabilities
         assert (mixup_p is not None) or (cutmix_p is not None), REQUIRES_MIXUP_P_OR_CUTMIX_P
-        if mixup_p is None and cutmix_p is None:
-            # no percentages specified -> equal split by default
-            mixup_p = 0.5
-            cutmix_p = 0.5
         # assign 0 probability if one is not specified
         mixup_p = mixup_p or 0.
         cutmix_p = cutmix_p or 0.

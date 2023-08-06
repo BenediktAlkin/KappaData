@@ -4,6 +4,7 @@ from kappadata.transforms.base.kd_stochastic_transform import KDStochasticTransf
 class KDRandomApplyBase(KDStochasticTransform):
     def __init__(self, p, **kwargs):
         super().__init__(**kwargs)
+        assert 0. <= p <= 1.
         self.p = p
 
     def __call__(self, x, ctx=None):
