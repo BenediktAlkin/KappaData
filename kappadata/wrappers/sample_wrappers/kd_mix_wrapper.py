@@ -4,10 +4,21 @@ import torch
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.error_messages import REQUIRES_MIXUP_P_OR_CUTMIX_P
 from kappadata.utils.one_hot import to_one_hot_vector
+from torch.nn.functional import pad
 
 
 class KDMixWrapper(KDWrapper):
-    def __init__(self, dataset, mixup_p=None, cutmix_p=None, mixup_alpha=None, cutmix_alpha=None, seed=None, **kwargs):
+    def __init__(
+            self,
+            dataset,
+            mixup_p=None,
+            cutmix_p=None,
+            mixup_alpha=None,
+            cutmix_alpha=None,
+            mixup_unify_shapes_mode=None,
+            seed=None,
+            **kwargs,
+    ):
         super().__init__(dataset=dataset, **kwargs)
 
         # check probabilities
@@ -21,6 +32,7 @@ class KDMixWrapper(KDWrapper):
         # check alphas
         if mixup_p == 0.:
             assert mixup_alpha is None
+            assert mixup_unify_shapes_mode is None
         else:
             assert isinstance(mixup_alpha, (int, float)) and 0. < mixup_alpha
         if cutmix_p == 0.:
@@ -34,6 +46,7 @@ class KDMixWrapper(KDWrapper):
         self.cutmix_p = cutmix_p
         self.mixup_alpha = mixup_alpha
         self.cutmix_alpha = cutmix_alpha
+        self.mixup_unify_shapes_mode = mixup_unify_shapes_mode
         self.seed = seed
 
     @property
@@ -76,6 +89,28 @@ class KDMixWrapper(KDWrapper):
             # cutmix
             raise NotImplementedError
         else:
+            # pad/cut samples
+            if self.mixup_unify_shapes_mode is None:
+                assert x.shape == x2.shape
+            elif self.mixup_unify_shapes_mode == "pad_or_cut_end":
+                # pad or cut at the end of the original sample
+                # example input: x.shape=(1, 128, 900), x2.shape=(1, 125, 1024)
+                # example output: x.shape=(1, 128, 900), x2.shape=(1, 128, 900)
+                deltas = [s - s2 for s, s2 in zip(x.shape, x2.shape)]
+                # pad takes paddings in reverse order
+                for i, delta in enumerate(deltas):
+                    if delta == 0:
+                        continue
+                    elif delta > 0:
+                        # pad takes padding values in reversed order
+                        paddings = [0] * ((len(deltas) - i) * 2 - 1) + [delta]
+                        x2 = pad(x2, pad=paddings, mode="constant", value=0.)
+                    else:
+                        # cut off excess values
+                        x2 = x2.index_select(dim=i, index=torch.arange(x.size(i)))
+            else:
+                raise NotImplementedError
+
             # mixup
             x_lamb = lamb.view(*[1] * x.ndim)
             x.mul_(x_lamb).add_(x2.mul_(1. - x_lamb))

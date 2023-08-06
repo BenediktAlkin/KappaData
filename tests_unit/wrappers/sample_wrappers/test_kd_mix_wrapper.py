@@ -27,3 +27,21 @@ class TestKDMixWrapper(unittest.TestCase):
         x, cls = ds[0]
         self.assertEqual((1, 8, 8), x.shape)
         self.assertEqual((5,), cls.shape)
+
+    def test_pad_or_cut_end(self):
+        generator = torch.Generator().manual_seed(0)
+        ds = ClassificationDataset(
+            x=[
+                torch.randn(1, 8, 8, generator=generator),
+                torch.randn(2, 5, 12, generator=generator),
+                torch.randn(1, 10, 10, generator=generator),
+            ],
+            classes=list(range(3)),
+        )
+        ds = KDMixWrapper(dataset=ds, mixup_p=1.0, mixup_alpha=0.8, seed=0, mixup_unify_shapes_mode="pad_or_cut_end")
+        ds = ModeWrapper(dataset=ds, mode="x class")
+        # each sample should have the shape of its index -> second sample is adjusted to first sample
+        for i, expected_shape in enumerate(map(lambda xx: xx.shape, ds.root_dataset.x)):
+            for _ in range(5):
+                x, _ = ds[i]
+                self.assertEqual(expected_shape, x.shape)
