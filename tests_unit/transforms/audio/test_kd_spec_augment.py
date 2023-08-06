@@ -24,21 +24,21 @@ class TestKDSpecAugment(unittest.TestCase):
 
     def test_equal_to_torchaudio_frequencymasking(self):
         self._test_equal_to_torchaudio(
-            kd_transform=KDSpecAugment(frequency_masking=192),
-            ta_transform=FrequencyMasking(freq_mask_param=192),
+            kd_transform=KDSpecAugment(frequency_masking=48),
+            ta_transform=FrequencyMasking(freq_mask_param=48),
         )
 
     def test_equal_to_torchaudio_timemasking(self):
         self._test_equal_to_torchaudio(
-            kd_transform=KDSpecAugment(time_masking=48),
-            ta_transform=TimeMasking(time_mask_param=48),
+            kd_transform=KDSpecAugment(time_masking=192),
+            ta_transform=TimeMasking(time_mask_param=192),
         )
 
     def test_equal_to_torchaudio(self):
         self._test_equal_to_torchaudio(
-            kd_transform=KDSpecAugment(frequency_masking=192, time_masking=48),
+            kd_transform=KDSpecAugment(frequency_masking=48, time_masking=192),
             ta_transform=Compose([
-                FrequencyMasking(freq_mask_param=192),
-                TimeMasking(time_mask_param=48),
+                FrequencyMasking(freq_mask_param=48),
+                TimeMasking(time_mask_param=192),
             ]),
         )
