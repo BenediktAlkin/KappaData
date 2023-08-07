@@ -55,7 +55,7 @@ class ModeWrapper(KDDataset):
                 self._getitem_fns.append(partial(self._getitem_from_ctx, ctx_key=ctx_key))
             else:
                 fn_name = f"getitem_{item}"
-                assert hasattr(self.dataset, fn_name), f"{type(self.dataset.root_dataset)} has no method getitem_{item}"
+                assert hasattr(type(self.dataset), fn_name), f"{type(self.dataset)} has no method getitem_{item}"
                 self._getitem_fns.append(getattr(self.dataset, fn_name))
 
     @staticmethod

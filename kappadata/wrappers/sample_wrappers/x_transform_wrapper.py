@@ -5,3 +5,9 @@ class XTransformWrapper(TransformWrapperBase):
     def getitem_x(self, idx, ctx=None):
         item = self.dataset.getitem_x(idx, ctx=ctx)
         return self._getitem(item=item, idx=idx, ctx=ctx)
+
+    def getitem_xclass(self, idx, ctx=None):
+        # TODO ugly solution to circumvent XTransformWrapper being skipped when a dataset with a fused operation
+        #  is wrapperd (e.g. XTransformWrapper(KDMixWrapper(dataset))
+        item, cls = self.dataset.getitem_xclass(idx, ctx=ctx)
+        return self._getitem(item=item, idx=idx, ctx=ctx), cls

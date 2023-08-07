@@ -1,9 +1,12 @@
+import torch
 import unittest
 
 from kappadata.datasets.kd_dataset import KDDataset
 from kappadata.datasets.kd_subset import KDSubset
 from kappadata.wrappers.mode_wrapper import ModeWrapper
 from tests_util.datasets.index_dataset import IndexDataset
+from kappadata.datasets.kd_wrapper import KDWrapper
+
 
 
 class TestModeWrapper(unittest.TestCase):
@@ -116,3 +119,20 @@ class TestModeWrapper(unittest.TestCase):
         root_ds = IndexDataset(size=3)
         wrapper = ModeWrapper(dataset=root_ds, mode="index x", return_ctx=False)
         self.assertEqual([ModeWrapper], wrapper.all_wrapper_types)
+
+    def test_fused_getitem_check(self):
+        # if outer wrappers need to implement the fused operations of inner wrappers
+        # this might change in the future as it would require all wrappers to implement all fused operations
+        class UnfusedWrapper(KDWrapper):
+            pass
+        class FusedWrapper(KDWrapper):
+            @property
+            def fused_operations(self):
+                return super().fused_operations + [["index", "x"]]
+
+
+        ds = IndexDataset(size=3)
+        ds = FusedWrapper(dataset=ds)
+        ds = UnfusedWrapper(dataset=ds)
+        with self.assertRaises(AssertionError):
+            ModeWrapper(dataset=ds, mode="index x")
