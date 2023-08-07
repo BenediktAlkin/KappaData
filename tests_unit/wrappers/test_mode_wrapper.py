@@ -120,6 +120,11 @@ class TestModeWrapper(unittest.TestCase):
         wrapper = ModeWrapper(dataset=root_ds, mode="index x", return_ctx=False)
         self.assertEqual([ModeWrapper], wrapper.all_wrapper_types)
 
+    def test_nonfused_getitem_check(self):
+        ds = IndexDataset(size=3)
+        with self.assertRaises(AssertionError):
+            ModeWrapper(dataset=ds, mode="x class")
+
     def test_fused_getitem_check(self):
         # if outer wrappers need to implement the fused operations of inner wrappers
         # this might change in the future as it would require all wrappers to implement all fused operations
