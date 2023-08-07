@@ -4,9 +4,8 @@ import zipfile
 from collections import namedtuple
 from pathlib import Path
 
-import joblib
-
 from kappadata.utils.logging import log
+from .copying_utils import folder_contains_mostly_zips, run_unzip_jobs
 
 CopyImageFolderResult = namedtuple("CopyImageFolderResult", "was_copied was_deleted was_zip was_zip_classwise")
 
@@ -71,11 +70,9 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
     was_zip = False
     was_zip_classwise = False
     if src_path.exists() and src_path.is_dir():
-        # check if subfolders are zips (allow files such as a README inside the folder)
-        items = os.listdir(src_path)
-        zips = [item for item in items if item.endswith(".zip")]
-        if len(zips) > 0 and len(zips) >= len(items) // 2:
-            # extract all zip folders into dst (e.g. imagenet1k/train/n01558993.zip
+        contains_mostly_zips, zips = folder_contains_mostly_zips(src_path)
+        if contains_mostly_zips:
+            # extract all zip folders into dst (e.g. imagenet1k/train/n01558993.zip)
             was_zip_classwise = True
             log(log_fn, f"extracting {len(zips)} zips from '{src_path}' to '{dst_path}' using {num_workers} workers")
             unzip_imagefolder_classwise(src=src_path, dst=dst_path, num_workers=num_workers)
@@ -95,7 +92,7 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
 
     # create end_copy_file
     with open(end_copy_file, "w") as f:
-        f.write("this file indicates that the copying the dataset automatically was successful")
+        f.write("this file indicates that copying the dataset automatically was successful")
 
     log(log_fn, "finished copying data from global to local")
     return CopyImageFolderResult(
@@ -123,11 +120,6 @@ def create_zipped_imagefolder_classwise(src, dst):
         )
 
 
-def _unzip(src, dst):
-    with zipfile.ZipFile(src) as f:
-        f.extractall(dst)
-
-
 def unzip_imagefolder_classwise(src, dst, num_workers=0):
     src_path = Path(src).expanduser()
     assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
@@ -143,10 +135,4 @@ def unzip_imagefolder_classwise(src, dst, num_workers=0):
         jobargs.append((src_uri, dst_uri))
 
     # run jobs
-    if num_workers <= 1:
-        for src, dst in jobargs:
-            _unzip(src, dst)
-    else:
-        jobs = [joblib.delayed(_unzip)(src, dst) for src, dst in jobargs]
-        pool = joblib.Parallel(n_jobs=num_workers)
-        pool(jobs)
+    run_unzip_jobs(jobargs=jobargs, num_workers=num_workers)

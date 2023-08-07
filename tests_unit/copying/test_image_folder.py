@@ -5,20 +5,10 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from kappadata.copying.image_folder import copy_imagefolder_from_global_to_local, create_zipped_imagefolder_classwise
+from tests_util.mock_logger import MockLogger
 
 
-class TestCopyFolderFromGlobalToLocal(TestCase):
-    class MockLogger:
-        def __init__(self):
-            self.msgs = []
-
-        def __call__(self, msg):
-            self.msgs.append(msg)
-
-        @staticmethod
-        def path_msg_equals(expected, actual):
-            return expected.replace("\\", "/") == actual.replace("\\", "/")
-
+class TestCopyImageFolderFromGlobalToLocal(TestCase):
     def setUp(self):
         self.setUpPyfakefs()
 
@@ -56,7 +46,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
                 self.assertTrue((split_path / cls / f"{cls}_{i + 1}.JPEG").exists())
 
     def _test_imagenet_autocopy(self, global_path, local_path, msg0, was_zip=False, was_zip_classwise=False):
-        logger = self.MockLogger()
+        logger = MockLogger()
         result = copy_imagefolder_from_global_to_local(global_path, local_path, relative_path="train", log_fn=logger)
         self.assertTrue(result.was_copied)
         self.assertFalse(result.was_deleted)
@@ -88,7 +78,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
         copy_imagefolder_from_global_to_local(global_path, local_path, relative_path="train")
         self._assert_imagenet_split_exists(local_path / "train")
 
-        logger = self.MockLogger()
+        logger = MockLogger()
         result = copy_imagefolder_from_global_to_local(global_path, local_path, relative_path="train", log_fn=logger)
         self.assertFalse(result.was_copied)
         self.assertFalse(result.was_deleted)
@@ -114,7 +104,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
         # remove end_copy_file
         os.remove(local_path / "train" / "autocopy_end.txt")
 
-        logger = self.MockLogger()
+        logger = MockLogger()
         result = copy_imagefolder_from_global_to_local(global_path, local_path, relative_path="train", log_fn=logger)
         self.assertTrue(result.was_copied)
         self.assertTrue(result.was_deleted)

@@ -1,11 +1,18 @@
+import os
 import shutil
 import zipfile
-from collections import namedtuple
+from dataclasses import dataclass
 from pathlib import Path
 
 from kappadata.utils.logging import log
+from .copying_utils import folder_contains_mostly_zips, run_unzip_jobs
 
-CopyFolderResult = namedtuple("CopyFolderResult", "was_copied was_deleted was_zip")
+
+@dataclass
+class CopyFolderResult:
+    was_copied: bool
+    was_deleted: bool
+    source_format: str
 
 
 def _check_src_path(src_path):
@@ -19,17 +26,14 @@ def _check_src_path(src_path):
 def copy_folder_from_global_to_local(
         global_path,
         local_path,
-        remove_zip_root_folder=True,
         relative_path=None,
+        num_workers=0,
         log_fn=None,
-):
+) -> CopyFolderResult:
     if not isinstance(global_path, Path):
         global_path = Path(global_path).expanduser()
     if not isinstance(local_path, Path):
         local_path = Path(local_path).expanduser()
-    if relative_path is not None and not isinstance(relative_path, Path):
-        # relative path can be .zip -> relative path is always without .zip as dst_path is never .zip
-        relative_path = Path(relative_path).with_suffix("")
 
     # check src_path exists (src_path can be folder or .zip)
     src_path = global_path / relative_path if relative_path is not None else global_path
@@ -51,7 +55,7 @@ def copy_folder_from_global_to_local(
                 return CopyFolderResult(
                     was_copied=False,
                     was_deleted=False,
-                    was_zip=False,
+                    source_format=None,
                 )
             else:
                 # incomplete copy -> delete and copy again
@@ -61,7 +65,7 @@ def copy_folder_from_global_to_local(
                 dst_path.mkdir()
         else:
             log(log_fn, f"using manually copied dataset '{dst_path}'")
-            return CopyFolderResult(was_copied=False, was_deleted=False, was_zip=False)
+            return CopyFolderResult(was_copied=False, was_deleted=False, was_zip=False, was_batched_zip=False)
     else:
         dst_path.mkdir(parents=True)
 
@@ -70,18 +74,23 @@ def copy_folder_from_global_to_local(
         f.write("this file indicates that an attempt to copy the dataset automatically was started")
 
     # copy
-    was_zip = False
     if src_path.exists() and src_path.is_dir():
-        # copy folders which contain the raw files (not zipped or anything)
-        log(log_fn, f"copying folders of '{src_path}' to '{dst_path}'")
-        # copy folder (dirs_exist_ok=True because dst_path is created for start_copy_file)
-        shutil.copytree(src_path, dst_path, dirs_exist_ok=True)
+        contains_mostly_zips, zips = folder_contains_mostly_zips(src_path)
+        if contains_mostly_zips:
+            source_format = "zips"
+            # extract all zip folders into dst (e.g. audioset/train/batch_0.zip)
+            log(log_fn, f"extracting {len(zips)} zips from '{src_path}' to '{dst_path}' using {num_workers} workers")
+            unzip_batched_zips(src=src_path, dst=dst_path, num_workers=num_workers)
+        else:
+            source_format = "raw"
+            # copy folders which contain the raw files (not zipped or anything)
+            log(log_fn, f"copying folders of '{src_path}' to '{dst_path}'")
+            # copy folder (dirs_exist_ok=True because dst_path is created for start_copy_file)
+            shutil.copytree(src_path, dst_path, dirs_exist_ok=True)
     elif src_path.with_suffix(".zip").exists():
-        log(log_fn, f"extracting '{src_path.with_suffix('.zip')}' to '{dst_path}'")
+        source_format = "zip"
         # extract zip
-        was_zip = True
-        if remove_zip_root_folder:
-            dst_path = dst_path.parent
+        log(log_fn, f"extracting '{src_path.with_suffix('.zip')}' to '{dst_path}'")
         with zipfile.ZipFile(src_path.with_suffix(".zip")) as f:
             f.extractall(dst_path)
     else:
@@ -89,11 +98,49 @@ def copy_folder_from_global_to_local(
 
     # create end_copy_file
     with open(end_copy_file, "w") as f:
-        f.write("this file indicates that the copying the dataset automatically was successful")
+        f.write("this file indicates that copying the dataset automatically was successful")
 
     log(log_fn, "finished copying data from global to local")
     return CopyFolderResult(
         was_copied=True,
         was_deleted=was_deleted,
-        was_zip=was_zip,
+        source_format=source_format,
     )
+
+
+def create_zips(src, dst, batch_size=1000):
+    src_path = Path(src).expanduser()
+    assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
+    dst_path = Path(dst).expanduser()
+    dst_path.mkdir(exist_ok=True, parents=True)
+
+    # retrieve items and check validity
+    items = []
+    for item in os.listdir(src_path):
+        assert (src_path / item).is_file(), f"source folder has to contain only files ({item})"
+        assert not item.endswith(".zip"), f"source folder cant contain zips ({item})"
+        items.append(item)
+
+    # create zipped folders, each with <batch_size> items
+    num_batches = (len(items) + batch_size - 1) // batch_size
+    for i in range(0, num_batches):
+        with zipfile.ZipFile(dst / f"batch_{i}.zip", "w") as f:
+            for j in range(i * batch_size, min(len(items), (i + 1) * batch_size)):
+                f.write(src_path / items[j], items[j])
+
+
+def unzip_batched_zips(src, dst, num_workers=0):
+    src_path = Path(src).expanduser()
+    assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
+    dst_path = Path(dst).expanduser()
+    dst_path.mkdir(exist_ok=True, parents=True)
+
+    # compose jobs
+    jobargs = []
+    for item in os.listdir(src_path):
+        assert item.endswith(".zip")
+        src_uri = src_path / item
+        jobargs.append((src_uri, dst_path))
+
+    # run jobs
+    run_unzip_jobs(jobargs=jobargs, num_workers=num_workers)
