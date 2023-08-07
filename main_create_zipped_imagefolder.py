@@ -1,7 +1,7 @@
 import shutil
 from argparse import ArgumentParser
 
-from kappadata.copying.image_folder import create_zipped_imagefolder_classwise
+from kappadata.copying.create_zips import create_zips_imagefolder
 
 
 def parse_args():
@@ -20,7 +20,7 @@ def main(src, dst, classwise):
     print(f"dst={dst}")
     print(f"classwise={classwise}")
     if classwise:
-        create_zipped_imagefolder_classwise(src=src, dst=dst)
+        create_zips_imagefolder(src=src, dst=dst)
     else:
         assert not str(dst).endswith(".zip"), "pass --dst without the .zip ending (appended automatically)"
         shutil.make_archive(src, "zip", dst)

@@ -4,7 +4,8 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from kappadata.copying.folder import copy_folder_from_global_to_local, create_zips
+from kappadata.copying.folder import copy_folder_from_global_to_local
+from kappadata.copying.create_zips import create_zips_folder
 from tests_util.mock_logger import MockLogger
 
 
@@ -51,7 +52,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
         global_path, local_path = self._setup_data()
         # create zip files
         zip_path = Path("/zips/dataset")
-        create_zips(src=global_path / "train", dst=zip_path / "train", batch_size=5)
+        create_zips_folder(src=global_path / "train", dst=zip_path / "train", batch_size=5)
         return zip_path, local_path
 
     def _assert_consistent_copy(self, split_path):

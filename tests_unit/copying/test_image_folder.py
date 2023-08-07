@@ -4,7 +4,8 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from kappadata.copying.image_folder import copy_imagefolder_from_global_to_local, create_zipped_imagefolder_classwise
+from kappadata.copying.create_zips import create_zips_imagefolder
+from kappadata.copying.image_folder import copy_imagefolder_from_global_to_local
 from tests_util.mock_logger import MockLogger
 
 
@@ -36,8 +37,8 @@ class TestCopyImageFolderFromGlobalToLocal(TestCase):
         global_path, local_path = self._setup_imagenet()
         # create zip files
         zip_path = Path("/zip/imagenet")
-        create_zipped_imagefolder_classwise(src=global_path / "train", dst=zip_path / "train")
-        create_zipped_imagefolder_classwise(src=global_path / "val", dst=zip_path / "val")
+        create_zips_imagefolder(src=global_path / "train", dst=zip_path / "train")
+        create_zips_imagefolder(src=global_path / "val", dst=zip_path / "val")
         return zip_path, local_path
 
     def _assert_imagenet_split_exists(self, split_path):

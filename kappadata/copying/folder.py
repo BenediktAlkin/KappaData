@@ -108,25 +108,6 @@ def copy_folder_from_global_to_local(
     )
 
 
-def create_zips(src, dst, batch_size=1000):
-    src_path = Path(src).expanduser()
-    assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
-    dst_path = Path(dst).expanduser()
-    dst_path.mkdir(exist_ok=True, parents=True)
-
-    # retrieve items and check validity
-    items = []
-    for item in os.listdir(src_path):
-        assert (src_path / item).is_file(), f"source folder has to contain only files ({item})"
-        assert not item.endswith(".zip"), f"source folder cant contain zips ({item})"
-        items.append(item)
-
-    # create zipped folders, each with <batch_size> items
-    num_batches = (len(items) + batch_size - 1) // batch_size
-    for i in range(0, num_batches):
-        with zipfile.ZipFile(dst / f"batch_{i}.zip", "w") as f:
-            for j in range(i * batch_size, min(len(items), (i + 1) * batch_size)):
-                f.write(src_path / items[j], items[j])
 
 
 def unzip_batched_zips(src, dst, num_workers=0):

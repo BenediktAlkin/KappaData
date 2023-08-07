@@ -6,8 +6,16 @@ from pathlib import Path
 
 from kappadata.utils.logging import log
 from .copying_utils import folder_contains_mostly_zips, run_unzip_jobs
+from .create_zips import create_zips_imagefolder
 
-CopyImageFolderResult = namedtuple("CopyImageFolderResult", "was_copied was_deleted was_zip was_zip_classwise")
+from dataclasses import dataclass
+
+@dataclass
+class CopyImageFolderResult:
+    was_copied: bool
+    was_deleted: bool
+    was_zip: bool
+    was_zip_classwise: bool
 
 
 def _check_src_path(src_path):
@@ -101,23 +109,6 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
         was_zip=was_zip,
         was_zip_classwise=was_zip_classwise,
     )
-
-
-def create_zipped_imagefolder_classwise(src, dst):
-    src_path = Path(src).expanduser()
-    assert src_path.exists(), f"src_path '{src_path}' doesn't exist"
-    dst_path = Path(dst).expanduser()
-    dst_path.mkdir(exist_ok=True, parents=True)
-
-    for item in os.listdir(src_path):
-        src_uri = src_path / item
-        if not src_uri.is_dir():
-            continue
-        shutil.make_archive(
-            base_name=dst_path / item,
-            format="zip",
-            root_dir=src_uri,
-        )
 
 
 def unzip_imagefolder_classwise(src, dst, num_workers=0):
