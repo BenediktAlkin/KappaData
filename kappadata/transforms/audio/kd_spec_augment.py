@@ -3,24 +3,24 @@ from kappadata.transforms.base.kd_stochastic_transform import KDStochasticTransf
 
 
 class KDSpecAugment(KDStochasticTransform):
-    def __init__(self, frequency_masking=None, time_masking=None, **kwargs):
+    def __init__(self, time_masking=None, frequency_masking=None, **kwargs):
         super().__init__(**kwargs)
-        assert (frequency_masking is not None) or (time_masking is not None)
-        self.frequency_masking = frequency_masking
+        assert (time_masking is not None) or (frequency_masking is not None)
         self.time_masking = time_masking
+        self.frequency_masking = frequency_masking
 
     def __call__(self, x, ctx=None):
         assert x.ndim == 3
-        if self.frequency_masking is not None:
-            x = self._mask_along_axis(
-                specgram=x,
-                mask_param=self.frequency_masking,
-                axis=1,
-            )
         if self.time_masking is not None:
             x = self._mask_along_axis(
                 specgram=x,
                 mask_param=self.time_masking,
+                axis=1,
+            )
+        if self.frequency_masking is not None:
+            x = self._mask_along_axis(
+                specgram=x,
+                mask_param=self.frequency_masking,
                 axis=2,
             )
         return x

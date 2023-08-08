@@ -31,6 +31,6 @@ class KDFbank(KDTransform):
             x = x[:self.target_length]
 
         # to image format
-        x = einops.rearrange(x, "time freq -> 1 freq time")
+        x = einops.rearrange(x, "time freq -> 1 time freq")
 
         return x

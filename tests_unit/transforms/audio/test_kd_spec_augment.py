@@ -1,3 +1,4 @@
+import einops
 import numpy as np
 import unittest
 
@@ -11,16 +12,16 @@ from torchvision.transforms import Compose
 class TestKDSpecAugment(unittest.TestCase):
     def _test_equal_to_torchaudio(self, kd_transform, ta_transform):
         # init data/seed
-        x = torch.randn(1, 128, 512, generator=torch.Generator().manual_seed(438))
+        ta_x = torch.randn(1, 128, 512, generator=torch.Generator().manual_seed(438))
         seed = 4389
         kd_transform.set_rng(np.random.default_rng(seed=seed))
 
-        # apply transform
-        kd_y = kd_transform(x)
+        # apply transform (KDSpecAugment expects TIMExFREQ instead of FREQxTIME)
+        kd_x = einops.rearrange(ta_x, "1 freq time -> 1 time freq")
+        kd_y = kd_transform(kd_x)
         with patch_rng(fn_names=["torch.rand"], seed=seed):
-            ta_y = ta_transform(x)
-
-        self.assertTrue(torch.all(kd_y == ta_y))
+            ta_y = ta_transform(ta_x)
+        self.assertTrue(torch.all(einops.rearrange(kd_y, "1 time freq -> 1 freq time") == ta_y))
 
     def test_equal_to_torchaudio_frequencymasking(self):
         self._test_equal_to_torchaudio(
@@ -38,7 +39,7 @@ class TestKDSpecAugment(unittest.TestCase):
         self._test_equal_to_torchaudio(
             kd_transform=KDSpecAugment(frequency_masking=48, time_masking=192),
             ta_transform=Compose([
-                FrequencyMasking(freq_mask_param=48),
                 TimeMasking(time_mask_param=192),
+                FrequencyMasking(freq_mask_param=48),
             ]),
         )
