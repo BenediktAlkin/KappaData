@@ -65,7 +65,7 @@ def copy_folder_from_global_to_local(
                 dst_path.mkdir()
         else:
             log(log_fn, f"using manually copied dataset '{dst_path}'")
-            return CopyFolderResult(was_copied=False, was_deleted=False, was_zip=False, was_batched_zip=False)
+            return CopyFolderResult(was_copied=False, was_deleted=False, source_format=None)
     else:
         dst_path.mkdir(parents=True)
 

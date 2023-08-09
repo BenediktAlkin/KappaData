@@ -6,8 +6,18 @@ from kappadata.copying.create_zips import create_zips_imagefolder, create_zips_f
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument("--src", type=str, required=True)
-    parser.add_argument("--dst", type=str, required=True)
+    parser.add_argument(
+        "--src",
+        type=str,
+        required=True,
+        help="source path (e.g. /local/audioset/eval_segments)",
+    )
+    parser.add_argument(
+        "--dst",
+        type=str,
+        required=True,
+        help="destination path (e.g. /global/AudioSet/eval_segments)",
+    )
     zip_group = parser.add_mutually_exclusive_group(required=True)
     zip_group.add_argument("--zip", action="store_const", dest="zip_format", const="zip")
     zip_group.add_argument("--zips", action="store_const", dest="zip_format", const="zips")
