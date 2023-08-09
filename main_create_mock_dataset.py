@@ -10,10 +10,11 @@ def parse_args():
     return vars(parser.parse_args())
 
 def main(dst, dataset):
+    kwargs = dict(dst=dst, log_fn=print)
     if dataset == "imagenet":
-        generate_mock_imagenet(dst=dst)
+        generate_mock_imagenet(**kwargs)
     elif dataset == "audioset":
-        generate_mock_audioset(dst=dst)
+        generate_mock_audioset(**kwargs)
     else:
         raise NotImplementedError
 

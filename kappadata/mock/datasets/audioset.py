@@ -36,10 +36,10 @@ def generate_mock_audioset(
             ytid = "".join([chr(ord("a") + v) for v in torch.randint(26, size=(11,), generator=generator)])
             # generate waveform
             waveform = torch.randn(1, 16000, generator=generator)
-            torchaudio.save(split_uri / f"{ytid}.wav", waveform, sample_rate=16000)
+            torchaudio.save(split_uri / f"{ytid}_0.0_1.0.wav", waveform, sample_rate=16000)
             # generate labels
-            num_positive_labels = torch.randint(labels_per_sample_max, size=(1,), generator=generator)
-            num_positive_labels_total += num_positive_labels
+            num_positive_labels = torch.randint(1, labels_per_sample_max, size=(1,), generator=generator)
+            num_positive_labels_total += num_positive_labels.item()
             positive_class_ids = [class_ids[i] for i in torch.randperm(len(class_ids))[:num_positive_labels]]
             row = f'{ytid}, 0.000, 1.000, "{",".join(positive_class_ids)}"'
             sample_rows.append(row)
