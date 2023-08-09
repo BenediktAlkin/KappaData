@@ -21,9 +21,9 @@ def generate_mock_audioset(
 
     log(f"generating mock AudioSet into '{dst.as_posix()}'")
     for split, num_samples in [
-        ("unbalanced_train", num_unbalanced_samples),
-        ("balanced_train", num_balanced_samples),
-        ("eval", num_eval_samples),
+        ("unbalanced_train_segments", num_unbalanced_samples),
+        ("balanced_train_segments", num_balanced_samples),
+        ("eval_segments", num_eval_samples),
     ]:
         split_uri = dst / split
         split_uri.mkdir()
