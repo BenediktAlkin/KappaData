@@ -1,5 +1,6 @@
 from functools import partial
 
+import torch
 from torch.utils.data import Subset
 
 from kappadata.errors import UseModeWrapperException
@@ -86,4 +87,5 @@ class KDSubset(Subset):
 
     def get_sampler_weights(self):
         sampler_weights = self.dataset.get_sampler_weights()
-        return [sampler_weights[i] for i in self.indices]
+        assert torch.is_tensor(sampler_weights)
+        return sampler_weights[self.indices]
