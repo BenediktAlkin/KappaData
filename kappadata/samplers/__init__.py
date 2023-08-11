@@ -4,3 +4,4 @@ from .interleaved_sampler import InterleavedSampler, InterleavedSamplerConfig
 from .random_sampler import RandomSampler
 from .semi_sampler import SemiSampler
 from .sequential_sampler import SequentialSampler
+from .weighted_sampler import WeightedSampler
