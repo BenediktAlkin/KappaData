@@ -83,3 +83,7 @@ class KDSubset(Subset):
 
     def __getitem__(self, idx):
         raise UseModeWrapperException
+
+    def get_sampler_weights(self):
+        sampler_weights = self.dataset.get_sampler_weights()
+        return [sampler_weights[i] for i in self.indices]
