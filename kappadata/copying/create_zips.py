@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import shutil
 import zipfile
@@ -55,7 +56,9 @@ def create_zips_folder(src, dst, batch_size=1000):
 
     # create zipped folders, each with <batch_size> items
     num_batches = (len(items) + batch_size - 1) // batch_size
+    num_digits = int(np.log10(num_batches)) + 1
+    format_str = f"{{:0{num_digits}d}}"
     for i in range(0, num_batches):
-        with zipfile.ZipFile(dst / f"batch_{i}.zip", "w") as f:
+        with zipfile.ZipFile(dst / f"batch_{format_str.format(i)}.zip", "w") as f:
             for j in range(i * batch_size, min(len(items), (i + 1) * batch_size)):
                 f.write(src_path / items[j], items[j])
