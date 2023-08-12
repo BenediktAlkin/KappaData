@@ -1,5 +1,5 @@
 ##
-
+- wrapper/baseclass for DistributedSampler
 - fused operations dont work with nested wrappers (e.g. XTransformWrapper(KDMixWrapper(dataset)))
 
 - collators cant be used as part of deterministically augmented dataset
