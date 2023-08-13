@@ -33,10 +33,9 @@ class WeightedSampler:
     def __iter__(self):
         # draw indices for current epoch (same for all ranks)
         generator = torch.Generator().manual_seed(self.seed + self.epoch)
-        effective_length = self.effective_length
-        indices = torch.multinomial(self.weights, effective_length, replacement=False, generator=generator)
+        indices = torch.multinomial(self.weights, self.effective_length, replacement=False, generator=generator)
         # distribute among ranks
-        indices = indices[self.rank:effective_length:self.world_size].tolist()
+        indices = indices[self.rank:self.effective_length:self.world_size].tolist()
         # drop last
         indices = indices[:len(self)]
         yield from indices
