@@ -8,6 +8,7 @@ from kappadata.transforms.audio import KDSpecAugment
 from tests_util.patch_rng import patch_rng
 from torchaudio.transforms import FrequencyMasking, TimeMasking
 from torchvision.transforms import Compose
+from tests_util.mock_rng import MockRng
 
 class TestKDSpecAugment(unittest.TestCase):
     def _test_equal_to_torchaudio(self, kd_transform, ta_transform):
@@ -43,3 +44,18 @@ class TestKDSpecAugment(unittest.TestCase):
                 FrequencyMasking(freq_mask_param=48),
             ]),
         )
+
+    def test_conversion_error(self):
+        # edge case where torch.tensor(0.99999999) results in 1. due to conversion impresicions
+        # NOTE: original implementation uses torch to draw random numbers in [0,1)
+        # but the implementation is cleaner with np.random anyways
+        t = KDSpecAugment(frequency_masking=48, time_masking=192)
+        rng = MockRng(
+            dict(
+                random=[0.99999999, 0.99999999, 0.99999999, 0.0, 0.99999999, 0.5],
+            ),
+        )
+        t.set_rng(rng)
+        x = torch.ones(1, 128, 512)
+        for _ in range(3):
+            t(x)

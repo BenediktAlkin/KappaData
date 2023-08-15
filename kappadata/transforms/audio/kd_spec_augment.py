@@ -1,5 +1,6 @@
 import torch
 from kappadata.transforms.base.kd_stochastic_transform import KDStochasticTransform
+from kappadata.utils.random import np_random_as_tensor
 
 
 class KDSpecAugment(KDStochasticTransform):
@@ -50,11 +51,11 @@ class KDSpecAugment(KDStochasticTransform):
         # pack batch
         shape = specgram.size()
         specgram = specgram.reshape([-1] + list(shape[-2:]))
-        value = torch.tensor(self.rng.random()) * mask_param
-        min_value = torch.tensor(self.rng.random()) * (specgram.size(axis) - value)
+        value = int(self.rng.random() * mask_param)
+        min_value = int(self.rng.random() * (specgram.size(axis) - value))
 
-        mask_start = (min_value.long()).squeeze()
-        mask_end = (min_value.long() + value.long()).squeeze()
+        mask_start = min_value
+        mask_end = (min_value + value)
         mask = torch.arange(0, specgram.shape[axis], device=specgram.device, dtype=specgram.dtype)
         mask = (mask >= mask_start) & (mask < mask_end)
         if axis == 1:
