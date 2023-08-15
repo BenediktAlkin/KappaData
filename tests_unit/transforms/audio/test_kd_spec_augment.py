@@ -47,8 +47,6 @@ class TestKDSpecAugment(unittest.TestCase):
 
     def test_conversion_error(self):
         # edge case where torch.tensor(0.99999999) results in 1. due to conversion impresicions
-        # NOTE: original implementation uses torch to draw random numbers in [0,1)
-        # but the implementation is cleaner with np.random anyways
         t = KDSpecAugment(frequency_masking=48, time_masking=192)
         rng = MockRng(
             dict(
