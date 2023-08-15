@@ -22,7 +22,8 @@ class TestKDSpecAugment(unittest.TestCase):
         kd_y = kd_transform(kd_x)
         with patch_rng(fn_names=["torch.rand"], seed=seed):
             ta_y = ta_transform(ta_x)
-        self.assertTrue(torch.all(einops.rearrange(kd_y, "1 time freq -> 1 freq time") == ta_y))
+        expected = einops.rearrange(kd_y, "1 time freq -> 1 freq time")
+        self.assertTrue(torch.all(expected == ta_y), (expected - ta_y).abs().max())
 
     def test_equal_to_torchaudio_frequencymasking(self):
         self._test_equal_to_torchaudio(

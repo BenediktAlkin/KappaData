@@ -54,7 +54,6 @@ class KDSpecAugment(KDStochasticTransform):
         value = np_random_as_tensor(self.rng) * mask_param
         min_value = np_random_as_tensor(self.rng) * (specgram.size(axis) - value)
 
-        # NOTE: conversion to long would be cleaner if done above but that makes it no longer equivalent to torchaudio
         mask_start = min_value.long()
         mask_end = min_value.long() + value.long()
         mask = torch.arange(0, specgram.shape[axis], device=specgram.device, dtype=specgram.dtype)
