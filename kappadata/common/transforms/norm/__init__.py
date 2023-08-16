@@ -5,8 +5,8 @@ from .kd_cifar10_norm import KDCifar10Norm
 from .kd_esc50_norm import KDEsc50Norm
 from .kd_image_net_norm import KDImageNetNorm
 from .kd_sid_norm import KDSidNorm
-from .kd_spc1_norm import KDSpc1Norm
-from .kd_spc2_norm import KDSpc2Norm
+from .kd_speech_ccommands_v1_norm import KDSpeechCommandsV1Norm
+from .kd_speech_ccommands_v2_norm import KDSpeechCommandsV2Norm
 
 
 def string_to_norm(name):
