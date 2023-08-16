@@ -4,10 +4,9 @@ from kappadata.utils.magnitude_sampler import MagnitudeSampler
 from .base.kd_stochastic_transform import KDStochasticTransform
 
 
-class KDAdditiveGaussianNoise(KDStochasticTransform):
+class KDAdditiveUniformNoise(KDStochasticTransform):
     def __init__(
             self,
-            std: float,
             magnitude: float = 1.,
             magnitude_std: float = float("inf"),
             magnitude_min: float = 0.,
@@ -17,7 +16,6 @@ class KDAdditiveGaussianNoise(KDStochasticTransform):
             **kwargs,
     ):
         super().__init__(**kwargs)
-        self.std = std
         self.magnitude_sampler = MagnitudeSampler(
             magnitude=magnitude,
             magnitude_std=magnitude_std,
@@ -33,7 +31,7 @@ class KDAdditiveGaussianNoise(KDStochasticTransform):
 
     def __call__(self, x, ctx=None):
         magnitude = self.magnitude_sampler.sample(self.rng)
-        noise = torch.from_numpy(self.rng.normal(scale=magnitude * self.std, size=x.shape)).float()
+        noise = torch.from_numpy(self.rng.random(size=x.shape)).float() * magnitude
         if ctx is not None:
             ctx[self.ctx_key] = magnitude
         x = x + noise
