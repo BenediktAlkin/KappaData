@@ -33,7 +33,10 @@ def copy_imagefolder_from_global_to_local(global_path, local_path, relative_path
         local_path = Path(local_path).expanduser()
     if relative_path is not None and not isinstance(relative_path, Path):
         # relative path can be .zip -> relative path is always without .zip as dst_path is never .zip
-        relative_path = Path(relative_path).with_suffix("")
+        relative_path = Path(relative_path)
+        if relative_path.name.endswith(".zip"):
+            relative_path = relative_path.with_suffix("")
+
 
     # check src_path exists (src_path can be folder or .zip)
     src_path = global_path / relative_path if relative_path is not None else global_path
