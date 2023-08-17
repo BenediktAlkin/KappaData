@@ -69,7 +69,7 @@ class KDMixWrapper(KDWrapper):
         apply = rng.random()
         if apply > self.total_p:
             # conver to onehot otherwise collate gets different shape if mixup is only applied sometimes
-            cls = to_one_hot_vector(y, n_classes=n_classes)
+            cls = to_one_hot_vector(cls, n_classes=n_classes)
             return x, cls
         use_cutmix = apply < self.cutmix_p
 
