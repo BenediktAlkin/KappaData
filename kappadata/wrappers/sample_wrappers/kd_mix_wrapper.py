@@ -65,8 +65,11 @@ class KDMixWrapper(KDWrapper):
         rng = np.random.default_rng(seed=self.seed + idx if self.seed is not None else None)
 
         # sample what operation to apply (nothing/cutmix/mixup)
+        n_classes = self.getdim_class()
         apply = rng.random()
         if apply > self.total_p:
+            # conver to onehot otherwise collate gets different shape if mixup is only applied sometimes
+            cls = to_one_hot_vector(y, n_classes=n_classes)
             return x, cls
         use_cutmix = apply < self.cutmix_p
 
@@ -76,7 +79,6 @@ class KDMixWrapper(KDWrapper):
         cls2 = self.dataset.getitem_class(idx2, ctx=ctx)
 
         # convert cls to onehot
-        n_classes = self.getdim_class()
         cls = to_one_hot_vector(cls, n_classes=n_classes)
         cls2 = to_one_hot_vector(cls2, n_classes=n_classes)
 
