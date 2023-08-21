@@ -1,5 +1,6 @@
 from .kd_mix_wrapper import KDMixWrapper
 from .kd_multi_view_wrapper import KDMultiViewWrapper
+from .kd_random_class_wrapper import KDRandomClassWrapper
 from .label_smoothing_wrapper import LabelSmoothingWrapper
 from .one_hot_wrapper import OneHotWrapper
 from .semseg_transform_wrapper import SemsegTransformWrapper
