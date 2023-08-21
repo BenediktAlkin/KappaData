@@ -123,7 +123,8 @@ def unzip_imagefolder_classwise(src, dst, num_workers=0):
     # compose jobs
     jobargs = []
     for item in os.listdir(src_path):
-        assert item.endswith(".zip")
+        if not item.endswith(".zip"):
+            continue
         dst_uri = (dst_path / item).with_suffix("")
         src_uri = src_path / item
         jobargs.append((src_uri, dst_uri))
