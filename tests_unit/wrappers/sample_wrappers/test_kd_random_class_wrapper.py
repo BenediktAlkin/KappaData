@@ -27,6 +27,28 @@ class TestOneHotWrapper(unittest.TestCase):
         classes = self.iterate(ds)
         self.assertEqual([4, 0, 1, 3, 2] * 2, classes)
 
+    def test_gatherbug2(self):
+        ds = KDRandomClassWrapper(
+            dataset=self._new_dataset(size=8),
+            mode="gatherbug",
+            mode_kwargs=dict(world_size=2),
+            num_classes=8,
+        )
+        self.assertEqual((8,), ds.getshape_class())
+        classes = self.iterate(ds)
+        self.assertEqual([0, 2, 4, 6, 1, 3, 5, 7], classes)
+
+    def test_gatherbug4(self):
+        ds = KDRandomClassWrapper(
+            dataset=self._new_dataset(size=8),
+            mode="gatherbug",
+            mode_kwargs=dict(world_size=4),
+            num_classes=8,
+        )
+        self.assertEqual((8,), ds.getshape_class())
+        classes = self.iterate(ds)
+        self.assertEqual([0, 4, 1, 5, 2, 6, 3, 7], classes)
+
     def test_setter_mode(self):
         ds = KDRandomClassWrapper(dataset=self._new_dataset(size=10), mode="random", num_classes=5, seed=2)
         ds.mode = "randperm"
