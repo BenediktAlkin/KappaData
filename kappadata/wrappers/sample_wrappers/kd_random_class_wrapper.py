@@ -63,7 +63,7 @@ class KDRandomClassWrapper(KDWrapper):
         else:
             raise NotImplementedError
         kwargs = dict(num_classes=self._num_classes, size=size, generator=generator)
-        self._classes = gen_fn(**kwargs, **self._mode_kwargs).tolist()
+        self._classes = gen_fn(**kwargs, **self._mode_kwargs or {}).tolist()
 
     @staticmethod
     def _random(num_classes, size, generator):

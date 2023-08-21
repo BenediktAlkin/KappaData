@@ -6,7 +6,7 @@ from tests_util.datasets.class_dataset import ClassDataset
 from kappadata.wrappers.sample_wrappers import KDRandomClassWrapper
 
 
-class TestOneHotWrapper(unittest.TestCase):
+class TestRandomClassWrapper(unittest.TestCase):
     @staticmethod
     def _new_dataset(size):
         return ClassDataset(classes=[-1] * size, n_classes=-1)
