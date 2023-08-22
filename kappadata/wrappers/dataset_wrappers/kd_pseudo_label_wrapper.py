@@ -11,7 +11,9 @@ class KDPseudoLabelWrapper(KDWrapper):
 
         # load pseudo labels
         if uri is not None:
-            uri = Path(uri).expanduser()
+            if not isinstance(uri, Path):
+                uri = Path(uri)
+            uri = uri.expanduser()
             assert uri.exists()
             pseudo_labels = torch.load(uri, map_location="cpu").float()
             assert len(pseudo_labels) == len(self.dataset)
