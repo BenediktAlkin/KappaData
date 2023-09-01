@@ -84,7 +84,7 @@ def copy_folder_from_global_to_local(
         else:
             source_format = "raw"
             # copy folders which contain the raw files (not zipped or anything)
-            log(log_fn, f"copying folders of '{src_path}' to '{dst_path}'")
+            log(log_fn, f"copying files of '{src_path}' to '{dst_path}'")
             # copy folder (dirs_exist_ok=True because dst_path is created for start_copy_file)
             shutil.copytree(src_path, dst_path, dirs_exist_ok=True)
     elif src_path.with_suffix(".zip").exists():
