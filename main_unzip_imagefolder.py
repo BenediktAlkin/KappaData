@@ -6,8 +6,18 @@ from kappadata.copying.image_folder import unzip_imagefolder_classwise
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument("--src", type=str, required=True)
-    parser.add_argument("--dst", type=str, required=True)
+    parser.add_argument(
+        "--src",
+        type=str,
+        required=True,
+        help="path to folder with classwise zips (e.g. /global/imagenet1k/train)",
+    )
+    parser.add_argument(
+        "--dst",
+        type=str,
+        required=True,
+        help="path to destination folder (e.g. /local/imagenet1k/train)",
+    )
     parser.add_argument("--num_workers", type=int, default=0)
     return vars(parser.parse_args())
 
