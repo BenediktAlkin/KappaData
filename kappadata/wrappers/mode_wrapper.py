@@ -68,6 +68,12 @@ class ModeWrapper(KDDataset):
         return item in mode.split(" ")
 
     @staticmethod
+    def add_item(mode, item):
+        if ModeWrapper.has_item(mode=mode, item=item):
+            return mode
+        return f"{mode} {item}"
+
+    @staticmethod
     def get_item_index(mode, item):
         return mode.split(" ").index(item)
 
