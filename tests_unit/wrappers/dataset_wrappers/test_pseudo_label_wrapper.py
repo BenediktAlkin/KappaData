@@ -31,6 +31,18 @@ class TestPseudoLabelWrapper(TestCase):
         self.assertEqual(pseudo_labels, [ds.getitem_class(i) for i in range(len(ds))])
         self.assertEqual(pseudo_labels, ds.getall_class())
 
+    def test_hard_shuffle4(self):
+        self.setUpPyfakefs()
+        original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
+        pseudo_labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard_shuffle4.th")
+        ds = KDPseudoLabelWrapper(ClassDataset(classes=original), uri=uri, shuffle_world_size=4)
+        self.assertEqual(10, len(ds))
+        # pseudo labels are padded to [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1] -> take every 4th -> cut away last 2
+        expected = [0, 4, 8, 1, 5, 9, 2, 6, 0, 3]
+        self.assertEqual(expected, [ds.getitem_class(i) for i in range(len(ds))])
+        self.assertEqual(expected, ds.getall_class())
+
     def test_soft_topk_uniform_static(self):
         self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
