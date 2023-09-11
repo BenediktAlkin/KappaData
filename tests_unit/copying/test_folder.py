@@ -74,7 +74,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
 
     def test_autocopy_folder(self):
         global_path, local_path = self._setup_data()
-        msg0 = r"copying folders of '/global/dataset/train' to '/local/data/dataset/train'"
+        msg0 = r"copying files of '/global/dataset/train' to '/local/data/dataset/train'"
         self._test_autocopy(global_path, local_path, source_format="raw", msg0=msg0)
 
     def test_autocopy_zip(self):
@@ -136,7 +136,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
 
     def test_incomplete_copy_raw(self):
         global_path, local_path = self._setup_data()
-        msg1 = "copying folders of '/global/dataset/train' to '/local/data/dataset/train'"
+        msg1 = "copying files of '/global/dataset/train' to '/local/data/dataset/train'"
         self._test_incomplete_copy(global_path, local_path, source_format="raw", msg1=msg1)
 
     def test_incomplete_copy_zip(self):
