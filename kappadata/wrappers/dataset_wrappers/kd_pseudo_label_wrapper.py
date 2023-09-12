@@ -9,7 +9,17 @@ from kappadata.utils.global_rng import GlobalRng
 
 
 class KDPseudoLabelWrapper(KDWrapper):
-    def __init__(self, dataset, uri, topk=None, tau=None, seed=None, shuffle_world_size=None, **kwargs):
+    def __init__(
+            self,
+            dataset,
+            uri,
+            threshold=None,
+            topk=None,
+            tau=None,
+            seed=None,
+            shuffle_world_size=None,
+            **kwargs,
+    ):
         super().__init__(dataset=dataset, **kwargs)
         assert len(self.getshape_class()) == 1
 
@@ -48,6 +58,7 @@ class KDPseudoLabelWrapper(KDWrapper):
 
         # set properties
         self.pseudo_labels = pseudo_labels
+        self.threshold = threshold
         self.topk = topk
         self.tau = tau
         self.seed = seed
@@ -58,7 +69,10 @@ class KDPseudoLabelWrapper(KDWrapper):
 
     # noinspection PyUnusedLocal
     def getitem_class(self, idx, ctx=None):
-        return self._getitem_class(idx).long().item()
+        item = self._getitem_class(idx)
+        if torch.is_tensor(item):
+            item = item.long().item()
+        return item
 
     def _getitem_class(self, idx):
         if self.seed is not None:
@@ -68,7 +82,9 @@ class KDPseudoLabelWrapper(KDWrapper):
             # dynamic pseudo labels (resampled for every epoch)
             rng = self._global_rng
 
+        # sample pseudo labels
         if self.topk is not None:
+            assert self.threshold is None, "threshold with sampled pseudo labels is not supported"
             # sample from topk
             assert self.pseudo_labels.ndim == 2
             topk_probs, topk_idxs = self.pseudo_labels[idx].topk(k=self.topk)
@@ -91,9 +107,17 @@ class KDPseudoLabelWrapper(KDWrapper):
         # hard labels
         assert self.tau is None
         if self.pseudo_labels.ndim == 1:
+            assert self.threshold is None, "provided pseudo labels have no probabilities -> can't apply threshold"
             return self.pseudo_labels[idx]
         elif self.pseudo_labels.ndim == 2:
-            return self.pseudo_labels[idx].argmax()
+            if self.threshold is None:
+                return self.pseudo_labels[idx].argmax()
+            else:
+                pseudo_label_probs = self.pseudo_labels[idx].softmax(dim=0)
+                argmax = pseudo_label_probs.argmax()
+                if pseudo_label_probs[argmax] > self.threshold:
+                    return argmax
+                return -1
         else:
             raise NotImplementedError
 
