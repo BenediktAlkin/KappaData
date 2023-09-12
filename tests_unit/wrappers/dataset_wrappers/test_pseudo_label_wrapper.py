@@ -42,7 +42,7 @@ class TestPseudoLabelWrapper(TestCase):
         self.assertEqual(10, ds.getshape_class()[0])
         expected = [4, 3, 2, 6, 5, 9, 7, 3, 0, 6]
         self.assertEqual(expected, [ds.getitem_class(i) for i in range(len(ds))])
-        self.assertEqual([0, 0, 0, 1, 1, 1, 1, 0, 0, 1], ds.split_indices.tolist())
+        self.assertEqual([0, 0, 0, 1, 1, 1, 1, 0, 0, 1], ds.split_indices)
 
     def test_hard_shuffle4(self):
         self.setUpPyfakefs()
