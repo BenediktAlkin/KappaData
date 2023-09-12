@@ -26,10 +26,23 @@ class TestPseudoLabelWrapper(TestCase):
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard.th")
         ds = KDPseudoLabelWrapper(ClassDataset(classes=original), uri=uri)
         self.assertEqual(10, len(ds))
+        self.assertEqual(5, ds.getshape_class()[0])
         self.assertEqual(pseudo_labels, [ds.getitem_class(i) for i in range(len(ds))])
         self.assertEqual(pseudo_labels, ds.getall_class())
         self.assertEqual(pseudo_labels, [ds.getitem_class(i) for i in range(len(ds))])
         self.assertEqual(pseudo_labels, ds.getall_class())
+
+    def test_hard_splits2(self):
+        self.setUpPyfakefs()
+        original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
+        pseudo_labels = [4, 3, 2, 1, 0, 4, 2, 3, 0, 1]
+        uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard.th")
+        ds = KDPseudoLabelWrapper(ClassDataset(classes=original), uri=uri, splits=2, seed=0)
+        self.assertEqual(10, len(ds))
+        self.assertEqual(10, ds.getshape_class()[0])
+        expected = [4, 3, 2, 6, 5, 9, 7, 3, 0, 6]
+        self.assertEqual(expected, [ds.getitem_class(i) for i in range(len(ds))])
+        self.assertEqual([0, 0, 0, 1, 1, 1, 1, 0, 0, 1], ds.split_indices.tolist())
 
     def test_hard_shuffle4(self):
         self.setUpPyfakefs()

@@ -18,10 +18,11 @@ class KDPseudoLabelWrapper(KDWrapper):
             tau=None,
             seed=None,
             shuffle_world_size=None,
+            splits=1,
             **kwargs,
     ):
         super().__init__(dataset=dataset, **kwargs)
-        assert len(self.getshape_class()) == 1
+        assert len(self.dataset.getshape_class()) == 1
 
         # load pseudo labels
         if uri is not None:
@@ -56,12 +57,29 @@ class KDPseudoLabelWrapper(KDWrapper):
             if num_padded_samples > 0:
                 pseudo_labels = pseudo_labels[:len(self)]
 
+
         # set properties
         self.pseudo_labels = pseudo_labels
         self.threshold = threshold
         self.topk = topk
         self.tau = tau
+        self.splits = splits
         self.seed = seed
+
+        # generate static indices for splits
+        if self.splits > 1:
+            if self.seed is not None:
+                rng = np.random.default_rng(seed=self.seed)
+            else:
+                rng = self._global_rng
+            self.split_indices = (rng.permutation(len(self)) % self.splits).astype(np.int)
+        else:
+            self.split_indices = None
+
+    def getshape_class(self):
+        og_shape = self.dataset.getshape_class()
+        assert len(og_shape) == 1
+        return self.splits * og_shape[0],
 
     @property
     def _global_rng(self):
@@ -72,6 +90,11 @@ class KDPseudoLabelWrapper(KDWrapper):
         item = self._getitem_class(idx)
         if torch.is_tensor(item):
             item = item.long().item()
+        # assign to a split
+        # Example: 1000 samples with 100 classes -> with 2 splits there are 1000 samples with 200 classes evenly split
+        if self.split_indices is not None:
+            split_idx = self.split_indices[idx]
+            item += self.dataset.getshape_class()[0] * split_idx
         return item
 
     def _getitem_class(self, idx):
@@ -122,6 +145,8 @@ class KDPseudoLabelWrapper(KDWrapper):
             raise NotImplementedError
 
     def getall_class(self):
+        if self.splits > 1:
+            raise NotImplementedError
         if self.pseudo_labels.ndim == 1:
             return self.pseudo_labels.tolist()
         raise NotImplementedError
