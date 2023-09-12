@@ -36,7 +36,7 @@ class KDPseudoLabelWrapper(KDWrapper):
             if pseudo_labels.ndim == 2 and pseudo_labels.size(1) == 1:
                 pseudo_labels = pseudo_labels.squeeze()
             if pseudo_labels.ndim == 2:
-                assert pseudo_labels.size(1) == self.getshape_class()[0]
+                assert pseudo_labels.size(1) == self.dataset.getshape_class()[0]
         else:
             raise NotImplementedError
 
