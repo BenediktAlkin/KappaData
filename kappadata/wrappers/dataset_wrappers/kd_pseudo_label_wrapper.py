@@ -72,7 +72,7 @@ class KDPseudoLabelWrapper(KDWrapper):
                 rng = np.random.default_rng(seed=self.seed)
             else:
                 rng = self._global_rng
-            self.split_indices = (rng.permutation(len(self)) % self.splits).astype(int)
+            self.split_indices = (rng.permutation(len(self)) % self.splits).tolist()
         else:
             self.split_indices = None
 
