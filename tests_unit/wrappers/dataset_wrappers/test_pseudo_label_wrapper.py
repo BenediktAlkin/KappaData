@@ -87,7 +87,6 @@ class TestPseudoLabelWrapper(TestCase):
         self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
         pseudo_labels = torch.randn(len(original), 5, generator=torch.Generator().manual_seed(0))
-        pseudo_labels_hard = pseudo_labels.argmax(dim=1).tolist()
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="threshold.th")
         ds = KDPseudoLabelWrapper(ClassDataset(classes=original), uri=uri, threshold=0.5)
         self.assertEqual(10, len(ds))
