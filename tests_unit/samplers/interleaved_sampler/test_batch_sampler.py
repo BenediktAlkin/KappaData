@@ -46,3 +46,31 @@ class TestInterleavedSamplerBatchSampler(unittest.TestCase):
                 [14],
             ],
         )
+
+    def test_trainbs1_evalbs4(self):
+        self._run(
+            sampler=InterleavedSampler(
+                main_sampler=SequentialSampler(list(range(5))),
+                configs=[
+                    InterleavedSamplerConfig(
+                        sampler=SequentialSampler(list(range(5))),
+                        every_n_epochs=1,
+                        batch_size=4,
+                    ),
+                ],
+                batch_size=1,
+                epochs=2,
+            ),
+            expected=[
+                # main
+                [0], [1], [2], [3], [4],
+                # configs[0]
+                [5, 6, 7, 8],
+                [9],
+                # main
+                [0], [1], [2], [3], [4],
+                # configs[0]
+                [5, 6, 7, 8],
+                [9],
+            ],
+        )

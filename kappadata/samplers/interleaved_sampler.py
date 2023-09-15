@@ -12,16 +12,19 @@ class InterleavedSamplerConfig:
     every_n_updates: int = None
     every_n_samples: int = None
     collator: callable = None
+    batch_size: int = None
 
     def __str__(self):
-        interval_strs = []
+        strs = []
         if self.every_n_epochs is not None:
-            interval_strs.append(f"every_n_epochs={self.every_n_epochs}")
+            strs.append(f"every_n_epochs={self.every_n_epochs}")
         if self.every_n_updates is not None:
-            interval_strs.append(f"every_n_updates={self.every_n_updates}")
+            strs.append(f"every_n_updates={self.every_n_updates}")
         if self.every_n_samples is not None:
-            interval_strs.append(f"every_n_samples={self.every_n_samples}")
-        return f"{type(self).__name__}({','.join(interval_strs)})"
+            strs.append(f"every_n_samples={self.every_n_samples}")
+        if self.batch_size is not None:
+            strs.append(f"batch_size={self.batch_size}")
+        return f"{type(self).__name__}({','.join(strs)})"
 
 
 # can't be a local class as it is required to be pickleable
@@ -118,6 +121,7 @@ class InterleavedSampler:
             assert config.every_n_epochs is None or 0 < config.every_n_epochs
             assert config.every_n_updates is None or 0 < config.every_n_updates
             assert config.every_n_samples is None or 0 < config.every_n_samples
+            assert config.batch_size is None or 0 < config.batch_size
 
         # infer full start checkpoint from one of epoch/update/sample
         if start_epoch is not None:
@@ -276,11 +280,12 @@ class InterleavedSampler:
                         if not should_iter:
                             continue
                         index_offset = self.index_offsets[config_idx]
+                        interleaved_batch_size = config.batch_size or self.batch_size
                         sample_in_interleaved = 0
                         for interleaved_idx in config.sampler:
                             sample_in_interleaved += 1
                             if (
-                                    sample_in_interleaved % self.batch_size == 0 or
+                                    sample_in_interleaved % interleaved_batch_size == 0 or
                                     sample_in_interleaved == len(config.sampler)
                             ):
                                 yield True, index_offset + interleaved_idx
