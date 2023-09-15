@@ -200,8 +200,10 @@ class KDPseudoLabelWrapper(KDWrapper):
             raise NotImplementedError
 
     def getall_class(self):
-        if self.splits > 1:
+        if self.splits > 1 or self.tau is not None or self.topk is not None:
             raise NotImplementedError
         if self.pseudo_labels.ndim == 1:
             return self.pseudo_labels.tolist()
+        if self.pseudo_labels.ndim == 2:
+            return self.pseudo_labels.argmax(dim=1).tolist()
         raise NotImplementedError

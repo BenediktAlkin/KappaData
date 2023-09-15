@@ -1,3 +1,5 @@
+from functools import partial
+
 from kappadata.errors import UseModeWrapperException
 from .kd_dataset import KDDataset
 
@@ -16,7 +18,20 @@ class KDWrapper(KDDataset):
     def __getattr__(self, item):
         if item == "dataset":
             return getattr(super(), item)
+        # make getdim_... an alias to getshape_...[0]
+        if item.startswith("getdim_"):
+            return partial(self.getdim, item[len("getdim_"):])
         return getattr(self.dataset, item)
+
+    def getshape(self, kind):
+        attr = f"getshape_{kind}"
+        assert hasattr(self, attr)
+        return getattr(self, attr)()
+
+    def getdim(self, kind):
+        shape = self.getshape(kind)
+        assert isinstance(shape, tuple) and len(shape) == 1
+        return shape[0]
 
     def __getitem__(self, idx):
         raise UseModeWrapperException
