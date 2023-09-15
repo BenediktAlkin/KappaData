@@ -7,6 +7,12 @@ from kappadata.utils.global_rng import GlobalRng
 
 
 class RandomSuperclassWrapper(KDWrapper):
+    """
+    randomly merge classes into superclasses
+    Example input: dataset with 10 classes and classes_per_superclass=2
+    Example output: dataset with 5 classes where each class consists of 2 input classes
+    """
+
     def __init__(self, dataset, classes_per_superclass, seed=None):
         super().__init__(dataset=dataset)
         self.classes_per_subclass = classes_per_superclass

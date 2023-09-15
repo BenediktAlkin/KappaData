@@ -3,6 +3,7 @@ from .kd_pseudo_label_wrapper import KDPseudoLabelWrapper
 from .oversampling_wrapper import OversamplingWrapper
 from .overwrite_classes_wrapper import OverwriteClassesWrapper
 from .percent_filter_wrapper import PercentFilterWrapper
+from .random_superclass_wrapper import RandomSuperclassWrapper
 from .repeat_wrapper import RepeatWrapper
 from .shuffle_wrapper import ShuffleWrapper
 from .subset_wrapper import SubsetWrapper
