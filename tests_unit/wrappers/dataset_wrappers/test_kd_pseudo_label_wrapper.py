@@ -133,3 +133,19 @@ class TestKDPseudoLabelWrapper(TestCase):
             [1, 1, 3, 3, 2, 2, 0, 0, 2, 2, 0, 0, 1, 1, 3, 3],
             [ds.getitem_class(i) for i in range(len(ds))]
         )
+
+    def test_shuffle_pseudoclass(self):
+        self.setUpPyfakefs()
+        pseudo_labels = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+        uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard.th")
+        ds = KDPseudoLabelWrapper(
+            ClassDataset(classes=list(reversed(pseudo_labels))),
+            uri=uri,
+            shuffle_world_size=2,
+            shuffle_preprocess_mode="shuffle_pseudoclass",
+            seed=0,
+        )
+        self.assertEqual(
+            [1, 1, 3, 3, 2, 2, 0, 0, 2, 2, 0, 0, 1, 1, 3, 3],
+            [ds.getitem_class(i) for i in range(len(ds))]
+        )

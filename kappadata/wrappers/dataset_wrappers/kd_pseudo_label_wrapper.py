@@ -68,6 +68,27 @@ class KDPseudoLabelWrapper(KDWrapper):
                 perm = np.concatenate(perm)
                 pseudo_labels = pseudo_labels[perm]
                 inv_perm = np.argsort(perm)
+            elif shuffle_preprocess_mode == "shuffle_pseudoclass":
+                assert seed is not None
+                assert topk is None and tau is None
+                rng = np.random.default_rng(seed=seed)
+                num_cls = self.dataset.getshape_class()[0]
+                if num_cls == 1:
+                    num_cls = 2
+                if pseudo_labels.ndim == 1:
+                    cls = pseudo_labels.numpy()
+                elif pseudo_labels.ndim == 2:
+                    cls = pseudo_labels.argmax(dim=1).numpy()
+                else:
+                    raise NotImplementedError
+                cls_perm = rng.permutation(num_cls)
+                perm = []
+                for i in range(num_cls):
+                    idxs = (cls == cls_perm[i]).nonzero()[0]
+                    perm.append(idxs)
+                perm = np.concatenate(perm)
+                pseudo_labels = pseudo_labels[perm]
+                inv_perm = np.argsort(perm)
             else:
                 raise NotImplementedError
 
