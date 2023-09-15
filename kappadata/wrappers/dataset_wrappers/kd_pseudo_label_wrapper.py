@@ -54,6 +54,7 @@ class KDPseudoLabelWrapper(KDWrapper):
                 pseudo_labels = pseudo_labels[perm]
                 inv_perm = np.argsort(perm)
             elif shuffle_preprocess_mode == "shuffle_classwise":
+                assert seed is not None
                 rng = np.random.default_rng(seed=seed)
                 num_cls = self.dataset.getshape_class()[0]
                 if num_cls == 1:
