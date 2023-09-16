@@ -25,7 +25,10 @@ class RandomSuperclassWrapper(KDWrapper):
         else:
             # dynamic pseudo labels (resampled for every epoch)
             rng = GlobalRng()
-        self.perm = rng.permutation(dataset.getdim_class())
+        if shuffle:
+            self.perm = rng.permutation(dataset.getdim_class())
+        else:
+            self.perm = np.arange(dataset.getdim_class())
         if superclass_splits > 1:
             classes = dataset.getall_class()
             if not isinstance(classes, np.ndarray):
@@ -35,18 +38,16 @@ class RandomSuperclassWrapper(KDWrapper):
                 perm = rng.permutation(len(classes))
                 classes = classes[perm]
             else:
-                perm = None
+                perm = np.arange(len(classes))
             # mapping for each sample to its split
             self.idx_within_class = []
             counter = defaultdict(int)
             for cls in classes:
                 self.idx_within_class.append(counter[cls])
                 counter[cls] += 1
-            self.idx_within_class = np.array(self.idx_within_class)
             # invert shuffling
-            if perm is not None:
-                inv_perm = np.argsort(perm)
-                self.idx_within_class = self.idx_within_class[inv_perm]
+            inv_perm = np.argsort(perm)
+            self.idx_within_class = np.array(self.idx_within_class)[inv_perm]
         else:
             self.idx_within_class = None
 
