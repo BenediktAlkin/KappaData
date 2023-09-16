@@ -8,3 +8,9 @@ class GlobalRng:
     @staticmethod
     def integers(low, high=None, size=None):
         return np.random.randint(low=low, high=high, size=size)
+
+    @staticmethod
+    def permuted(x, axis=None, out=None):
+        assert axis is None and out is None
+        perm = np.random.permutation(len(x))
+        return x[perm]

@@ -5,6 +5,18 @@ from tests_util.datasets.class_dataset import ClassDataset
 
 
 class TestRandomSuperclassWrapper(unittest.TestCase):
+    def test_identity(self):
+        ds = RandomSuperclassWrapper(
+            dataset=ClassDataset(classes=[0, 1, 2, 3, 0, 1, 2, 3]),
+            classes_per_superclass=1,
+            shuffle=False,
+        )
+        expected = [0, 1, 2, 3, 0, 1, 2, 3]
+        self.assertEqual(expected, [ds.getitem_class(i) for i in range(len(ds))])
+        self.assertEqual(expected, ds.getall_class())
+        self.assertEqual(4, ds.getshape_class()[0])
+        self.assertEqual(4, ds.getdim_class())
+
     def test_2superclasses(self):
         ds = RandomSuperclassWrapper(
             dataset=ClassDataset(classes=[0, 1, 2, 3, 0, 1, 2, 3]),
