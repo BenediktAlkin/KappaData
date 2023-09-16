@@ -14,7 +14,7 @@ class RandomSuperclassWrapper(KDWrapper):
     Example output: dataset with 5 classes where each class consists of 2 input classes
     """
 
-    def __init__(self, dataset, classes_per_superclass, superclass_splits=1, seed=None):
+    def __init__(self, dataset, classes_per_superclass, superclass_splits=1, shuffle=True, seed=None):
         super().__init__(dataset=dataset)
         self.classes_per_superclass = classes_per_superclass
         self.superclass_splits = superclass_splits
@@ -31,17 +31,22 @@ class RandomSuperclassWrapper(KDWrapper):
             if not isinstance(classes, np.ndarray):
                 classes = np.array(classes)
             # shuffle classes to avoid patterns
-            perm = rng.permutation(len(classes))
-            classes = classes[perm]
+            if shuffle:
+                perm = rng.permutation(len(classes))
+                classes = classes[perm]
+            else:
+                perm = None
             # mapping for each sample to its split
             self.idx_within_class = []
             counter = defaultdict(int)
             for cls in classes:
                 self.idx_within_class.append(counter[cls])
                 counter[cls] += 1
+            self.idx_within_class = np.array(self.idx_within_class)
             # invert shuffling
-            inv_perm = np.argsort(perm)
-            self.idx_within_class = np.array(self.idx_within_class)[inv_perm]
+            if perm is not None:
+                inv_perm = np.argsort(perm)
+                self.idx_within_class = self.idx_within_class[inv_perm]
         else:
             self.idx_within_class = None
 
