@@ -20,10 +20,8 @@ class RandomSuperclassWrapper(KDWrapper):
         self.superclass_splits = superclass_splits
         self.og_num_classes = math.ceil(dataset.getdim_class() / classes_per_superclass)
         if seed is not None:
-            # static pseudo labels (they dont change from epoch to epoch)
             rng = np.random.default_rng(seed=seed)
         else:
-            # dynamic pseudo labels (resampled for every epoch)
             rng = GlobalRng()
         if shuffle:
             self.perm = rng.permutation(dataset.getdim_class())
