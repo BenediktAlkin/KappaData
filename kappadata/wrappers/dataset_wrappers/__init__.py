@@ -1,4 +1,5 @@
 from .class_filter_wrapper import ClassFilterWrapper
+from .class_groups_wrapper import ClassGroupsWrapper
 from .kd_pseudo_label_wrapper import KDPseudoLabelWrapper
 from .oversampling_wrapper import OversamplingWrapper
 from .overwrite_classes_wrapper import OverwriteClassesWrapper
