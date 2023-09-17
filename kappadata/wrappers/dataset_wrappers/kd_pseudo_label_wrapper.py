@@ -33,7 +33,7 @@ class KDPseudoLabelWrapper(KDWrapper):
                 uri = Path(uri)
             uri = uri.expanduser()
             assert uri.exists(), f"'{uri.as_posix()}' does not exist"
-            pseudo_labels = torch.load(uri, map_location="cpu").float()
+            pseudo_labels = torch.load(uri, map_location="cpu")
         elif pseudo_labels is not None:
             pass
         else:
