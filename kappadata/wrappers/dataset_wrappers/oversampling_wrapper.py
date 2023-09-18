@@ -7,14 +7,14 @@ from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
 
 
 class OversamplingWrapper(KDSubset):
-    def __init__(self, dataset, strategy="multiply"):
-        self.strategy = strategy
+    def __init__(self, dataset, mode="multiply"):
+        self.mode = mode
 
         classes = getall_class_as_tensor(dataset)
         class_counts, _ = get_class_counts(classes, dataset.getdim_class())
         max_class_count = torch.max(class_counts).item()
         indices = torch.arange(len(dataset), dtype=torch.long)
-        if self.strategy == "multiply":
+        if self.mode == "multiply":
             # append miniority classes as long as they are not bigger than the majority class
             for i in range(len(class_counts)):
                 # if class is not contained in dataset -> cant multiply sample
@@ -26,7 +26,7 @@ class OversamplingWrapper(KDSubset):
                     all_indices = torch.arange(len(dataset), dtype=torch.long)
                     sample_idxs = all_indices[classes == i]
                     indices = torch.concat([indices, torch.tile(sample_idxs, dims=[multiply_factor])])
-        elif self.strategy == "exact":
+        elif self.mode == "exact":
             # add samples from minority classes until they have the same count as the majority class
             indices = []
             for i in range(len(class_counts)):
@@ -38,5 +38,5 @@ class OversamplingWrapper(KDSubset):
                     remaining_indices -= len(perm)
             indices = torch.concat(indices)
         else:
-            raise NotImplementedError(f"invalid oversampling strategy {self.strategy}")
+            raise NotImplementedError(f"invalid oversampling mode '{self.mode}'")
         super().__init__(dataset=dataset, indices=indices)
