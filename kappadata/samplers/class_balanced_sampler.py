@@ -44,9 +44,10 @@ class ClassBalancedSampler:
             remaining_indices = self.samples_per_class
             while remaining_indices > 0:
                 if self.shuffle:
-                    perm = torch.randperm(len(indices_per_class), generator=generator)[:remaining_indices]
+                    perm = torch.randperm(len(indices_per_class), generator=generator)
                 else:
                     perm = torch.arange(len(indices_per_class))
+                perm = perm[:remaining_indices]
                 indices.append(indices_per_class[perm])
                 remaining_indices -= len(perm)
         indices = torch.concat(indices)

@@ -18,19 +18,19 @@ class TestClassBalancedSampler(unittest.TestCase):
         self.assertEqual(4, len(sampler))
 
     def test_sample_noshuffle(self):
-        ds = ClassDataset(classes=[0, 1, 0, 0])
+        ds = ClassDataset(classes=[0, 1, 1, 1, 0])
         sampler = ClassBalancedSampler(ds, shuffle=False)
         indices = [i for i in sampler]
         classes = torch.tensor([ds.getitem_class(i) for i in indices])
         _, counts = classes.unique(return_counts=True)
-        self.assertEqual([0, 2, 3, 1, 1, 1], indices)
+        self.assertEqual([0, 4, 0, 1, 2, 3], indices)
         self.assertEqual([3, 3], counts.tolist())
 
     def test_sample_shuffle(self):
-        ds = ClassDataset(classes=[0, 1, 0, 0])
+        ds = ClassDataset(classes=[0, 1, 1, 1, 0])
         sampler = ClassBalancedSampler(ds, shuffle=True, seed=0)
         indices = [i for i in sampler]
         classes = torch.tensor([ds.getitem_class(i) for i in indices])
         _, counts = classes.unique(return_counts=True)
-        self.assertEqual([1, 0, 3, 1, 2, 1], indices)
+        self.assertEqual([4, 1, 0, 2, 4, 3], indices)
         self.assertEqual([3, 3], counts.tolist())
