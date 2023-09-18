@@ -12,7 +12,7 @@ class OversamplingWrapper(KDSubset):
 
         classes = getall_class_as_tensor(dataset)
         class_counts, _ = get_class_counts(classes, dataset.getdim_class())
-        max_class_count = torch.max(class_counts)
+        max_class_count = torch.max(class_counts).item()
         indices = torch.arange(len(dataset), dtype=torch.long)
         if self.strategy == "multiply":
             # append miniority classes as long as they are not bigger than the majority class
@@ -26,6 +26,17 @@ class OversamplingWrapper(KDSubset):
                     all_indices = torch.arange(len(dataset), dtype=torch.long)
                     sample_idxs = all_indices[classes == i]
                     indices = torch.concat([indices, torch.tile(sample_idxs, dims=[multiply_factor])])
+        elif self.strategy == "exact":
+            # add samples from minority classes until they have the same count as the majority class
+            indices = []
+            for i in range(len(class_counts)):
+                remaining_indices = max_class_count
+                indices_for_cur_class = (classes == i).nonzero().squeeze(1)
+                while remaining_indices > 0:
+                    perm = torch.arange(len(indices_for_cur_class))[:remaining_indices]
+                    indices.append(indices_for_cur_class[perm])
+                    remaining_indices -= len(perm)
+            indices = torch.concat(indices)
         else:
             raise NotImplementedError(f"invalid oversampling strategy {self.strategy}")
         super().__init__(dataset=dataset, indices=indices)

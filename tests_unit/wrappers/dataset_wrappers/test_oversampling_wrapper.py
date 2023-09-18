@@ -55,3 +55,9 @@ class TestOversamplingWrapper(unittest.TestCase):
         self.assertEqual(10, class_counts[0])
         self.assertEqual(8, class_counts[1])
         self.assertEqual(0, unlabeled_count)
+
+    def test_exact(self):
+        ds = OversamplingWrapper(ClassDataset(classes=[0] * 10 + [1] * 4), strategy="exact")
+        self.assertEqual(20, len(ds))
+        self.assertEqual([0] * 10 + [1] * 10, [ds.getitem_class(i) for i in range(len(ds))])
+        self.assertEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 10, 11, 12, 13, 10, 11], ds.indices.tolist())
