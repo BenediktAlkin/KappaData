@@ -1,11 +1,14 @@
 import torch
 
-from kappadata.datasets.kd_subset import KDSubset
+from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
 import einops
 
-class AllgatherWrapper(KDSubset):
+class AllgatherClassWrapper(KDWrapper):
+    """ permute classes as if they were all_gathered by world_size GPUs """
+
     def __init__(self, dataset, world_size):
+        super().__init__(dataset=dataset)
         indices = torch.arange(len(dataset))
         num_padded_samples = (world_size - len(indices) % world_size) % world_size
 
@@ -21,4 +24,7 @@ class AllgatherWrapper(KDSubset):
         # cut away padding
         if num_padded_samples > 0:
             indices = indices[:-num_padded_samples]
-        super().__init__(dataset=dataset, indices=indices.tolist())
+        self.indices = indices.tolist()
+
+    def getitem_class(self, idx, ctx=None):
+        return self.dataset.getitem_class(self.indices[idx], ctx=ctx)
