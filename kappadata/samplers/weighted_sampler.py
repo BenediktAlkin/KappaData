@@ -1,7 +1,7 @@
 import torch
 
 from kappadata.utils.distributed import get_rank, get_world_size
-from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
+from kappadata.utils.getall_as_tensor import getall_as_tensor
 
 
 class WeightedSampler:

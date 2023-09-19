@@ -18,7 +18,11 @@ class ClassGroupsWrapper(KDWrapper):
             classes = classes.tolist()
         assert isinstance(classes, (tuple, list))
 
-        num_clsgroups = math.ceil(dataset.getdim_class() / self.classes_per_group)
+        # generate cls to clsgrp
+        # Example: num_classes=10 classes_per_group=2 [0, 1, 2, 3, 4, 0, 1, 2, 3, 4] -> grp0=[0,5] grp1=[1,6] ...
+        # Example: num_classes=8 classes_per_group=4 [0, 1, 0, 1, 0, 1, 0, 1] -> grp0=[0,2,4,6] grp1=[1,3,5,7]
+        num_classes = dataset.getdim_class()
+        num_clsgroups = math.ceil(num_classes / self.classes_per_group)
         self.cls_to_clsgroup = np.arange(num_clsgroups).repeat(self.classes_per_group)
         if shuffle:
             self.cls_to_clsgroup = rng.permuted(self.cls_to_clsgroup)

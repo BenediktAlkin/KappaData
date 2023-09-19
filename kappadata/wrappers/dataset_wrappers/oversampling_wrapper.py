@@ -3,14 +3,14 @@ import torch
 
 from kappadata.datasets.kd_subset import KDSubset
 from kappadata.utils.class_counts import get_class_counts
-from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
+from kappadata.utils.getall_as_tensor import getall_as_tensor
 
 
 class OversamplingWrapper(KDSubset):
     def __init__(self, dataset, mode="multiply"):
         self.mode = mode
 
-        classes = getall_class_as_tensor(dataset)
+        classes = getall_as_tensor(dataset)
         class_counts, _ = get_class_counts(classes, dataset.getdim_class())
         max_class_count = torch.max(class_counts).item()
         indices = torch.arange(len(dataset), dtype=torch.long)

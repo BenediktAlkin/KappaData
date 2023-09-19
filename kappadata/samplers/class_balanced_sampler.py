@@ -1,11 +1,20 @@
 import torch
 
 from kappadata.utils.distributed import get_rank, get_world_size
-from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
+from kappadata.utils.getall_as_tensor import getall_as_tensor
 
 
 class ClassBalancedSampler:
-    def __init__(self, dataset, shuffle=True, samples_per_class=None, seed=0, rank=None, world_size=None):
+    def __init__(
+            self,
+            dataset,
+            shuffle=True,
+            samples_per_class=None,
+            getall_item="class",
+            seed=0,
+            rank=None,
+            world_size=None,
+    ):
         super().__init__()
         self.dataset = dataset
         self.shuffle = shuffle
@@ -16,7 +25,7 @@ class ClassBalancedSampler:
 
         # load/check all classes
         self.num_classes = max(2, dataset.getdim_class())
-        classes = torch.tensor(dataset.getall_class())
+        classes = getall_as_tensor(self.dataset, item=getall_item)
         unique, counts = classes.unique(return_counts=True)
         assert classes.ndim == 1
         assert len(unique) == self.num_classes

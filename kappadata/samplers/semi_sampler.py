@@ -1,7 +1,7 @@
 import torch
 
 from kappadata.utils.distributed import get_rank, get_world_size
-from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
+from kappadata.utils.getall_as_tensor import getall_as_tensor
 
 
 class SemiSampler:
@@ -44,7 +44,7 @@ class SemiSampler:
         assert length_mode in ["labeled", "unlabeled", "all"]
         self.length_mode = length_mode
 
-        self.classes = getall_class_as_tensor(dataset)
+        self.classes = getall_as_tensor(dataset)
         is_unlabeled = self.classes == -1
         self.labeled_idxs = (~is_unlabeled).nonzero().squeeze(1).tolist()
         self.unlabeled_idxs = is_unlabeled.nonzero().squeeze(1).tolist()
