@@ -1,8 +1,8 @@
+import einops
 import torch
 
 from kappadata.datasets.kd_wrapper import KDWrapper
-from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
-import einops
+
 
 class AllgatherClassWrapper(KDWrapper):
     """ permute classes as if they were all_gathered by world_size GPUs """

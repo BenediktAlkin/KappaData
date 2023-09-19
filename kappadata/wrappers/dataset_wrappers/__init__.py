@@ -1,6 +1,7 @@
 from .allgather_class_wrapper import AllgatherClassWrapper
 from .class_filter_wrapper import ClassFilterWrapper
 from .class_groups_wrapper import ClassGroupsWrapper
+from .intra_class_shuffle_wrapper import IntraClassShuffleShuffleWrapper
 from .kd_pseudo_label_wrapper import KDPseudoLabelWrapper
 from .oversampling_wrapper import OversamplingWrapper
 from .overwrite_classes_wrapper import OverwriteClassesWrapper
