@@ -6,14 +6,15 @@ import torch
 
 from kappadata.datasets.kd_wrapper import KDWrapper
 from kappadata.utils.global_rng import GlobalRng
+from kappadata.utils.getall_as_tensor import getall_as_tensor
 
 
 class ClassGroupsWrapper(KDWrapper):
-    def __init__(self, dataset, classes_per_group, shuffle=False, seed=None):
+    def __init__(self, dataset, classes_per_group, shuffle=False, seed=0):
         super().__init__(dataset=dataset)
         self.classes_per_group = classes_per_group
         rng = GlobalRng() if seed is None else np.random.default_rng(seed=seed)
-        classes = dataset.getall_class()
+        classes = getall_as_tensor(dataset, item="class")
         if torch.is_tensor(classes):
             classes = classes.tolist()
         assert isinstance(classes, (tuple, list))
@@ -40,15 +41,15 @@ class ClassGroupsWrapper(KDWrapper):
         return cls
 
     def getitem_class(self, idx, ctx=None):
-        cls = self.dataset.getitem_class(idx, ctx=ctx)
+        cls = self.getitem_class_before_grouping(idx, ctx=ctx)
         return self._map_cls(idx=idx, cls=cls)
 
     def getall_class(self):
-        classes = self.dataset.getall_class()
+        classes = self.getall_class_before_grouping()
         return [self._map_cls(idx=idx, cls=cls) for idx, cls in enumerate(classes)]
 
     def getitem_class_before_grouping(self, idx, ctx=None):
         return self.dataset.getitem_class(idx, ctx=ctx)
 
     def getall_class_before_grouping(self):
-        return self.dataset.getall_class()
+        return getall_as_tensor(self.dataset, item="class")

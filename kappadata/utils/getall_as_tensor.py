@@ -22,4 +22,4 @@ def getall_as_tensor(dataset, item="class"):
         return torch.from_numpy(classes)
     elif not torch.is_tensor(classes):
         return torch.tensor(classes)
-    raise NotImplementedError
+    return classes
