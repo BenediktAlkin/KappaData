@@ -6,7 +6,7 @@ from kappadata.datasets.kd_subset import KDSubset
 from kappadata.utils.global_rng import GlobalRng
 from kappadata.utils.getall_class_as_tensor import getall_class_as_tensor
 
-class IntraClassShuffleShuffleWrapper(KDSubset):
+class IntraClassShuffleWrapper(KDSubset):
     def __init__(self, dataset, seed=None):
         num_classes = dataset.getdim_class()
         classes = getall_class_as_tensor(dataset)

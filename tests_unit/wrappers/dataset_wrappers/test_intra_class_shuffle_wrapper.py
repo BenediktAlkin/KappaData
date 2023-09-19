@@ -1,12 +1,12 @@
 import unittest
 
-from kappadata.wrappers.dataset_wrappers.intra_class_shuffle_wrapper import IntraClassShuffleShuffleWrapper
+from kappadata.wrappers.dataset_wrappers.intra_class_shuffle_wrapper import IntraClassShuffleWrapper
 from tests_util.datasets.classification_dataset import ClassificationDataset
 
 
 class TestIntraClassShuffleWrapper(unittest.TestCase):
     def _test(self, classes, expected_x, seed):
-        dataset = IntraClassShuffleShuffleWrapper(
+        dataset = IntraClassShuffleWrapper(
             dataset=ClassificationDataset(
                 x=list(range(len(classes))),
                 classes=classes,
