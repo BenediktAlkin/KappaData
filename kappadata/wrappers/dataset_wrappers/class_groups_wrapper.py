@@ -5,8 +5,8 @@ import numpy as np
 import torch
 
 from kappadata.datasets.kd_wrapper import KDWrapper
+from kappadata.utils.getall_as_tensor import getall_as_list, getall
 from kappadata.utils.global_rng import GlobalRng
-from kappadata.utils.getall_as_tensor import getall_as_tensor
 
 
 class ClassGroupsWrapper(KDWrapper):
@@ -14,10 +14,7 @@ class ClassGroupsWrapper(KDWrapper):
         super().__init__(dataset=dataset)
         self.classes_per_group = classes_per_group
         rng = GlobalRng() if seed is None else np.random.default_rng(seed=seed)
-        classes = getall_as_tensor(dataset, item="class")
-        if torch.is_tensor(classes):
-            classes = classes.tolist()
-        assert isinstance(classes, (tuple, list))
+        classes = getall_as_list(dataset, item="class")
 
         # generate cls to clsgrp
         # Example: num_classes=10 classes_per_group=2 [0, 1, 2, 3, 4, 0, 1, 2, 3, 4] -> grp0=[0,5] grp1=[1,6] ...
@@ -52,4 +49,4 @@ class ClassGroupsWrapper(KDWrapper):
         return self.dataset.getitem_class(idx, ctx=ctx)
 
     def getall_class_before_grouping(self):
-        return getall_as_tensor(self.dataset, item="class")
+        return getall(self.dataset, item="class")

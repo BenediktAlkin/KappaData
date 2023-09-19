@@ -1,25 +1,33 @@
 import numpy as np
 import torch
 
-
-def getall_as_tensor(dataset, item="class"):
+def getall(dataset, item="class"):
     getall_attr = f"getall_{item}"
     getitem_attr = f"getitem_{item}"
 
-    # load classes
     if hasattr(dataset, getall_attr):
         # fast all-at-once loading
-        classes = getattr(dataset, getall_attr)()
-    elif hasattr(dataset, getitem_attr):
+        return getattr(dataset, getall_attr)()
+    if hasattr(dataset, getitem_attr):
         # slow sample-wise loading
         getitem = getattr(dataset, getitem_attr)
-        classes = [getitem(i) for i in range(len(dataset))]
-    else:
-        raise NotImplementedError
+        return [getitem(i) for i in range(len(dataset))]
+    raise NotImplementedError
 
-    # convert to tensor
-    if isinstance(classes, np.ndarray):
-        return torch.from_numpy(classes)
-    elif not torch.is_tensor(classes):
-        return torch.tensor(classes)
+def getall_as_list(dataset, item="class"):
+    items = getall(dataset=dataset, item=item)
+    if isinstance(items, list):
+        return items
+    if torch.is_tensor(items):
+        return items.tolist()
+    if isinstance(items, np.ndarray):
+        return items.tolist()
+    raise NotImplementedError
+
+def getall_as_tensor(dataset, item="class"):
+    items = getall(dataset=dataset, item=item)
+    if isinstance(items, np.ndarray):
+        return torch.from_numpy(items)
+    elif not torch.is_tensor(items):
+        return torch.tensor(items)
     return classes
