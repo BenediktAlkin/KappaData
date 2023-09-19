@@ -46,3 +46,9 @@ class ClassGroupsWrapper(KDWrapper):
     def getall_class(self):
         classes = self.dataset.getall_class()
         return [self._map_cls(idx=idx, cls=cls) for idx, cls in enumerate(classes)]
+
+    def getitem_class_before_grouping(self, idx, ctx=None):
+        return self.dataset.getitem_class(idx, ctx=ctx)
+
+    def getall_class_before_grouping(self):
+        return self.dataset.getall_class()
