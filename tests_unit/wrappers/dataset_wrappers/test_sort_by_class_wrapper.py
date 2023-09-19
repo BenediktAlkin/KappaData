@@ -8,7 +8,7 @@ class TestSortByClassWrapper(unittest.TestCase):
     def _test(self, classes, expected_x=None):
         dataset = SortByClassWrapper(
             dataset=ClassificationDataset(
-                x=list(range(10)),
+                x=list(range(len(classes))),
                 classes=classes,
             ),
         )
