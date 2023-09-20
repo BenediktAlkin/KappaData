@@ -16,27 +16,68 @@ class TestAllgatherClassWrapper(unittest.TestCase):
     def test_sorted_balanced_nopadding(self):
         self._test(
             world_size=4,
-            classes=[0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
-            expected=[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+            classes=[0] * 8 + [1] * 8 + [2] * 8 + [3] * 8,
+            expected=[0, 0, 1, 1, 2, 2, 3, 3] * 4,
         )
 
     def test_sorted_balanced_padding1(self):
         self._test(
-            world_size=4,
-            classes=[0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3],
-            expected=[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2],
+            world_size=2,
+            classes=[
+                0, 0, 0, 0,
+                1, 1, 1, 1,
+                2, 2, 2, 2,
+                3, 3, 3
+            ],
+            expected=[
+                0, 0, 1, 1, 2, 2, 3, 3,
+                0, 0, 1, 1, 2, 2, 3,
+            ],
         )
 
-    def test_sorted_balanced_padding2(self):
+    def test_sorted_unbalanced_at_end(self):
         self._test(
-            world_size=4,
-            classes=[0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3],
-            expected=[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 0, 0, 1],
+            world_size=2,
+            classes=[
+                0, 0, 0, 0,
+                1, 1, 1, 1,
+                2, 2, 2, 2,
+                3, 3,
+            ],
+            expected=[
+                0, 0, 1, 1, 2, 2, 3,
+                0, 0, 1, 1, 2, 2, 3,
+            ],
+        )
+
+    def test_sorted_unbalanced_at_end_and_middle(self):
+        self._test(
+            world_size=2,
+            classes=[
+                0,
+                1, 1, 1,
+                2, 2, 2, 2,
+                3, 3,
+            ],
+            expected=[
+                0, 1, 2, 2, 3,
+                1, 1, 2, 2, 3,
+            ],
         )
 
     def test_sorted_balanced_padding3(self):
         self._test(
             world_size=4,
-            classes=[0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3],
-            expected=[0, 1, 2, 3, 0, 1, 2, 0, 0, 1, 2, 0, 0],
+            classes=[
+                0, 0, 0, 0,
+                1, 1, 1, 1,
+                2, 2, 2, 2,
+                3,
+            ],
+            expected=[
+                0, 1, 2, 3,
+                0, 1, 2, 0,
+                0, 1, 2, 0,
+                0,
+            ],
         )
