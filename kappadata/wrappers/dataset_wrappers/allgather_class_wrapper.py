@@ -18,7 +18,7 @@ class AllgatherClassWrapper(KDWrapper):
         # rearrange
         indices = einops.rearrange(
             tensor=indices,
-            pattern="(world_size samples_per_gpu) -> (samples_per_gpu world_size)",
+            pattern="(samples_per_gpu world_size) -> (world_size samples_per_gpu)",
             world_size=world_size
         )
         # cut away padding
