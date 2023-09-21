@@ -24,6 +24,14 @@ def getall_as_list(dataset, item="class"):
         return items.tolist()
     raise NotImplementedError
 
+def getall_as_numpy(dataset, item="class"):
+    items = getall(dataset=dataset, item=item)
+    if isinstance(items, np.ndarray):
+        return items
+    elif not torch.is_tensor(items):
+        items = torch.tensor(items)
+    return items.numpy()
+
 def getall_as_tensor(dataset, item="class"):
     items = getall(dataset=dataset, item=item)
     if isinstance(items, np.ndarray):
