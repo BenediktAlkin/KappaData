@@ -28,3 +28,6 @@ class AllgatherClassWrapper(KDWrapper):
 
     def getitem_class(self, idx, ctx=None):
         return self.dataset.getitem_class(self.indices[idx], ctx=ctx)
+
+    def getall_class(self):
+        return [self.getitem_class(self.indices[idx]) for idx in range(len(self))]
