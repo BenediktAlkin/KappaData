@@ -4,6 +4,7 @@ from .image_pos_embed_grid import ImagePosEmbedGrid
 from .image_pos_embed_sincos import ImagePosEmbedSincos
 from .kd_additive_gaussian_noise import KDAdditiveGaussianNoise
 from .kd_additive_uniform_noise import KDAdditiveUniformNoise
+from .kd_binarize import KDBinarize
 from .kd_bucketize import KDBucketize
 from .kd_color_jitter import KDColorJitter
 from .kd_columnwise_norm import KDColumnwiseNorm
