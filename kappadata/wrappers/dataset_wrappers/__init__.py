@@ -1,5 +1,7 @@
+from .allgather_class_wrapper import AllgatherClassWrapper
 from .class_filter_wrapper import ClassFilterWrapper
 from .class_groups_wrapper import ClassGroupsWrapper
+from .intra_class_shuffle_wrapper import IntraClassShuffleWrapper
 from .kd_pseudo_label_wrapper import KDPseudoLabelWrapper
 from .oversampling_wrapper import OversamplingWrapper
 from .overwrite_classes_wrapper import OverwriteClassesWrapper
@@ -7,4 +9,5 @@ from .percent_filter_wrapper import PercentFilterWrapper
 from .random_superclass_wrapper import RandomSuperclassWrapper
 from .repeat_wrapper import RepeatWrapper
 from .shuffle_wrapper import ShuffleWrapper
+from .sort_by_class_wrapper import SortByClassWrapper
 from .subset_wrapper import SubsetWrapper

@@ -16,6 +16,8 @@ class TestClassGroupsWrapper(unittest.TestCase):
         )
         self.assertEqual(expected, [ds.getitem_class(i) for i in range(len(ds))])
         self.assertEqual(expected, ds.getall_class())
+        self.assertEqual(classes, [ds.getitem_class_before_grouping(i) for i in range(len(ds))])
+        self.assertEqual(classes, ds.getall_class_before_grouping())
 
     def test_identity(self):
         self._test(
