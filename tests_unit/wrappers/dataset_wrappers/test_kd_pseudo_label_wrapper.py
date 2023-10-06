@@ -20,7 +20,7 @@ class TestKDPseudoLabelWrapper(TestCase):
         return uri
 
     def test_hard(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
         pseudo_labels = [4, 3, 2, 1, 0, 4, 3, 2, 1, 0]
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard.th")
@@ -33,7 +33,7 @@ class TestKDPseudoLabelWrapper(TestCase):
         self.assertEqual(pseudo_labels, ds.getall_class())
 
     def test_hard_splits2(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
         pseudo_labels = [4, 3, 2, 1, 0, 4, 2, 3, 0, 1]
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard.th")
@@ -45,7 +45,7 @@ class TestKDPseudoLabelWrapper(TestCase):
         self.assertEqual([0, 0, 0, 1, 1, 1, 1, 0, 0, 1], ds.split_indices)
 
     def test_hard_shuffle4(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
         pseudo_labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard_shuffle4.th")
@@ -57,7 +57,7 @@ class TestKDPseudoLabelWrapper(TestCase):
         self.assertEqual(expected, ds.getall_class())
 
     def test_soft_topk_uniform_static(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
         pseudo_labels = torch.randn(len(original), max(original) + 1, generator=torch.Generator().manual_seed(3657))
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="soft_uniform_static.th")
@@ -69,7 +69,7 @@ class TestKDPseudoLabelWrapper(TestCase):
         #self.assertEqual(expected, ds.getall_class())
 
     def test_soft_topk_weighted_static(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
         pseudo_labels = torch.randn(len(original), max(original) + 1, generator=torch.Generator().manual_seed(3657))
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="soft_weighted_static.th")
@@ -87,7 +87,7 @@ class TestKDPseudoLabelWrapper(TestCase):
             def _global_rng(self):
                 return rng
 
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
         pseudo_labels = torch.randn(len(original), max(original) + 1, generator=torch.Generator().manual_seed(3657))
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="soft_uniform_dynamic.th")
@@ -97,7 +97,7 @@ class TestKDPseudoLabelWrapper(TestCase):
         self.assertEqual([1, 4, 4, 2, 0, 0, 2, 3, 0, 2], [ds.getitem_class(i) for i in range(len(ds))])
 
     def test_threshold(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
         pseudo_labels = torch.randn(len(original), 5, generator=torch.Generator().manual_seed(0))
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="threshold.th")
@@ -106,7 +106,7 @@ class TestKDPseudoLabelWrapper(TestCase):
         self.assertEqual([4, -1, -1, -1, 3, -1, -1, -1, 3, 1], [ds.getitem_class(i) for i in range(len(ds))])
 
     def test_shuffle_samplewise(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         pseudo_labels = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1]
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard.th")
         ds = KDPseudoLabelWrapper(
@@ -119,7 +119,7 @@ class TestKDPseudoLabelWrapper(TestCase):
         self.assertEqual([1, 1, 1, 0, 0, 0, 0, 1, 0, 0], [ds.getitem_class(i) for i in range(len(ds))])
 
     def test_shuffle_classwise(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         pseudo_labels = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard.th")
         ds = KDPseudoLabelWrapper(
@@ -135,7 +135,7 @@ class TestKDPseudoLabelWrapper(TestCase):
         )
 
     def test_shuffle_pseudoclass(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         pseudo_labels = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
         uri = self._setup_pseudo_labels_file(labels=pseudo_labels, fname="hard.th")
         ds = KDPseudoLabelWrapper(

@@ -16,7 +16,7 @@ class TestOverwriteClassesWrapper(TestCase):
         self.assertEqual(overwritten, [ds.getitem_class(i) for i in range(len(ds))])
 
     def test_file(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
         original = [0, 1, 2, 3, 4, 4, 3, 2, 1, 0]
         overwritten = torch.tensor([4, 3, 2, 1, 0, 4, 3, 2, 1, 0])
         uri = Path("/temp")

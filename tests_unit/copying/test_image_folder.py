@@ -11,7 +11,7 @@ from tests_util.mock_logger import MockLogger
 
 class TestCopyImageFolderFromGlobalToLocal(TestCase):
     def setUp(self):
-        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
+        self.setUpPyfakefs()
 
     def _setup_imagenet(self):
         global_path = Path("/global/imagenet")
