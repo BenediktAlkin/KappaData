@@ -1,8 +1,7 @@
 # dev requirements
-# with pytorch 2.1 setupPyFakeFs throws "AttributeError: torch._functorch.config.os does not exist"
-torch==2.0.1
-torchaudio==2.0.2
-torchvision==0.15.2
+torch
+torchaudio
+torchvision
 Pillow
 numpy
 einops
