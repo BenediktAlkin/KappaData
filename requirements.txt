@@ -1,5 +1,5 @@
 # dev requirements
-torch
+torch==2.0
 torchaudio
 torchvision
 Pillow
