@@ -1,6 +1,6 @@
 # dev requirements
 # with pytorch 2.1 setupPyFakeFs throws "AttributeError: torch._functorch.config.os does not exist"
-torch==2.0
+torch==2.0.1
 torchaudio
 torchvision
 Pillow
