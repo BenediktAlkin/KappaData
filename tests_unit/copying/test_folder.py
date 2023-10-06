@@ -30,7 +30,7 @@ class TestCopyFolderFromGlobalToLocal(TestCase):
     ]
 
     def setUp(self):
-        self.setUpPyfakefs()
+        self.setUpPyfakefs(additional_skip_names=["torch._functorch.config.os"])
 
     def _setup_data(self):
         global_path = Path("/global/dataset")
