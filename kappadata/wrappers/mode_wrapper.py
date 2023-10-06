@@ -79,6 +79,9 @@ class ModeWrapper(KDDataset):
 
     @staticmethod
     def get_item(mode, item, batch):
+        if not isinstance(batch, tuple):
+            assert len(mode.split(" ")) == 1
+            return batch
         idx = ModeWrapper.get_item_index(mode=mode, item=item)
         return batch[idx]
 

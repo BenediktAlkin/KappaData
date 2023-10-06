@@ -141,3 +141,8 @@ class TestModeWrapper(unittest.TestCase):
         ds = UnfusedWrapper(dataset=ds)
         with self.assertRaises(AssertionError):
             ModeWrapper(dataset=ds, mode="index x")
+
+    def test_getitem_single(self):
+        batch = torch.ones(2, 5)
+        x = ModeWrapper.get_item(mode="x", item="x", batch=batch)
+        self.assertEqual(x, batch)
