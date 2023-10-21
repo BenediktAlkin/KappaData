@@ -14,3 +14,9 @@ class SemiWrapper(KDWrapper):
         if idx in self.semi_idxs:
             return -1
         return self.dataset.getitem_class(idx, ctx=ctx)
+
+    def getall_class(self):
+        cls = self.dataset.getall_class()
+        for idx in self.semi_idxs:
+            cls[idx] = -1
+        return cls
