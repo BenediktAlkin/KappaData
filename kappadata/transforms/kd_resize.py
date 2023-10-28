@@ -9,7 +9,7 @@ class KDResize(KDTransform):
 
     def __init__(self, *args, ctx_prefix=None, interpolation="bilinear", **kwargs):
         super().__init__(ctx_prefix=ctx_prefix)
-        self.resize = Resize(*args, interpolation=InterpolationMode(interpolation), **kwargs)
+        self.resize = Resize(*args, interpolation=InterpolationMode(interpolation), antialias=True, **kwargs)
 
     def __call__(self, x, ctx=None):
         return self.resize(x)
