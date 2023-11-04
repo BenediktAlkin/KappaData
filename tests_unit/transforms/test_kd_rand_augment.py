@@ -13,7 +13,7 @@ from tests_util.patch_rng import patch_rng
 
 class TestKDRandAug(unittest.TestCase):
     @staticmethod
-    def create_mae_randaug(magnitude, magnitude_std):
+    def create_mae_randaug(magnitude, magnitude_std, interpolation):
         config_str = f"rand-m{magnitude}-mstd{magnitude_std}-inc1"
         img_size = 224
         if isinstance(img_size, (tuple, list)):
@@ -23,8 +23,14 @@ class TestKDRandAug(unittest.TestCase):
         aa_params = dict(
             translate_const=int(img_size_min * 0.45),
             img_mean=tuple([min(255, round(255 * x)) for x in IMAGENET_DEFAULT_MEAN]),
-            interpolation=3,  # bicubic
         )
+        if interpolation == "random":
+            # defaults to random (bilinear + bicubic) interpolation
+            pass
+        else:
+            # bicubic
+            aa_params["interpolation"] = 3
+
         return rand_augment_transform(config_str=config_str, hparams=aa_params)
 
     @staticmethod
@@ -40,7 +46,7 @@ class TestKDRandAug(unittest.TestCase):
         return [to_tensor(fn(img)) for img in images]
 
     @patch_rng(fn_names=["numpy.random.choice", "random.random", "random.uniform", "random.gauss"])
-    def test_equivalent_to_timm(self, seed):
+    def test_equivalent_to_timm_bicubic(self, seed):
         kd_fn = KDRandAugment(
             num_ops=2,
             magnitude=9,
@@ -48,7 +54,23 @@ class TestKDRandAug(unittest.TestCase):
             interpolation="bicubic",
             fill_color=tuple([min(255, round(255 * x)) for x in IMAGENET_DEFAULT_MEAN]),
         ).set_rng(np.random.default_rng(seed=seed))
-        timm_fn = self.create_mae_randaug(magnitude=9, magnitude_std=0.5)
+        timm_fn = self.create_mae_randaug(magnitude=9, magnitude_std=0.5, interpolation="bicubic")
+
+        timm_images = self._forward(timm_fn)
+        kd_images = self._forward(kd_fn)
+        for i, (timm_image, kd_image) in enumerate(zip(timm_images, kd_images)):
+            self.assertTrue(torch.all(timm_image == kd_image), f"images are unequal idx={i}")
+
+    @patch_rng(fn_names=["numpy.random.choice", "random.choice", "random.random", "random.uniform", "random.gauss"])
+    def test_equivalent_to_timm_randominterpolation(self, seed):
+        kd_fn = KDRandAugment(
+            num_ops=2,
+            magnitude=9,
+            magnitude_std=0.5,
+            interpolation="random",
+            fill_color=tuple([min(255, round(255 * x)) for x in IMAGENET_DEFAULT_MEAN]),
+        ).set_rng(np.random.default_rng(seed=seed))
+        timm_fn = self.create_mae_randaug(magnitude=9, magnitude_std=0.5, interpolation="random")
 
         timm_images = self._forward(timm_fn)
         kd_images = self._forward(kd_fn)

@@ -16,6 +16,8 @@ class BYOLTransform(KDComposeTransform):
             self,
             size=224,
             interpolation="bicubic",
+            min_scale=0.08,
+            max_scale=1.0,
             flip_p=0.5,
             color_jitter_p=0.8,
             brightness=0.4,
@@ -29,7 +31,7 @@ class BYOLTransform(KDComposeTransform):
             solarize_threshold=128,
             norm="imagenet",
     ):
-        transforms = [KDRandomResizedCrop(size=size, interpolation=interpolation)]
+        transforms = [KDRandomResizedCrop(size=size, interpolation=interpolation, scale=(min_scale, max_scale))]
         if flip_p > 0.:
             transforms.append(KDRandomHorizontalFlip(p=flip_p))
         if color_jitter_p > 0.:
@@ -59,9 +61,9 @@ class BYOLTransform(KDComposeTransform):
 
 
 class BYOLTransform0(KDComposeTransform):
-    def __init__(self):
+    def __init__(self, size=224, min_scale=0.08, max_scale=1.0):
         super().__init__(transforms=[
-            KDRandomResizedCrop(size=224, interpolation="bicubic"),
+            KDRandomResizedCrop(size=size, interpolation="bicubic", scale=(min_scale, max_scale)),
             KDRandomHorizontalFlip(),
             KDRandomColorJitter(p=0.8, brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1),
             KDGaussianBlurPIL(sigma=(0.1, 2.0)),
@@ -71,9 +73,9 @@ class BYOLTransform0(KDComposeTransform):
 
 
 class BYOLTransform1(KDComposeTransform):
-    def __init__(self):
+    def __init__(self, size=224, min_scale=0.08, max_scale=1.0):
         super().__init__(transforms=[
-            KDRandomResizedCrop(size=224, interpolation="bicubic"),
+            KDRandomResizedCrop(size=size, interpolation="bicubic", scale=(min_scale, max_scale)),
             KDRandomHorizontalFlip(),
             KDRandomColorJitter(p=0.8, brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1),
             KDRandomGaussianBlurPIL(p=0.1, sigma=(0.1, 2.0)),

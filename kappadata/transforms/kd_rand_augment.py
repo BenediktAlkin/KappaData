@@ -44,8 +44,14 @@ class KDRandAugment(KDStochasticTransform):
         assert isinstance(magnitude, (int, float)) and 0 <= magnitude <= 10
         self.num_ops = num_ops
         if isinstance(interpolation, str):
-            interpolation = InterpolationMode(interpolation)
-        self.interpolation = interpolation
+            if interpolation == "random":
+                # timm uses only bilinear or bicubic
+                self.interpolations = [InterpolationMode("bilinear"), InterpolationMode("bicubic")]
+            else:
+                self.interpolations = [InterpolationMode(interpolation)]
+        else:
+            assert isinstance(interpolation, InterpolationMode)
+            self.interpolations = [interpolation]
         self.ops = self._get_ops()
         self.apply_op_p = apply_op_p
         self.magnitude_sampler = MagnitudeSampler(
@@ -64,11 +70,13 @@ class KDRandAugment(KDStochasticTransform):
             # self.identity, # timm applies each transform with 50% probability
             self.auto_contrast,
             self.equalize,
-            self.invert,  # not in original publication (but timm uses it)
+            # not in original publication (but timm uses it)
+            self.invert,
             self.rotate,
             self.posterize,
             self.solarize,
-            self.solarize_add,  # not in original publication (but timm uses it)
+            # not in original publication (but timm uses it)
+            self.solarize_add,
             self.color,
             self.contrast,
             self.brightness,
@@ -89,6 +97,9 @@ class KDRandAugment(KDStochasticTransform):
             if self.rng.random() < self.apply_op_p:
                 x = transform(x, self.magnitude_sampler.sample(self.rng))
         return x
+
+    def _sample_interpolation(self):
+        return self.rng.choice(self.interpolations)
 
     @staticmethod
     def identity(x, _):
@@ -111,7 +122,7 @@ class KDRandAugment(KDStochasticTransform):
         degrees = 30 * magnitude
         if self.rng.random() > 0.5:
             degrees = -degrees
-        return F.rotate(x, degrees, interpolation=self.interpolation, fill=self.fill_color)
+        return F.rotate(x, degrees, interpolation=self._sample_interpolation(), fill=self.fill_color)
 
     @staticmethod
     def solarize(x, magnitude):
@@ -206,7 +217,7 @@ class KDRandAugment(KDStochasticTransform):
         #     translate=[0, 0],
         #     scale=1.,
         #     shear=[shear_degrees, 0.],
-        #     interpolation=self.interpolation,
+        #     interpolation=self._sample_interpolation(),
         #     center=[0, 0],
         #     fill=self.fill_color,
         # )
@@ -215,7 +226,7 @@ class KDRandAugment(KDStochasticTransform):
             Image.AFFINE,
             (1, shear_degrees, 0, 0, 1, 0),
             fillcolor=self.fill_color,
-            resample=F.pil_modes_mapping[self.interpolation],
+            resample=F.pil_modes_mapping[self._sample_interpolation()],
         )
 
     def shear_y(self, x, magnitude):
@@ -227,7 +238,7 @@ class KDRandAugment(KDStochasticTransform):
         #     translate=[0, 0],
         #     scale=1.,
         #     shear=[0., shear_degrees],
-        #     interpolation=self.interpolation,
+        #     interpolation=self._sample_interpolation(),
         #     center=[0, 0],
         #     fill=self.fill_color,
         # )
@@ -236,7 +247,7 @@ class KDRandAugment(KDStochasticTransform):
             Image.AFFINE,
             (1, 0, 0, shear_degrees, 1, 0),
             fillcolor=self.fill_color,
-            resample=F.pil_modes_mapping[self.interpolation],
+            resample=F.pil_modes_mapping[self._sample_interpolation()],
         )
 
     def _translation(self, magnitude):
@@ -256,7 +267,7 @@ class KDRandAugment(KDStochasticTransform):
         #     angle=0.,
         #     translate=[translation, 0],
         #     scale=1.,
-        #     interpolation=self.interpolation,
+        #     interpolation=self._sample_interpolation(),
         #     shear=[0., 0.],
         #     fill=self.fill_color,
         # )
@@ -265,7 +276,7 @@ class KDRandAugment(KDStochasticTransform):
             Image.AFFINE,
             (1, 0, translation, 0, 1, 0),
             fillcolor=self.fill_color,
-            resample=F.pil_modes_mapping[self.interpolation],
+            resample=F.pil_modes_mapping[self._sample_interpolation()],
         )
 
     def translate_vertical(self, x, magnitude):
@@ -278,7 +289,7 @@ class KDRandAugment(KDStochasticTransform):
         #     angle=0.,
         #     translate=[0, translation],
         #     scale=1.,
-        #     interpolation=self.interpolation,
+        #     interpolation=self._sample_interpolation(),
         #     shear=[0., 0.],
         #     fill=self.fill_color,
         # )
@@ -287,5 +298,5 @@ class KDRandAugment(KDStochasticTransform):
             Image.AFFINE,
             (1, 0, 0, 0, 1, translation),
             fillcolor=self.fill_color,
-            resample=F.pil_modes_mapping[self.interpolation],
+            resample=F.pil_modes_mapping[self._sample_interpolation()],
         )

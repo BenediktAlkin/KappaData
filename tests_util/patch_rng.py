@@ -21,6 +21,8 @@ class patch_rng:
                 ctx_manager = patch("numpy.random.randint", lambda a, b=None, size=None: rng.integers(a, b, size=size))
             elif fn_name == "numpy.random.permutation":
                 ctx_manager = patch("numpy.random.permutation", lambda count: rng.permutation(count))
+            elif fn_name == "random.choice":
+                ctx_manager = patch("random.choice", rng.choice)
             elif fn_name == "random.gauss":
                 ctx_manager = patch("random.gauss", lambda mu, sigma: rng.normal(mu, sigma))
             elif fn_name == "random.randint":
