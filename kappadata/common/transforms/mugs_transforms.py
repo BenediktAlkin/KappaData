@@ -26,5 +26,5 @@ class MUGSStrongGlobalTransform(MUGSStrongTransform):
 
 
 class MUGSStrongLocalTransform(MUGSStrongTransform):
-    def __init__(self, size=96, max_scale=0.25):
-        super().__init__(size=size, max_scale=max_scale)
+    def __init__(self, size=96, min_scale=0.05, max_scale=0.25):
+        super().__init__(size=size, min_scale=min_scale, max_scale=max_scale)

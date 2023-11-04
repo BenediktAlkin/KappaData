@@ -9,7 +9,7 @@ from kappadata.wrappers.sample_wrappers.x_transform_wrapper import XTransformWra
 
 
 class MUGSMultiViewWrapper(KDWrapper):
-    def __init__(self, dataset, global_size=224, local_size=96, mid_scale=0.25, seed=None, **kwargs):
+    def __init__(self, dataset, global_size=224, local_size=96, min_scale=0.05, mid_scale=0.25, seed=None, **kwargs):
         super().__init__(dataset=dataset, **kwargs)
         # if dataset is XTransformWrapper -> check that transform is deterministic (can only check KDTransforms)
         if isinstance(dataset, XTransformWrapper):
@@ -22,9 +22,13 @@ class MUGSMultiViewWrapper(KDWrapper):
         # student strong augmentations (weak augmentation is the same as teacher)
         self.student_strong_transform = MUGSStrongGlobalTransform(size=global_size, min_scale=mid_scale)
         # local weak transform (same as byol)
-        self.local_weak_transform = BYOLTransform0(size=local_size, max_scale=mid_scale)
+        self.local_weak_transform = BYOLTransform0(size=local_size, min_scale=min_scale, max_scale=mid_scale)
         # local strong transform (same as global strong but smaller)
-        self.local_strong_transform = MUGSStrongLocalTransform(size=local_size, max_scale=mid_scale)
+        self.local_strong_transform = MUGSStrongLocalTransform(
+            size=local_size,
+            min_scale=min_scale,
+            max_scale=mid_scale,
+        )
 
         # compose to list for easy rng setting
         self.transforms = [
