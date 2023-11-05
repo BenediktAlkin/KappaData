@@ -31,7 +31,7 @@ def set_seed(seed):
         torch.cuda.manual_seed_all(seed)
 
 
-class KDRandAugmentSingle(kd.KDRandAugment):
+class KDRandAugmentSingle(kd.transforms.KDRandAugment):
     def __init__(self, aug_idx, **kwargs):
         self.aug_idx = aug_idx
         super().__init__(num_ops=1, apply_op_p=1., **kwargs)
@@ -45,7 +45,7 @@ class KDRandAugmentSingle(kd.KDRandAugment):
 
 def get_randaug_transforms():
     return {
-        f"RandAug{mag_name}-{key}": kd.KDComposeTransform([
+        f"RandAug{mag_name}-{key}": kd.transforms.KDComposeTransform([
             Resize(size=(224, 224)),
             KDRandAugmentSingle(
                 aug_idx=i,
@@ -80,21 +80,21 @@ def get_randaug_transforms():
 
 
 TRANSFORMS = {
-    "MAE-pretrain": kd.KDComposeTransform([
+    "MAE-pretrain": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.2, 1.0), interpolation="bicubic"),
         kd.transforms.KDRandomHorizontalFlip(),
     ]),
-    "MAE-pretrain-normalizepixels": kd.KDComposeTransform([
+    "MAE-pretrain-normalizepixels": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.2, 1.0), interpolation="bicubic"),
         kd.transforms.KDRandomHorizontalFlip(),
-        kd.transforms.KDImageNetNorm(),
+        kd.common.transforms.KDImageNetNorm(),
         kd.transforms.PatchifyImage(patch_size=16),
         kd.transforms.PatchwiseNorm(),
         kd.transforms.UnpatchifyImage(),
-        kd.transforms.KDImageNetNorm(inverse=True),
+        kd.common.transforms.KDImageNetNorm(inverse=True),
         ToPILImage(),
     ]),
-    "MAE-finetune": kd.KDComposeTransform([
+    "MAE-finetune": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.transforms.KDRandomHorizontalFlip(),
         kd.transforms.KDRandAugment(
@@ -104,20 +104,39 @@ TRANSFORMS = {
             interpolation="bicubic",
             fill_color=(124, 116, 104),
         ),
-        kd.transforms.KDImageNetNorm(),
+        kd.common.transforms.KDImageNetNorm(),
         kd.transforms.KDRandomErasing(
             p=0.25,
             mode="pixelwise",
             max_count=1,
         ),
-        kd.transforms.KDImageNetNorm(inverse=True),
+        kd.common.transforms.KDImageNetNorm(inverse=True),
         ToPILImage(),
     ]),
-    "SSL-probe": kd.KDComposeTransform([
+    "MAE-finetune-randaugfirst": kd.transforms.KDComposeTransform([
+        kd.transforms.KDRandAugment(
+            num_ops=2,
+            magnitude=9,
+            magnitude_std=0.5,
+            interpolation="bicubic",
+            fill_color=(124, 116, 104),
+        ),
+        kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
+        kd.transforms.KDRandomHorizontalFlip(),
+        kd.common.transforms.KDImageNetNorm(),
+        kd.transforms.KDRandomErasing(
+            p=0.25,
+            mode="pixelwise",
+            max_count=1,
+        ),
+        kd.common.transforms.KDImageNetNorm(inverse=True),
+        ToPILImage(),
+    ]),
+    "SSL-probe": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.transforms.KDRandomHorizontalFlip(),
     ]),
-    "BYOL-view0": kd.KDComposeTransform([
+    "BYOL-view0": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.transforms.KDRandomHorizontalFlip(),
         kd.transforms.KDRandomColorJitter(
@@ -130,7 +149,7 @@ TRANSFORMS = {
         kd.transforms.KDGaussianBlurPIL(sigma=(0.1, 2.0)),
         kd.transforms.KDRandomGrayscale(p=0.2),
     ]),
-    "BYOL-view0-torchvisionblur": kd.KDComposeTransform([
+    "BYOL-view0-torchvisionblur": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.transforms.KDRandomHorizontalFlip(),
         kd.transforms.KDRandomColorJitter(
@@ -143,7 +162,7 @@ TRANSFORMS = {
         kd.transforms.KDGaussianBlurTV(kernel_size=23, sigma=(0.1, 2.0)),
         kd.transforms.KDRandomGrayscale(p=0.2),
     ]),
-    "BYOL-view1": kd.KDComposeTransform([
+    "BYOL-view1": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.transforms.KDRandomHorizontalFlip(),
         kd.transforms.KDRandomColorJitter(
@@ -157,7 +176,7 @@ TRANSFORMS = {
         kd.transforms.KDRandomGrayscale(p=0.2),
         kd.transforms.KDRandomSolarize(p=0.2, threshold=128),
     ]),
-    "SIMCLR": kd.KDComposeTransform([
+    "SIMCLR": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.transforms.KDRandomHorizontalFlip(),
         kd.transforms.KDRandomColorJitter(
@@ -170,22 +189,22 @@ TRANSFORMS = {
         kd.transforms.KDRandomGaussianBlurPIL(p=0.5, sigma=(0.1, 2.0)),
         kd.transforms.KDRandomGrayscale(p=0.2),
     ]),
-    "GaussianBlur-sigma=0.1": kd.KDComposeTransform([
+    "GaussianBlur-sigma=0.1": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.transforms.KDGaussianBlurPIL(sigma=0.1),
     ]),
-    "GaussianBlur-sigma=1.0": kd.KDComposeTransform([
+    "GaussianBlur-sigma=1.0": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.transforms.KDGaussianBlurPIL(sigma=1.0),
     ]),
-    "GaussianBlur-sigma=2.0": kd.KDComposeTransform([
+    "GaussianBlur-sigma=2.0": kd.transforms.KDComposeTransform([
         kd.transforms.KDRandomResizedCrop(size=224, scale=(0.08, 1.0), interpolation="bicubic"),
         kd.transforms.KDGaussianBlurPIL(sigma=2.0),
     ]),
     **get_randaug_transforms(),
 }
 COLLATORS = {
-    "MAE-finetune": kd.KDMixCollator(
+    "MAE-finetune": kd.collators.KDMixCollator(
         mixup_alpha=0.8,
         cutmix_alpha=1.0,
         mixup_p=0.5,
