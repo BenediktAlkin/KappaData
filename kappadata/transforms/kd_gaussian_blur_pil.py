@@ -1,5 +1,7 @@
+import torch
 from PIL import ImageFilter
 from torchvision.transforms import GaussianBlur
+from torchvision.transforms.functional import to_pil_image
 
 from .base.kd_stochastic_transform import KDStochasticTransform
 
@@ -18,6 +20,8 @@ class KDGaussianBlurPIL(KDStochasticTransform):
         self.sigma_ub = self.sigma_lb + (self.og_sigma_ub - self.sigma_lb) * factor
 
     def __call__(self, x, ctx=None):
+        if torch.is_tensor(x):
+            x = to_pil_image(x)
         sigma = self.get_params()
         if ctx is not None:
             ctx[self.ctx_key] = sigma

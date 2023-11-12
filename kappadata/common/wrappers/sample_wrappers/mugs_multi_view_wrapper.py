@@ -9,12 +9,23 @@ from kappadata.wrappers.sample_wrappers.x_transform_wrapper import XTransformWra
 
 
 class MUGSMultiViewWrapper(KDWrapper):
-    def __init__(self, dataset, global_size=224, local_size=96, min_scale=0.05, mid_scale=0.25, seed=None, **kwargs):
+    def __init__(
+            self,
+            dataset,
+            global_size=224,
+            local_size=96,
+            min_scale=0.05,
+            mid_scale=0.25,
+            num_local_crops=10,
+            seed=None,
+            **kwargs,
+    ):
         super().__init__(dataset=dataset, **kwargs)
         # if dataset is XTransformWrapper -> check that transform is deterministic (can only check KDTransforms)
         if isinstance(dataset, XTransformWrapper):
             assert dataset.transform.is_deterministic
         self.seed = seed
+        self.num_local_crops = num_local_crops
 
         # teacher views (same as byol)
         self.teacher_transform0 = BYOLTransform0(min_scale=mid_scale)
@@ -73,7 +84,7 @@ class MUGSMultiViewWrapper(KDWrapper):
             ]
 
         # local
-        for _ in range(10):
+        for _ in range(self.num_local_crops):
             cur_weak_local_aug = rng.random() < 0.5
             if cur_weak_local_aug:
                 x.append(self.local_weak_transform(sample))
