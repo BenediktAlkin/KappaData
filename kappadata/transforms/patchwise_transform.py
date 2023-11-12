@@ -35,7 +35,13 @@ class PatchwiseTransform(KDTransform):
                 patches,
                 "c seqlen_h seqlen_w patch_h patch_w -> c (seqlen_h seqlen_w) patch_h patch_w"
             )
-            patches = torch.stack([to_tensor(self.transform(patch, ctx=ctx)) for patch in patches.unbind(1)], dim=1)
+            transformed_patches = []
+            for i in range(patches.size(1)):
+                transformed_patch = self.transform(patches[:, i], ctx=ctx)
+                if not torch.is_tensor(transformed_patch):
+                    transformed_patch = to_tensor(transformed_patch)
+                transformed_patches.append(transformed_patch)
+            patches = torch.stack(transformed_patches, dim=1)
             patches = einops.rearrange(
                 patches,
                 "c (seqlen_h seqlen_w) patch_h patch_w -> c seqlen_h seqlen_w patch_h patch_w",
