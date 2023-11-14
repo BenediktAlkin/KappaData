@@ -1,6 +1,6 @@
 # dev requirements
 torch
-torchaudio
+# torchaudio
 torchvision
 Pillow
 numpy

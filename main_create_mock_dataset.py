@@ -8,7 +8,7 @@
 #     parser.add_argument("--dst", type=str, required=True)
 #     parser.add_argument("--dataset", type=str, required=True)
 #     return vars(parser.parse_args())
-# 
+#
 # def main(dst, dataset):
 #     kwargs = dict(dst=dst, log_fn=print)
 #     if dataset == "imagenet":
