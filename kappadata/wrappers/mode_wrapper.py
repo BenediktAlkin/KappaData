@@ -190,6 +190,7 @@ class ModeWrapper(KDDataset):
             # TODO implement getitems
             # new torch versions (>=2.1) implements this which leads to wrappers being circumvented
             # -> disable batched getitems and call getitem instead
+            # this occoured when doing DataLoader(dataset) where dataset is ModeWrapper(Subset(...))
             return None
         return getattr(self.dataset, item)
 
