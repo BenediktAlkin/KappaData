@@ -11,8 +11,7 @@ class KDSingleCollatorWrapper(KDCollatorBase):
         self.collator = collator
 
     def set_rng(self, rng):
-        for collator in self.collators:
-            collator.set_rng(rng)
+        self.collator.set_rng(rng)
         return self
 
     def __call__(self, batch):
