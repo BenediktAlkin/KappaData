@@ -15,8 +15,7 @@ class KDSingleCollatorWrapper(KDCollatorBase):
         return self
 
     def __call__(self, batch):
-        ctx = {}
-        batch = self.collator.collate(batch=batch, dataset_mode=self.dataset_mode, ctx=ctx)
+        batch, ctx = self.collator.collate(batch=batch, dataset_mode=self.dataset_mode, ctx={})
         if self.return_ctx:
             return batch, ctx
         return batch
