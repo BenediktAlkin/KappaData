@@ -36,12 +36,11 @@ class KDCollatorBase:
                 called_default_collate = True
 
             # collate ctx if not collated already
-            if collator.default_collate_mode != "after":
-                if not called_default_collate and return_ctx and not removed_ctx_from_batch:
-                    batch, ctx = zip(*batch)
-                    ctx = default_collate(ctx)
-                    assert isinstance(ctx, dict), "ModeWrapper.return_ctx should be equal to KDComposeCollator.return_ctx"
-                    removed_ctx_from_batch = True
+            if not called_default_collate and return_ctx and not removed_ctx_from_batch:
+                batch, ctx = zip(*batch)
+                ctx = default_collate(ctx)
+                assert isinstance(ctx, dict), "ModeWrapper.return_ctx should be equal to KDComposeCollator.return_ctx"
+                removed_ctx_from_batch = True
 
             # call collator
             batch = collator.collate(batch, dataset_mode, ctx)
