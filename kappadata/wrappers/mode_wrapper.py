@@ -186,6 +186,14 @@ class ModeWrapper(KDDataset):
     def __getattr__(self, item):
         if item == "dataset":
             return getattr(super(), item)
+        if item == "__getitems__":
+            # TODO implement getitems
+            # new torch versions (>=2.1) implements this which leads to wrappers being circumvented
+            # -> disable batched getitems and call getitem instead
+            # this occoured when doing DataLoader(dataset) where dataset is ModeWrapper(Subset(...))
+            # Subset implements __getitems__ which leads to the fetcher from the DataLoader believing also the
+            # ModeWrapper has a __getitems__ and therefore calls it instead of the __getitem__ function
+            return None
         return getattr(self.dataset, item)
 
     def __iter__(self):
