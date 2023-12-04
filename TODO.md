@@ -1,3 +1,6 @@
+## collators
+- collators should be revamped
+
 ##
 - wrapper/baseclass for DistributedSampler
 - fused operations dont work with nested wrappers (e.g. XTransformWrapper(KDMixWrapper(dataset)))
