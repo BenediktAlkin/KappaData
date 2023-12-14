@@ -38,7 +38,7 @@ class KDPseudoLabelWrapper(KDWrapper):
                 # uri is file with dict(labels=labels, confidences=confidences)
                 assert isinstance(data, dict) and "label" in data and "confidence" in data
                 pseudo_labels = data["label"]
-                confidences = data["confidence"]
+                confidences = data["confidence"].float()
         elif pseudo_labels is not None:
             confidences = None
         else:
