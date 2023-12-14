@@ -80,8 +80,6 @@ class KDPseudoLabelWrapper(KDWrapper):
         assert self.threshold is None
         assert self.confidences is not None
         confidence = self.confidences[idx]
-        if torch.is_tensor(confidence):
-            confidence = confidence.item()
         return confidence
 
     def _getitem_class(self, idx):
