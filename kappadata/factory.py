@@ -4,6 +4,12 @@ from itertools import chain
 
 import torchvision.transforms
 
+_REGISTERED_TRANSFORMS = {}
+
+
+def register_transform(name, cls):
+    _REGISTERED_TRANSFORMS[name] = cls
+
 
 def object_to_transform(obj):
     if obj is None:
@@ -23,6 +29,9 @@ def object_to_transform(obj):
     assert "kind" in obj and isinstance(obj["kind"], str)
     obj = deepcopy(obj)
     kind = obj.pop("kind")
+
+    if kind in _REGISTERED_TRANSFORMS:
+        return _REGISTERED_TRANSFORMS[kind](**obj)
 
     # import here to avoid circular dependencies
     import kappadata.common.transforms
