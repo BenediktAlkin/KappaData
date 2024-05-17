@@ -30,5 +30,5 @@ class TestKDSemsegRandomResize(unittest.TestCase):
         t.set_rng(np.random.default_rng(seed=9823))
         x_t, semseg_t = t((x, semseg))
         # nearest interpolation is different for PIL and tensor
-        self.assertEqual(576, (x_t == to_tensor(semseg_t)).sum())
-        self.assertEqual(414, (x_t != to_tensor(semseg_t)).sum())
+        self.assertEqual(229, (x_t == to_tensor(semseg_t)).sum())
+        self.assertEqual(255, (x_t != to_tensor(semseg_t)).sum())

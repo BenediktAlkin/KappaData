@@ -19,8 +19,11 @@ class KDSemsegRandomResize(KDStochasticTransform):
         x, seg = xsemseg
 
         # get params
-        h = x.height
-        w = x.width
+        if torch.is_tensor(x):
+            _, h, w = x.shape
+        else:
+            h = x.height
+            w = x.width
         suggested_height, suggested_width = self.get_params()
         # scale by smallest scaleing while keeping aspect ratio
         max_long_edge = max(suggested_height, suggested_width)
