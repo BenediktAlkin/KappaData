@@ -11,26 +11,40 @@ class KDSemsegRandomResize(KDStochasticTransform):
 
     def __init__(self, base_size, ratio, interpolation="bilinear", **kwargs):
         super().__init__(**kwargs)
-        self.base_size = to_2tuple(base_size)
-        self.ratio = to_2tuple(ratio)
+        self.ratio_resolution = to_2tuple(base_size)
+        self.ratio_range = to_2tuple(ratio)
         self.interpolation = InterpolationMode(interpolation)
 
     def __call__(self, xsemseg, ctx=None):
-        new_size = self.get_params()
-        x, semseg = xsemseg
-        x = resize(x, new_size, self.interpolation)
-        squeeze_semseg = False
-        if torch.is_tensor(semseg):
-            semseg = semseg.unsqueeze(0)
-            squeeze_semseg = True
-        semseg = resize(semseg, new_size, InterpolationMode.NEAREST)
-        if squeeze_semseg:
-            semseg = semseg.squeeze(0)
-        return x, semseg
+        x, seg = xsemseg
+
+        # get params
+        h = x.height
+        w = x.width
+        suggested_height, suggested_width = self.get_params()
+        # scale by smallest scaleing while keeping aspect ratio
+        max_long_edge = max(suggested_height, suggested_width)
+        max_short_edge = min(suggested_height, suggested_width)
+        smallest_scale = min(max_long_edge / max(h, w), max_short_edge / min(h, w))
+
+        new_height = round(h * smallest_scale)
+        new_width = round(w * smallest_scale)
+        new_size = new_height, new_width
+
+        x = resize(x, size=new_size, interpolation=self.interpolation)
+        squeeze = False
+        if torch.is_tensor(seg):
+            seg = seg.unsqueeze(0)
+            squeeze = True
+        seg = resize(seg, size=new_size, interpolation=InterpolationMode.NEAREST)
+        if squeeze:
+            seg = seg.squeeze(0)
+        return x, seg
 
     def get_params(self):
-        ratio = self.rng.uniform(self.ratio[0], self.ratio[1])
-        height, width = self.base_size
-        new_height = round(height * ratio)
-        new_width = round(width * ratio)
-        return new_height, new_width
+        ratio_min, ratio_max = self.ratio_range
+        ratio = self.rng.uniform(ratio_min, ratio_max)
+        height, width = self.ratio_resolution
+        suggested_height = height * ratio
+        suggested_width = width * ratio
+        return suggested_height, suggested_width
