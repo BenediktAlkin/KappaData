@@ -210,10 +210,11 @@ class InterleavedSampler:
         for config_idx, config in enumerate(self.configs):
             index_offset = self.index_offsets[config_idx]
             sample_in_interleaved = 0
+            interleaved_batch_size = config.batch_size or self.batch_size
             for interleaved_idx in config.sampler:
                 sample_in_interleaved += 1
                 if (
-                        sample_in_interleaved % self.batch_size == 0 or
+                        sample_in_interleaved % interleaved_batch_size == 0 or
                         sample_in_interleaved == len(config.sampler)
                 ):
                     yield True, index_offset + interleaved_idx
